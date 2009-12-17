@@ -1,0 +1,76 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification file for the USBClassChangeUIPlugin.
+*
+*/
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+TARGET          USBClassChangeUIPlugin.dll 
+TARGETTYPE      PLUGIN
+
+// ECom Dll recognition UID followed by the unique UID for this dll
+UID             0x10009D8D  0x1020E472
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+SOURCEPATH ../src
+SOURCE  USBClassChangeUIPluginImplementationTable.cpp
+SOURCE  USBClassChangeUIPluginView.cpp
+SOURCE  USBClassChangeUIPluginContainer.cpp
+SOURCE  USBClassChangeUIPluginModel.cpp
+SOURCE  USBClassChangeUIPluginCRWatcher.cpp
+SOURCE  USBDeviceStateWatcher.cpp 
+SOURCE  usbotghoststatewatcher.cpp
+
+// ECom resource file
+START RESOURCE ../data/1020E472.rss
+TARGET  USBClassChangeUIPlugin.rsc 
+END	
+
+START RESOURCE  ../data/USBClassChangeUIPlugin.rss
+TARGETPATH      RESOURCE_FILES_DIR
+HEADER
+LANGUAGE_IDS
+END
+
+USERINCLUDE ../inc
+USERINCLUDE ../../inc
+
+SYSTEMINCLUDE		../../../inc ../../../../inc     //for internal and private API headers
+SYSTEMINCLUDE   /epoc32/include/ecom
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY euser.lib apparc.lib cone.lib eikcore.lib 
+LIBRARY eikcoctl.lib avkon.lib
+LIBRARY bafl.lib                            // Basic Application Framework 
+LIBRARY aknnotify.lib                       // Avkon global notes
+LIBRARY AknSkins.lib                        // Skinned icons
+LIBRARY aknicon.lib
+LIBRARY centralrepository.lib               // Central Repository
+LIBRARY commonengine.lib                    // Series 60 common components library
+LIBRARY eiksrv.lib      
+LIBRARY GSEcomPlugin.lib        
+LIBRARY ecom.lib
+LIBRARY usbman.lib
+LIBRARY usbwatcher.lib
+LIBRARY FeatMgr.lib                         // for fetching if help is supported
+LIBRARY hlplch.lib                          // Help library
+
+DEBUGLIBRARY flogger.lib                    // File logging services
+
+
+// End of File

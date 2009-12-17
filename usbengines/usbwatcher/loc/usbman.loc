@@ -1,0 +1,110 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization strings for project usbwatcher
+*
+*/
+
+
+//d: List item text of USBUI Setting view
+//d: for "Ovi suite". 
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_ovisuite "Ovi Suite"
+
+//d: List item text of USBUI Setting view
+//d: for "Mass storage". 
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_mass_storage "Mass storage"
+
+//d: List item text of USBUI Setting view
+//d: for "Image print". 
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_ptp "Image print"
+
+//d: List item text of USBUI Setting view
+//d: for "Media transfer". 
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_mtp "Media transfer"
+
+//d: List item text of USBUI Setting view
+//d: for "Ovi Suite". 
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_ovisuite_mtp "Ovi Suite"
+
+//d: List item text of USBUI Setting view
+//d: for "Connect to internet". 
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_quickconnect "Connect PC to Web"
+
+//d: List item text of USBUI Setting view, not to be localized
+//d: for "RNDIS"
+//d: This text is also used in USB connected popup
+//l: list_double_large_graphic_pane_t1_cp2
+//w:
+//r: 5.2
+//
+#define qtn_usb_mode_rndis "Connect PC with RNDIS"
+
+//d: text describing the mass storage mode, shown in preview pop up in USB UI Setting 
+//l: popup_preview_text_window/opt6
+//r: 5.2
+#define qtn_usb_mode_msg_mass_storage "Access your phone’s memory card from the device you are connected to."
+
+//d: text describing the ovi suite mode, shown in preview pop up in USB UI setting
+//l: popup_preview_text_window/opt6
+//r: 5.2
+#define qtn_usb_mode_msg_ovi_suite "Manage your phone with Ovi Suite and sync your media content."
+
+//d: text describing the media transfer mode, shown in preview pop up in USB UI setting
+//l: popup_preview_text_window/opt6
+//r: 5.2
+#define qtn_usb_mode_msg_mtp "Sync your media content with Windows Media Player or Nokia Ovi Player, or connect to compatible stereos."
+
+//d: text describing the picture transfer mode, shown in preview pop up in USB UI setting
+//l: popup_preview_text_window/opt6
+//r: 5.2
+#define qtn_usb_mode_msg_ptp "Print pictures with a compatible printer."
+
+//d: text describing the Phone as modem mode, shown in preview pop up in USB UI setting
+//l: popup_preview_text_window/opt6
+//r: 5.2
+#define qtn_usb_mode_msg_pam "Use your mobile phone as a modem"
+
+//d: text describing the Phone as RNDIS mode, shown in preview pop up in USB UI setting, not to be localized
+//l: popup_preview_text_window/opt6
+//r: 5.2
+#define qtn_usb_mode_msg_rndis "Use your mobile phone as RNDIS"

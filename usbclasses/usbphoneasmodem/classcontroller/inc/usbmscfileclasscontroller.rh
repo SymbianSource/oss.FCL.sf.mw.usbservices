@@ -1,0 +1,27 @@
+// Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+// 
+// 
+
+
+#include <badef.rh>
+
+STRUCT USBMSCFILE_FILESYSTEM_IMAGE
+    {
+    WORD protocol = 0; // protocol not used
+    WORD lun;          // only LUN 0 supported currently
+    LTEXT path;        // full path to file system image file
+    }
+
+// End Of File

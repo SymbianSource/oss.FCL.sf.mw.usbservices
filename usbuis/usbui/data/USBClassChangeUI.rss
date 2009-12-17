@@ -1,0 +1,61 @@
+/*
+* Copyright (c) 2005, 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  USB UI application resources.
+*
+*/
+
+
+#include <data_caging_paths_strings.hrh>
+
+//  RESOURCE IDENTIFIER
+NAME    USBC // 4 letter ID
+
+//  INCLUDES
+#include <eikon.rh>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <avkon.loc>
+#include <appinfo.rh>
+
+#include <usbclasschangeui.loc>
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+// default file name for a document
+RESOURCE TBUF { buf = "USBCLASSCHANGEUI"; }
+
+RESOURCE EIK_APP_INFO
+    {
+    }
+
+RESOURCE LOCALISABLE_APP_INFO r_usbclasschangeui_localisable_app_info
+    {
+    short_caption = qtn_apps_usb_grid;
+    caption_and_icon = 
+    CAPTION_AND_ICON_INFO
+        {
+        caption = qtn_apps_usb_list;
+        #ifdef __SCALABLE_ICONS
+        number_of_icons = 1;
+        icon_file = APP_BITMAP_DIR"\\usbclasschangeui_aif.mif";
+        #else
+        number_of_icons = 2; 
+        icon_file = APP_BITMAP_DIR"\\usbclasschangeui_aif.mbm"; 
+        #endif	
+        };
+    }
+// End of File
