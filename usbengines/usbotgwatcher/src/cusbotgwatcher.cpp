@@ -77,9 +77,9 @@ void CUsbOtgWatcher::ConstructL()
             KUsbWatcherPeripheralIsNotConnected ) );
 #endif
     
-    iNotifManager = CUsbNotifManager::NewL();
     iUsbServiceControl = CUsbServiceControl::NewL(this, iUsb);
 
+    User::LeaveIfError(iStates.Append(CUsbState::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAInitiate::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAHost::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAPeripheral::NewL(this)));
@@ -94,6 +94,12 @@ void CUsbOtgWatcher::ConstructL()
             &iUsb);
     iMessageNotificationObserver = CUsbMessageNotificationObserver::NewL(
             &iUsb);
+    
+    iHostState = iStates[EUsbStateUndefined];
+    
+    // Notif manager must be created at least after VBus observer and iHostState initialization
+    // to allow USb indicator subscribe to its notifications at construction and check their's current states
+    iNotifManager = CUsbNotifManager::NewL(this);
 
     iIdPinObserver->SubscribeL(this);
 
@@ -143,6 +149,9 @@ CUsbOtgWatcher::~CUsbOtgWatcher()
     RProperty::Delete( KPSUidUsbWatcher, KUsbWatcherIsPeripheralConnected );
 #endif
     
+    // delete Notif manager before VBus observer, due to USB indicator observes VBus
+    delete iNotifManager;
+    
     delete iIdPinObserver;
     delete iVBusObserver;
     delete iOtgStateObserver;
@@ -150,11 +159,12 @@ CUsbOtgWatcher::~CUsbOtgWatcher()
     delete iHostEventNotificationObserver;
     delete iMessageNotificationObserver;
 
+    iOtgStateObservers.Close();
+    
     // Destroy states
     iStates.ResetAndDestroy();
     iStates.Close();
-
-    delete iNotifManager;
+    
     delete iUsbServiceControl;
 
     iUsb.Close();
@@ -803,7 +813,12 @@ void CUsbOtgWatcher::ChangeHostStateL(TUsbStateIds aNewStateId)
     __ASSERT_DEBUG(iHostState != NULL, Panic(EBadState));
 
     iHostState->JustAdvancedToThisStateL(); // checks if there are conditions for advancing to another state(s)
-
+    
+    // notify state change to observers
+    for (TInt i(0); i < iOtgStateObservers.Count(); ++i)
+        {
+        iOtgStateObservers[i]->OtgWatcherStateChangedL(iHostState->Id());
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -926,8 +941,6 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
 // 
 // ---------------------------------------------------------------------------
 //
-
-
 TInt CUsbOtgWatcher::SelfTestL()
     {
 #ifdef _DEBUG
@@ -945,15 +958,7 @@ TInt CUsbOtgWatcher::SelfTestL()
     iMessageNotificationObserver =
             CUsbMessageNotificationObserver::NewL(&iUsb);
 
-  /*      FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL idPinObserver->Subscribe" ) );
-
-    iIdPinObserver->SubscribeL(this);
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL idPinObserver->Unsubscribe" ) );
-
-    iIdPinObserver->UnsubscribeL(this); */
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Observers getters." ) );
+         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Observers getters." ) );
 
     if (iIdPinObserver != IdPinObserver())
         {
@@ -984,8 +989,9 @@ TInt CUsbOtgWatcher::SelfTestL()
 
     delete iIdPinObserver;
     iIdPinObserver = 0;
-    delete iVBusObserver;
-    iVBusObserver = 0;
+    
+    // Vbus observer is deleted later
+    
     delete iOtgStateObserver;
     iOtgStateObserver = 0;
     delete iBusActivityObserver;
@@ -995,23 +1001,9 @@ TInt CUsbOtgWatcher::SelfTestL()
     delete iMessageNotificationObserver;
     iMessageNotificationObserver = 0;
 
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL NotifManager and WarningNotifier." ) );
-
-    CUsbNotifManager* usbnotifmanager = CUsbNotifManager::NewL();
-    RNotifier rnotifier;
-    User::LeaveIfError(rnotifier.Connect());
-    CUsbWarningNotifier* usbnotifier = CUsbWarningNotifier::NewL(rnotifier,
-            usbnotifmanager, EUsbOtgPartiallySupportedDevice);
-    usbnotifier->IsFeedbackNeeded();
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL NotifManager and WarningNotifier destruction." ) );
-
-    delete usbnotifier;
-    rnotifier.Close();
-    delete usbnotifmanager;
-
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Creating states." ) );
 
+    User::LeaveIfError(iStates.Append(CUsbState::NewL(this)));    
     User::LeaveIfError(iStates.Append(CUsbStateHostAInitiate::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAHost::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAPeripheral::NewL(this)));
@@ -1033,6 +1025,25 @@ TInt CUsbOtgWatcher::SelfTestL()
         {
         User::Leave(KErrGeneral);
         }
+		
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL NotifManager and WarningNotifier." ) );
+
+    CUsbNotifManager* usbnotifmanager = CUsbNotifManager::NewL(this);
+    RNotifier rnotifier;
+    User::LeaveIfError(rnotifier.Connect());
+    CUsbWarningNotifier* usbnotifier = CUsbWarningNotifier::NewL(rnotifier,
+            usbnotifmanager, EUsbOtgPartiallySupportedDevice);
+    usbnotifier->IsFeedbackNeeded();
+
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL NotifManager and WarningNotifier destruction." ) );
+
+    delete usbnotifier;
+    rnotifier.Close();
+    delete usbnotifmanager; 
+    
+    // VBus observer is deleted here, due to it is used by usbnotifmanager.usbindicatornotifier
+    delete iVBusObserver;
+    iVBusObserver = 0;
         
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Destructing states." ) );
         
@@ -1051,3 +1062,42 @@ TInt CUsbOtgWatcher::SelfTestL()
 
     }
 
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//   
+void CUsbOtgWatcher::SubscribeL(MUsbOtgWatcherStateObserver* aObserver)
+    {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SubscribeL" ) );
+
+    User::LeaveIfError(iOtgStateObservers.Append(aObserver));
+
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbOtgWatcher::UnsubscribeL(MUsbOtgWatcherStateObserver* aObserver)
+    {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UnsubscribeL" ) );
+    if (0 == iOtgStateObservers.Count()) // no items
+        {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UnsubscribeL No observers" ) );
+        return;
+        }
+    
+    TInt i(0);
+    while (i < iOtgStateObservers.Count() && aObserver != iOtgStateObservers[i])
+        ++i;
+
+    if (aObserver == iOtgStateObservers[i]) // found
+        {
+        iOtgStateObservers.Remove(i);
+        }
+    else
+        {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UnsubscribeL CanNotGetUsbOtgStateWatcherObserver" ) );
+        Panic(ECanNotFindUsbOtgWatcherStateObserver);
+        }
+    }

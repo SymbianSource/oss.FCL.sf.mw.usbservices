@@ -108,7 +108,9 @@ enum TUsbWatcherPanic
     EUnexpectedNotifId, //67
     EUnknownUsbServiceState, //68
     EUnexpectedUsbServiceState,    //69
-    EUnexpectedUsbSwitchPersonalityState //70
+    EUnexpectedUsbSwitchPersonalityState, //70
+    
+    ECanNotFindUsbOtgWatcherStateObserver //71
 
     };
 

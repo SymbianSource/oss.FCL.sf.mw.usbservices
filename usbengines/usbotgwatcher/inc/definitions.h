@@ -37,6 +37,8 @@ const TUint KFirst = 1;
  */
 enum TUsbStateIds
     {
+    EUsbStateUndefined,
+    
     EUsbStateHostAInitiate,
     EUsbStateHostAHost,
     EUsbStateHostAPeripheral,

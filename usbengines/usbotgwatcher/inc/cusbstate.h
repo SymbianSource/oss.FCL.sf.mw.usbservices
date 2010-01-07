@@ -66,9 +66,22 @@ NONSHARABLE_CLASS( CUsbState ) : public CBase
 public:
 
     /**
+     * This function is needed to find a real state by id
+     * This might be used in switching states in watcher. New state object searched by its id
+     * @return Id
+     */
+    virtual TUsbStateIds Id();
+    
+    /**
      * Destruction
      */
     virtual ~CUsbState();
+    
+    /**
+     * Two-phased constructor.
+     * @param aWatcher owner
+     */
+    static CUsbState* NewL(CUsbOtgWatcher* aWatcher);
 
 protected:
     /**
@@ -90,13 +103,11 @@ protected:
     void ChangeHostStateL(TUsbStateIds aNewStateId);
 
 private:
-
+    
     /**
-     * This function is needed to find a real state by id
-     * This might be used in switching states in watcher. New state object searched by its id
-     * @return Id
+     * 2nd phase construction
      */
-    virtual TUsbStateIds Id() = 0;
+    void ConstructL();
 
     /**
      * State machine calls this, state object to perform any initial  

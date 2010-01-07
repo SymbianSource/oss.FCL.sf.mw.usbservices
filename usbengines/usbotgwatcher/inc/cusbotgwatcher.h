@@ -51,6 +51,23 @@ class CUsbStateHostHandle;
 class CUsbNotifManager;
 
 /**
+ * Observers for usb otg watcher state nachine
+ * Observers gets feedback by implementing this interface
+ */
+class MUsbOtgWatcherStateObserver
+    {
+
+public:
+
+    /**
+     * Observer must implement this interface
+     * which is called back when state changes
+     * @param aState new state id
+     */
+    virtual void OtgWatcherStateChangedL(TUsbStateIds aState) = 0;
+    };
+
+/**
  *  UsbWatcher main class
  *  Implements states machines and owns them
  *
@@ -339,6 +356,18 @@ public:
      * @param aWhatKindOf problem Id to be handled
      */
     void HandleHostProblemL(TInt aWhatKindOf);
+    
+    /**
+     * Add observer to USb Otg state machine
+     * @param aObserver Observer
+     */
+    void SubscribeL(MUsbOtgWatcherStateObserver* aObserver);
+
+    /**
+     * Remove observer from UsbOtg state observer
+     * @param aObserver Observer
+     */
+    void UnsubscribeL(MUsbOtgWatcherStateObserver* aObserver);
 
     /**
      * Used for test purposes
@@ -462,6 +491,12 @@ private:
      * Own.  
      */
     CUsbServiceControl* iUsbServiceControl;
+    
+    /**
+     * The observer reports state changes to its own observers
+     * Not Own
+     */
+    RPointerArray<MUsbOtgWatcherStateObserver> iOtgStateObservers;
     };
 
 #endif //  C_USBOTGWATCHER_H

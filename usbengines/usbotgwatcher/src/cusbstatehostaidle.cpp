@@ -95,8 +95,6 @@ void CUsbStateHostAIdle::JustAdvancedToThisStateL()
 
     iWatcher->PrintStateToLog();
     
-    iWatcher->NotifManager()->ShowIndicatorL(EFalse);
-
     // do BusDrop, if Up
     if (CUsbVBusObserver::EVBusUp == iWatcher->VBusObserver()->VBus())
         {

@@ -90,41 +90,45 @@ MWaitNotifierObserver* CWaitNotifierInfo::Observer() const
     return iObserver;
     }
 
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-CUsbNotifManager::CUsbNotifManager()
-    {
-    }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbNotifManager::ConstructL()
-    {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::ConstructL" ) );
-
-    User::LeaveIfError(iNotifier.Connect());
-
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-CUsbNotifManager* CUsbNotifManager::NewL()
+CUsbNotifManager* CUsbNotifManager::NewL(CUsbOtgWatcher* aOtgWatcher)
     {
 
         FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::NewL" ) );
 
     CUsbNotifManager* self = new (ELeave) CUsbNotifManager();
     CleanupStack::PushL(self);
-    self->ConstructL();
+    self->ConstructL(aOtgWatcher);
     CleanupStack::Pop(self);
     return self;
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbNotifManager::ConstructL(CUsbOtgWatcher* aOtgWatcher)
+    {
+
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::ConstructL" ) );
+
+    User::LeaveIfError(iNotifier.Connect());
+    
+    iIndicatorNotifier = CUsbIndicatorNotifier::NewL(this, aOtgWatcher);
+
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+CUsbNotifManager::CUsbNotifManager()
+    {
+
     }
 
 // ---------------------------------------------------------------------------
@@ -134,10 +138,12 @@ CUsbNotifManager* CUsbNotifManager::NewL()
 CUsbNotifManager::~CUsbNotifManager()
     {
 
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::~CUsbNotifManager" ) );
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::~CUsbNotifManager" ) );
 
     CloseAllNotifiers();
-
+    
+    delete iIndicatorNotifier;
+    
     iNotifier.Close();
 
     }
@@ -200,37 +206,6 @@ void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
     }
 
 // ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbNotifManager::BlinkIndicatorL(TBool aBlinking)
-    {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbNotifManager::BlinkIndicatorL, aBlinking=%d" ), aBlinking));
-
-    if (!iIndicatorNotifier)
-        iIndicatorNotifier = CUsbIndicatorNotifier::NewL(this);
-
-    if (aBlinking)
-        iIndicatorNotifier->ShowL();
-    else
-        iIndicatorNotifier->Close();
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbNotifManager::ShowIndicatorL(TBool aVisible)
-    {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbNotifManager::ShowIndicatorL, aVisible=%d" ), aVisible ));
-
-    if (!iIndicatorNotifier)
-        iIndicatorNotifier = CUsbIndicatorNotifier::NewL(this);
-
-    iIndicatorNotifier->ShowIndicatorL(aVisible);
-    }
-
-// ---------------------------------------------------------------------------
 //
 // ---------------------------------------------------------------------------
 //
@@ -264,6 +239,5 @@ void CUsbNotifManager::CloseAllNotifiers()
         FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::CloseAllNotifiers" ) );
 
     iWaitNotifiers.ResetAndDestroy();
-    delete iIndicatorNotifier;
-    iIndicatorNotifier = NULL;
+    iIndicatorNotifier->Close();
     }

@@ -24,13 +24,14 @@
 #include <cusbpersonalityplugin.h>
 #include <tusbpersonalityparams.h>
 #include <startupdomainpskeys.h> //for global system state
-#include <rusb.h> // for KUsbmanSvrUid
 #include "cusbactivepersonalityhandler.h"
 #include "cusbglobalsystemstateobserver.h"
 
 // CONSTANTS
 // const TInt KSerialNumberLength = 12;
 const TInt KContainerIdLength = 16;
+
+const TUid KUsbmanSvrUid = {0x101fe1db};
 
 // ============================ MEMBER FUNCTIONS ==============================
 

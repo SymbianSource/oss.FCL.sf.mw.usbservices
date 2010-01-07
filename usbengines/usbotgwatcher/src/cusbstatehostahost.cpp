@@ -103,8 +103,6 @@ void CUsbStateHostAHost::JustAdvancedToThisStateL()
                 KUsbWatcherIsPeripheralConnected,
                 KUsbWatcherPeripheralIsConnected ) );
     
-    iWatcher->NotifManager()->ShowIndicatorL(ETrue);
-    
     iWatcher->PrintStateToLog();
     }
 
@@ -119,8 +117,6 @@ void CUsbStateHostAHost::JustBeforeLeavingThisStateL()
         User::LeaveIfError( RProperty::Set( KPSUidUsbWatcher,
                     KUsbWatcherIsPeripheralConnected,
                     KUsbWatcherPeripheralIsNotConnected ) );
-        
-        iWatcher->NotifManager()->ShowIndicatorL(EFalse);
     }
 
 // ---------------------------------------------------------------------------

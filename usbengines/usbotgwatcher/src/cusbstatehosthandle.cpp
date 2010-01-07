@@ -227,7 +227,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL DriversNotFound" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
 
@@ -238,7 +237,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherHubsNotSupported" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgHubUnsupported, this);
             break;
@@ -255,7 +253,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrDeviceRequiresTooMuchPower" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgTooMuchPower, this);
             break;
@@ -265,7 +262,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrUnsupportedDevice" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
             break;
@@ -276,7 +272,6 @@ void CUsbStateHostHandle::DoHandleL()
                 
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
             break;
@@ -286,7 +281,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrDandlingCable" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgErrorAttachTimedOut, this);
             break;
@@ -296,7 +290,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherNoActivity" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
 
@@ -307,7 +300,6 @@ void CUsbStateHostHandle::DoHandleL()
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrorInConnection" ) );
             // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgErrorInConnection, this);
             break;
@@ -315,7 +307,6 @@ void CUsbStateHostHandle::DoHandleL()
         case EUsbWatcherCanNotStartUsbServices:
             {
             FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherCanNotStartUsbServices" ) );
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                 EUsbOtgErrorInConnection, this);
             break;           
@@ -330,7 +321,6 @@ void CUsbStateHostHandle::DoHandleL()
             FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL Error from observer" ) );
         // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
         iWatcher->Usb().BusDrop();
-        iWatcher->NotifManager()->ShowIndicatorL(EFalse);
         iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                 EUsbOtgErrorInConnection, this);
             break;
@@ -592,7 +582,6 @@ void CUsbStateHostHandle::TimerElapsedL(TUsbTimerId aTimerId)
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::TimerElapsedL - ETooMuchPowerRequiredTimer" ) );
             iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowIndicatorL(EFalse);
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgTooMuchPowerRequired, this);
             break;

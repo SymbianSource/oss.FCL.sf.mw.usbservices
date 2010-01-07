@@ -23,37 +23,56 @@
 #include <AknNotifyStd.h>       // SAknSmallIndicatorParams
 #include <AknNotifySignature.h> // SAknNotifierPackage
 #include <avkon.hrh>            // EAknIndicatorUSBConnection
+
 #include "cusbtimer.h"
 #include "cusbnotifier.h"
+#include "cusbvbusobserver.h"
+#include "cusbotgwatcher.h"
 
 
 /**
  * Class implements functionality of showing/blinking usb indicator
  * Class does not provide method to get response from the user
  */
-NONSHARABLE_CLASS( CUsbIndicatorNotifier ): public CUsbNotifier, MUsbTimerObserver
+NONSHARABLE_CLASS( CUsbIndicatorNotifier ): public CUsbNotifier, MUsbTimerObserver, MUsbOtgWatcherStateObserver, MUsbVBusObserver
     {
 public:
     /**
      * Two-phased constructor.
-     * @param aNotifManager Owner of the class, will destroy the object when needed
+     * @param aNotifManager parent
+     * @param aOtgWatcher provides VBus observer and usb otg watcher state notifications
      * @return Pointer to the new instance of CUsbIndicatorNotifier
      */
-    static CUsbIndicatorNotifier* NewL(CUsbNotifManager* aNotifManager);
+    static CUsbIndicatorNotifier* NewL(CUsbNotifManager* aNotifManager, CUsbOtgWatcher* aOtgWatcher);
 
     /**
      * Destructor.
      */
     virtual ~CUsbIndicatorNotifier();
 
+    // From MUsbOtgWatcherStateObserver
     /**
-     * Show/hide static icon of the indicator. 
-     * If the indicator is blinking, stop blinking it and show/hide the static 
-     * form of the indicator.
-     * @param aVisible ETrue - Show the indicator, EFalse - Hide the indicator 
+     * Otg Watcher state changed call back
+     * @param aState new state
      */
-    void ShowIndicatorL(TBool aVisible);
-
+    virtual void OtgWatcherStateChangedL(TUsbStateIds aState);
+    
+    // From MUsbVBusObserver
+    /**
+     * VBus down event received
+     */
+    virtual void VBusDownL();
+    /**
+     * VBus up event received
+     */
+    virtual void VBusUpL();
+    /**
+     * error handler
+     * @param aError error code
+     */   
+    virtual void VBusObserverErrorL(TInt aError);
+    
+    
     // From base class CUsbNotifier
     /**
      * Start to show notifier
@@ -76,9 +95,10 @@ private:
 
     /**
      * Default constructor.
-     * @param aNotifManager Owner
+     * @param aNotifManger parent
+     * @param aOtgWatcher Otg watcher
      */
-    CUsbIndicatorNotifier(CUsbNotifManager* aNotifManager);
+    CUsbIndicatorNotifier(CUsbNotifManager* aNotifManager, CUsbOtgWatcher* aOtgWatcher);
 
     /**
      * 2nd phase constructor.
@@ -91,9 +111,33 @@ private:
      */
     void SetIndicatorStateL(const TInt aState);
     
+    /**
+     * Show/hide static icon of the indicator. 
+     * If the indicator is blinking, stop blinking it and show/hide the static 
+     * form of the indicator.
+     * @param aVisible ETrue - Show the indicator, EFalse - Hide the indicator 
+     */
+    void ShowStaticL(TBool aVisible);
+    
+    /**
+     * Blinks indicator
+     */
+    void BlinkL();
+    
+    /**
+     * Sets indicator accordingly
+     */
+    void SetIndicatorL();
+    
 private:
     // data
 
+    /**
+     * OtgWatcher
+     * not own
+     */
+    CUsbOtgWatcher* iOtgWatcher;
+    
     /**
      * Switch timer for showing/hiding the usb indicator interleavingly for 
      * animating the indicator. 

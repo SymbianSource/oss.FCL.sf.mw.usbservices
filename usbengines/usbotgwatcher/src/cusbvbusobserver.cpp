@@ -115,6 +115,8 @@ void CUsbVBusObserver::SubscribeL(MUsbVBusObserver* aObserver)
         FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::SubscribeL" ) );
 
     User::LeaveIfError(iObservers.Append(aObserver));
+    
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::SubscribeL Observer appended." ) );
 
     if (KFirst == iObservers.Count()) // first item
         {

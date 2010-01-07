@@ -24,6 +24,7 @@
 // forward declaration
 class CUsbNotifier;
 class CUsbIndicatorNotifier;
+class CUsbOtgWatcher;
 
 // pause warning is visible for (ms)
 const TUint KPauseForWarnings = 1000000; // 1 sec
@@ -116,8 +117,9 @@ public:
 
     /**
      * 2phase construction
+     * @param aOtgWatcher OtgWatcher is a parent class
      */
-    static CUsbNotifManager* NewL();
+    static CUsbNotifManager* NewL(CUsbOtgWatcher* aOtgWatcher);
 
     /**
      * Destructor
@@ -132,18 +134,6 @@ public:
      */
     void ShowNotifierL(TUid aCat, TUint aNotifId,
             MWaitNotifierObserver* aObserver = NULL);
-
-    /**
-     * Changes USB indicator to blink or not
-     * @param aBlinking ETrue if want to make it blinking, EFalse otherwise
-     */
-    void BlinkIndicatorL(TBool aBlinking);
-
-    /**
-     * Shows or hides usb indicator
-     * @param aVisible ETRue is show, EFalse id hide 
-     */
-    void ShowIndicatorL(TBool aVisible);
 
     /**
      * Closes and deletes all the notifiers
@@ -163,13 +153,14 @@ private:
 
     /**
      * Default construction
+     * @param aOtgWatcher otg watcher (parent class)
      */
     CUsbNotifManager();
 
     /**
      * Second phase construction
      */
-    void ConstructL();
+    void ConstructL(CUsbOtgWatcher* aOtgWatcher);
 
 private:
     // data
@@ -186,7 +177,7 @@ private:
 
     /**
      * Own
-     * Notifier for showing or blinking Usb indicator
+     * USB indicator
      */
     CUsbIndicatorNotifier* iIndicatorNotifier;
     };

@@ -141,7 +141,6 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
     // start timer, waiting for device attachment
     iAttachmentTimer->After(KTimeToWaitForDeviceAttachment);
 
-    iWatcher->NotifManager()->BlinkIndicatorL(ETrue);
     }
 
 // ---------------------------------------------------------------------------
@@ -152,7 +151,5 @@ void CUsbStateHostAInitiate::JustBeforeLeavingThisStateL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustBeforeLeavingThisStateL" ) );
     
-        iWatcher->NotifManager()->BlinkIndicatorL(EFalse);
-        
         CUsbStateHostAInitiateBase::JustBeforeLeavingThisStateL();
     }

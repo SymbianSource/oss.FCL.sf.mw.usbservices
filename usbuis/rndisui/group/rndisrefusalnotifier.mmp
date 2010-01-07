@@ -27,7 +27,7 @@ DEFFILE			rndisrefusalnotifier.def
 
 USERINCLUDE		../inc
 
-OS_LAYER_SYSTEMINCLUDE
+MW_LAYER_SYSTEMINCLUDE
 
 SOURCEPATH		../src
 SOURCE			rndisrefusalnotifier.cpp 
