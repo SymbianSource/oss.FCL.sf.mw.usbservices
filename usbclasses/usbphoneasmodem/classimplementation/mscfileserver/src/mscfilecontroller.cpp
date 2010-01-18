@@ -10,14 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: CMscFileController implementation.
 // 
 // 
-
-/** 
- @file
- CMscFileController implementation.
-*/
 
 #include "mscfilecontroller.h"
 #include "scsiprot.h"

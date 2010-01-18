@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Adheres to the UsbMan USB Class API and talks to mass storage file system
 // 
 // 
-
- 
-/** 
- @file
- @internalTechnology
- Adheres to the UsbMan USB Class API and talks to mass storage file system
- */
 
 #ifndef USBMSCLASSCONTROLLER_H
 #define USBMSCLASSCONTROLLER_H

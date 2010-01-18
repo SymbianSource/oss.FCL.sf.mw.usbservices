@@ -11,16 +11,9 @@
 *
 * Contributors:
 *
-* Description:
+* Description: Resource header for usbman configuration.
 *
 */
-
-
-/** 
- * @file
- *
- * Resource header for usbman configuration.
- */
 
 STRUCT USBMASSSTORAGE_CONFIG
 	{

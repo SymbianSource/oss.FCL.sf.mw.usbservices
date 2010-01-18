@@ -10,15 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Shared client/server definitions
 // 
 // 
-
-/**
- @file
- @internalTechnology 
- Shared client/server definitions
- */
 
 #ifndef USBMSCFILESHARED_H
 #define USBMSCFILESHARED_H

@@ -72,8 +72,20 @@ void CDpsPtpNotifier::ChangePtpPersonality()
     IF_DEBUG(Print(_L(">>>CDpsPtpNotifier::ChangePtpPersonality")));            
     if (!IsActive())
         {
-        iNotifier->iUsbW.SetPersonality(iStatus, KUsbPersonalityIdMTP, ETrue);
-        SetActive();			
+        TInt personalityId = KUsbPersonalityIdMTP;
+        iNotifier->iUsbM.GetCurrentPersonalityId(personalityId);
+        IF_DEBUG(Print(_L("CDpsPtpNotifier::ChangePtpPersonality, current personality= %d"), personalityId));
+        if(KUsbPersonalityIdPCSuiteMTP == personalityId)
+            {
+            TRequestStatus* statusPtr = &iStatus;
+            User::RequestComplete(statusPtr, KErrNone);
+            SetActive();            
+            }
+        else                
+            {
+            iNotifier->iUsbW.SetPersonality(iStatus, KUsbPersonalityIdMTP, ETrue);
+            SetActive();
+            }
         }
     IF_DEBUG(Print(_L("<<<CDpsPtpNotifier::ChangePtpPersonality")));        
     }

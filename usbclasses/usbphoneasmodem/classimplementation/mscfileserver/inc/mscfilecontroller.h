@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Class declaration for CMscFileController.
 // 
 // 
-
-
-/** 
- @file
- @internalTechnology
- Class declaration for CMscFileController.
-*/
 
 #ifndef MSCFILECONTROLLER_H
 #define MSCFILECONTROLLER_H

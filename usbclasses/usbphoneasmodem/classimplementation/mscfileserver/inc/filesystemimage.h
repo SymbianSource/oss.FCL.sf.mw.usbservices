@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: CFileSystemImage declaration
 // 
 // 
-
-/**
- @file
- @internalTechnology
-
- CFileSystemImage declaration
-*/
 
 #ifndef FILESYSTEMIMAGE_H
 #define FILESYSTEMIMAGE_H

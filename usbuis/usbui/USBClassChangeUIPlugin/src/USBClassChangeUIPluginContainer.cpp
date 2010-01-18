@@ -269,14 +269,17 @@ TKeyResponse CUSBClassChangeUIPluginContainer::OfferKeyEventL(
 void CUSBClassChangeUIPluginContainer::ShowPopUpsL(TInt aIndex)
     {
     FLOG(_L("[CUSBClassChangeUIPlugin]\t CUSBClassChangeUIPluginContainer::ShowPopUpsL "));
-    iPopupController->SetTimePopupInView( KMaxVisibleTime);
-    TPtrC chosen = iPopUpItems->MdcaPoint(aIndex);
-    iPopupController->SetTextL( chosen );
-    iPopupController->SetPositionByHighlight( TRect( 
+    if ( aIndex >= 0 && aIndex < iPopUpItems->Count() )
+        {
+        iPopupController->SetTimePopupInView( KMaxVisibleTime);
+        TPtrC chosen = iPopUpItems->MdcaPoint(aIndex);
+        iPopupController->SetTextL( chosen );
+        iPopupController->SetPositionByHighlight( TRect( 
                    iUSBMainListBox->View()->ItemPos( aIndex + 1 ), 
                    iUSBMainListBox->View()->ItemSize() ) );
-    iPopupController->SetTimeDelayBeforeShow( KMsToWaitBeforePopup );
-    iPopupController->ShowInfoPopupNote();
+        iPopupController->SetTimeDelayBeforeShow( KMsToWaitBeforePopup );
+        iPopupController->ShowInfoPopupNote();
+        }
     FLOG(_L("[CUSBClassChangeUIPlugin]\t CUSBClassChangeUIPluginContainer::ShowPopUpsL complete"));
   
 }

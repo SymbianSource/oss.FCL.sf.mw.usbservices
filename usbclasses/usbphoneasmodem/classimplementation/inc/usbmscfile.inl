@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Implementation of client API of mass storage file server
 // 
 // 
-
-
-/**
- @file
- @internalTechnology 
- Implementation of client API of mass storage file server
- */
 
 #ifndef USBMSCFILE_INL
 #define USBMSCFILE_INL

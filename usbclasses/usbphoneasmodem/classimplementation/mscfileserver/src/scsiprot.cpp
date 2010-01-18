@@ -10,14 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: SCSI protocol
 // 
 // 
-
-/** 
- @file
- SCSI protocol
- */
 
 #include "scsiprot.h"
 #include "debug.h"

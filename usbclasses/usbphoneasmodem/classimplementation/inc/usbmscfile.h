@@ -10,17 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: RUsbMscFile Client side header
+//              Implements the Symbian OS USB mass storage server RUsbMscFile API 
 // 
-// 
-
-
-/** 
- @file
- @internalTechnology 
- RUsbMscFile Client side header
- Implements the Symbian OS USB mass storage server RUsbMscFile API 
- */
 
 #ifndef USBMSCFILE_H
 #define USBMSCFILE_H

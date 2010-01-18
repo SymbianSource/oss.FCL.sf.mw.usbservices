@@ -10,15 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Implements a Symbian OS server that exposes the RUsbMassStorage API
 // 
 // 
-
-
-/** 
- @file
- Implements a Symbian OS server that exposes the RUsbMassStorage API
- */
 
 #include <e32svr.h>
 #include "usbmscfileshared.h"

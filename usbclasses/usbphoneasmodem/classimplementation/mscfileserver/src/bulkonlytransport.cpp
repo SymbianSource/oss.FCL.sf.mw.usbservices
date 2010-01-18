@@ -13,9 +13,7 @@
 // Description:
 // 
 // 
-/** 
- @file
- */
+
 #include "bulkonlytransport.h"
 #include "mscfileserver.h"
 #include "usbmscfileshared.h"

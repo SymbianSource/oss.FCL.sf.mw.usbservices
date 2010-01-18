@@ -10,16 +10,11 @@
 //
 // Contributors:
 //
-// Description:
+// Description: CFileSystemImage implementation
 // 
 // 
 
-/** 
- @file
- CFileSystemImage implementation
- */
-
-#include "FileSystemImage.h"
+#include "filesystemimage.h"
 #include "debug.h"
 
 const TInt KImageFileMode = EFileShareReadersOnly | EFileRead;

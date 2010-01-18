@@ -150,14 +150,20 @@ void CDpsUsbNotifier::Rollback()
     // personality
     if (iPersonality)
         {
-        if (!iConfigured || iRollback)
-    	    {
-    	    iUsbW.SetPreviousPersonality();
-    	    }
-        else
-    	    {
-    	    iUsbW.SetPreviousPersonalityOnDisconnect();
-    	    }    
+        TInt personalityId = KUsbPersonalityIdMTP;
+        iUsbM.GetCurrentPersonalityId(personalityId);
+        IF_DEBUG(Print(_L("CDpsUsbNotifier::Rollback, current personality= %d"), personalityId));
+        if(KUsbPersonalityIdPCSuiteMTP != personalityId)
+            {
+            if (!iConfigured || iRollback)
+                {
+                iUsbW.SetPreviousPersonality();
+                }
+            else
+                {
+                iUsbW.SetPreviousPersonalityOnDisconnect();
+                }
+            }
         }
     IF_DEBUG(Print(_L("<<<CDpsUsbNotifier::Rollback")));
     }

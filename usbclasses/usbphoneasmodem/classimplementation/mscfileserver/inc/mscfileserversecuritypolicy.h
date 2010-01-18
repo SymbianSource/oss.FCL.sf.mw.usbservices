@@ -10,17 +10,10 @@
 //
 // Contributors:
 //
-// Description:
+// Description: USB mass storage Server Security Policy definitions for Platform security.
 // 
 // 
 
-/**
- * @file 
- * @internalComponent
- *
- * USB mass storage Server Security Policy definitions for Platform security.
- */
- 
 #ifndef MSCFILESERVERSECURITYPOLICY_H
 #define MSCFILESERVERSECURITYPOLICY_H
 

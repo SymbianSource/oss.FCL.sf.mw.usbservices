@@ -10,17 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Implements a Session of a Symbian OS server for the RUsbMassStorage API
 // 
 // 
-
-
-/** 
- @file
- @internalTechnology
-
- Implements a Session of a Symbian OS server for the RUsbMassStorage API
- */
 
 #ifndef MSCFILESESSION_H
 #define MSCFILESESSION_H

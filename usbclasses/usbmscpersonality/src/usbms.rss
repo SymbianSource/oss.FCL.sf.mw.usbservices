@@ -11,16 +11,9 @@
 *
 * Contributors:
 *
-* Description:
+* Description: Resource file for the USB mass storage configuration.
 *
 */
-
-
-/** 
- * @file
- *
- * Resource file for the USB mass storage configuration.
- */
 
 NAME MSCF
 

@@ -10,20 +10,15 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Defines the implementation collection for the mass storage class controller.
 // 
 // 
-
-/** 
- @file
- Defines the implementation collection for the mass storage class controller.
- */
 
 #include <e32base.h>
 #include <e32std.h>
 #include <ecom/ecom.h>
 #include <ecom/implementationproxy.h>
-#include "UsbMscFileClassController.h"
+#include "usbmscfileclasscontroller.h"
 #include "usbmscfileuids.hrh"
 
 // Define the private interface UIDs

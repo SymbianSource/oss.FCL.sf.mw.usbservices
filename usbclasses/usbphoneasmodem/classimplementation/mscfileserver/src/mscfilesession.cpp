@@ -10,15 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Implements a Session of a Symbian OS server for the RUsbMassStorage API
 // 
 // 
-
-
-/** 
- @file
- Implements a Session of a Symbian OS server for the RUsbMassStorage API
- */
 
 #include <e32property.h>
 #include <coreapplicationuisdomainpskeys.h>

@@ -10,17 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: SCSI Protocol layer for USB Mass Storage
 // 
 // 
-
-
-/**
-@file
-@internalTechnology
-
-SCSI Protocol layer for USB Mass Storage
-*/
 
 #ifndef SCSIPROT_H
 #define SCSIPROT_H

@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Class declaration for CBulkOnlyTransport.
 // 
 // 
-
-
-/** 
- @file
- @internalTechnology
- Class declaration for CBulkOnlyTransport.
-*/
 
 #ifndef BULKONLYTRANSPORT_H
 #define BULKONLYTRANSPORT_H

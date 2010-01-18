@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Adheres to the UsbMan USB Class Controller API and talks to mass storage file server
 // 
 // 
-
-
-/** 
- @file
- Adheres to the UsbMan USB Class Controller API and talks to mass storage 
- file server
- */
 
 #include <barsc.h> 
 #include <barsread.h>

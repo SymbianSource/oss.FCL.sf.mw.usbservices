@@ -23,7 +23,7 @@
 #include <usbman.h>
 #include <usbwatcher.h>
 #include <akncapserverclient.h>  
-#include "USBUINotifDebug.h"
+#include "usbuinotifdebug.h"
 // CONSTANTS
 // Literal resource filename 
 _LIT(KResourceFileName, "usbuinotif.rsc");

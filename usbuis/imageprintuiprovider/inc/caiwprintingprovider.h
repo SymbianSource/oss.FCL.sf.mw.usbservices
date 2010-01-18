@@ -24,7 +24,7 @@
 #include <AknLaunchAppService.h>
 #include <badesca.h>
 
-#include "CAiwImagePrintIf.h"
+#include "caiwimageprintif.h"
 
 
 /**

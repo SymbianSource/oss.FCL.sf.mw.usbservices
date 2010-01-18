@@ -10,16 +10,9 @@
 //
 // Contributors:
 //
-// Description:
+// Description: Implements a Symbian OS server that exposes the RUsbMassStorage API
 // 
 // 
-
-/** 
- @file
- @internalTechnology
-
- Implements a Symbian OS server that exposes the RUsbMassStorage API
- */
 
 #ifndef MSCFILESERVER_H
 #define MSCFILESERVER_H
