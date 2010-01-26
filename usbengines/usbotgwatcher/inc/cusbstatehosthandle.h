@@ -224,6 +224,12 @@ private:
      * own
      */
     CUsbTimer* iTooMuchPowerTimer;
+    
+    /** 
+     * drivers not found
+     * own
+     */
+    CUsbTimer* iDriversNotFoundTimer;
     };
 
 #endif //  C_USBSTATEHOSTHANDLE_H

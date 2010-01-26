@@ -22,7 +22,7 @@
 #include <GenericParamConsumer.h>
 #include <aknnavide.h>
 #include <imageprintui.rsg>
-#include <aknwaitdialog.h>
+#include <AknWaitDialog.h>
 #include <f32file.h>
 #include <s32file.h>
 // #include <d32usbc.h>

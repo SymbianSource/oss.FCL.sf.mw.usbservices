@@ -18,7 +18,7 @@
 #define USBMSCLASSCONTROLLER_H
 
 #include <e32std.h>
-#include <CUsbClassControllerPlugIn.h>
+#include <cusbclasscontrollerplugin.h>
 #include "usbmscfile.h"
 
 class MUsbClassControllerNotify;

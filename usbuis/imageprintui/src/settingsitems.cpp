@@ -18,7 +18,7 @@
 
 #include <StringLoader.h>
 #include <eiklbx.h>
-#include <AknRadioButtonSettingPage.h>
+#include <aknradiobuttonsettingpage.h>
 
 
 #include "imageprintui.hrh"

@@ -18,14 +18,14 @@
 
 // INCLUDE FILES
 #include <eikenv.h>             // Eikon environment
-#include <AknNoteDialog.h>
+#include <aknnotedialog.h>
 #include <bautils.h>            // BAFL utils (for language file)
-#include <stringloader.h>       // Localisation stringloader
-#include <aknmediatorfacade.h>  // for cover display support
-#include <USBUINotif.rsg>       // Own resources
+#include <StringLoader.h>       // Localisation stringloader
+#include <AknMediatorFacade.h>  // for cover display support
+#include <usbuinotif.rsg>       // Own resources
 #include "usbuinotifotgwarning.h"        // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
-#include "USBUINotifSecondaryDisplay.h"     // Dialog index for cover UI
+#include "usbuinotifsecondarydisplay.h"     // Dialog index for cover UI
 // ================= MEMBER FUNCTIONS =========================================
 
 // ----------------------------------------------------------------------------

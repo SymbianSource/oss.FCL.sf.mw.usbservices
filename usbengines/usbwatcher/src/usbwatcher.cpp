@@ -50,6 +50,14 @@ TInt E32Main()
     CTrapCleanup* cleanup = CTrapCleanup::New();
 
     TRAP( ret, StartUsbWatcherL() );
+    if ( KErrAlreadyExists == ret )
+        {
+        LOG( "UsbWatcher is already running." );
+        }
+    else if ( KErrNone != ret )
+        {
+        LOG1( "ERROR: StartUsbWatcherL = %d", ret );
+        }
 
     delete cleanup; // destroy clean-up stack
     __UHEAP_MARKEND;

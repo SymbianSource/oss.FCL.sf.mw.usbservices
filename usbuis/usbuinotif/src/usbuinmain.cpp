@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <ecom/ecom.h>
 #include <ecom/implementationproxy.h>
-#include <EikNotApi.h>
+#include <eiknotapi.h>
 #include <eikenv.h>
 #include <AknNotifierWrapper.h>
 #include <usbuinotif.h>

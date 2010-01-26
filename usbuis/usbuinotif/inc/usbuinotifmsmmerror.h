@@ -22,7 +22,7 @@
 // INCLUDES
 
 #include "usbnotifier.h"      // Base class
-#include <aknquerydialog.h>   // AVKON component
+#include <AknQueryDialog.h>   // AVKON component
 #define KUsbUiNotifOtgGeneralQueryGranularity 3
 // CLASS DECLARATION
 

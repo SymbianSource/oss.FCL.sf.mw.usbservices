@@ -263,7 +263,7 @@ void CUsbOtgWatcher::StartSessionL()
         return;
         }
 
-    TInt err = iUsbServiceControl->Start(iPersonalityId);
+    TInt err = iUsbServiceControl->StartL(iPersonalityId);
     if (KErrNone != err)
         {
             FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgWatcher::StartSessionL Can not start usb services. reason = %d" ), err));
@@ -325,7 +325,7 @@ void CUsbOtgWatcher::IdPinOffL()
 
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::IdPinOffL Before TryStop" ) );
 
-    TInt err = iUsbServiceControl->Stop();
+    TInt err = iUsbServiceControl->StopL();
 
     if (KErrNone != err)
         {
@@ -866,14 +866,27 @@ CUsbNotifManager* CUsbOtgWatcher::NotifManager()
 //
 void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UsbServiceControlReqCompleted" ) );
-
-    if (KErrNone != aError)
+    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UsbServiceControlReqCompleted Error returned by UsbServiceControl = %d" ), aError));    
+    
+    switch(aError)
+    {
+    case KErrInUse: 
+    // usb services already started (this might happen if more than one idpin on event come)
         {
-            FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UsbServiceControlReqCompleted Error returned by UsbServiceControl = %d" ), aError));
+        return;
+        }
+        
+    case KErrNone:
+        {
+        break; // do normal routine
+        }
+        
+    default: // handle the issue
+        {
         HandleHostProblemL(EUsbWatcherCanNotStartUsbServices);
         return;
         }
+    }
 
     TUsbServiceState serviceState;
     TInt err = iUsb.GetServiceState(serviceState);
@@ -987,9 +1000,7 @@ TInt CUsbOtgWatcher::SelfTestL()
 
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Observers destructors." ) );
 
-    delete iIdPinObserver;
-    iIdPinObserver = 0;
-    
+    // idpinobserver is deleted later        
     // Vbus observer is deleted later
     
     delete iOtgStateObserver;
@@ -1044,6 +1055,10 @@ TInt CUsbOtgWatcher::SelfTestL()
     // VBus observer is deleted here, due to it is used by usbnotifmanager.usbindicatornotifier
     delete iVBusObserver;
     iVBusObserver = 0;
+    
+    // id pin observer is deleted here due to it is used by usbnotifmanager.usbindicatornotifier
+    delete iIdPinObserver;
+    iIdPinObserver = 0;
         
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Destructing states." ) );
         

@@ -16,7 +16,7 @@
 */
 
 
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 #include <imageprintui.rsg>
 #include <coecntrl.h>
 

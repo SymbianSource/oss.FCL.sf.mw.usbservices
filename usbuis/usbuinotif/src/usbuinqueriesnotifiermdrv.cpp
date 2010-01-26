@@ -19,15 +19,15 @@
 #include <eikenv.h>          // Eikon environment
 #include <bautils.h>         // BAFL utils (for language file)
 #include <utf.h>             // Unicode character conversion utilities
-#include <stringloader.h>    // Localisation stringloader
+#include <StringLoader.h>    // Localisation stringloader
 #include <AknQueryDialog.h> 
 #include <aknnotewrappers.h>
 
 #include <usbuinotif.h>                     // pck
-#include <USBUINotif.rsg>                   // Own resources
+#include <usbuinotif.rsg>                   // Own resources
 #include "usbuinqueriesnotifiermdrv.h"      // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
-#include <secondarydisplay/USBUINotifSecondaryDisplay.h>     // Dialog index for cover UI
+#include <SecondaryDisplay/usbuinotifsecondarydisplay.h>     // Dialog index for cover UI
 
 // ================= MEMBER FUNCTIONS =========================================
 

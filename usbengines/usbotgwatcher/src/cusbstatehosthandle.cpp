@@ -62,6 +62,7 @@ void CUsbStateHostHandle::ConstructL()
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::ConstructL" ) );
 
     iTooMuchPowerTimer = CUsbTimer::NewL(this, ETooMuchPowerRequiredTimer);
+    iDriversNotFoundTimer = CUsbTimer::NewL(this, EDriversNotFoundTimer);
 
     }
 
@@ -74,6 +75,7 @@ CUsbStateHostHandle::~CUsbStateHostHandle()
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::~CUsbStateHostHandle" ) );
 
     delete iTooMuchPowerTimer;
+    delete iDriversNotFoundTimer;
     }
 
 // ---------------------------------------------------------------------------
@@ -106,6 +108,8 @@ void CUsbStateHostHandle::JustAdvancedToThisStateL()
 void CUsbStateHostHandle::JustBeforeLeavingThisStateL()
     {
     iTooMuchPowerTimer->Cancel();
+    iDriversNotFoundTimer->Cancel();
+    
     iWatcher->NotifManager()->CloseAllNotifiers();
     }
 // ---------------------------------------------------------------------------
@@ -224,13 +228,11 @@ void CUsbStateHostHandle::DoHandleL()
         {
         case EUsbWatcherErrDriversNotFound:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL DriversNotFound" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
-                    EUsbOtgUnsupportedDevice, this);
-
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL DriversNotFound" ) );
+                
+            iDriversNotFoundTimer->After(KTimeDriversNotFound);
             break;
+                
             }
         case EUsbWatcherHubsNotSupported:
             {
@@ -443,15 +445,13 @@ void CUsbStateHostHandle::DeviceAttachedL(
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceAttachedL" ) );
 
-    if (iTooMuchPowerTimer->IsActive())
+    if (iTooMuchPowerTimer->IsActive() || iDriversNotFoundTimer->IsActive())
         {
         ChangeHostStateL(EUsbStateHostAInitiate);
         iWatcher->DeviceAttachedL(aDevEventInfo);
+        return;
         }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceAttachedL Unexpected situation" ) );
-        }
+     FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceAttachedL Unexpected situation" ) );
     }
 
 // ---------------------------------------------------------------------------
@@ -584,6 +584,16 @@ void CUsbStateHostHandle::TimerElapsedL(TUsbTimerId aTimerId)
             iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgTooMuchPowerRequired, this);
+            break;
+            }
+        case EDriversNotFoundTimer:
+            {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::TimerElapsedL - EDriversNotFoundTimer" ) );
+            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
+            iWatcher->Usb().BusDrop();
+            iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
+                    EUsbOtgUnsupportedDevice, this);
+
             break;
             }
         default:

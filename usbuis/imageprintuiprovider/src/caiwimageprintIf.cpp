@@ -22,9 +22,9 @@
 #include <bautils.h>
 #include <e32std.h>
 #include <f32file.h>
-#include <drmcommon.h>
-#include <ImageConversion.h>
-#include <PathInfo.h> 
+#include <DRMCommon.h>
+#include <imageconversion.h>
+#include <pathinfo.h> 
 
 //Internal includes
 #include "caiwimageprintif.h"

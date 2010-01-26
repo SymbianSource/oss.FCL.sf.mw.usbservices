@@ -16,8 +16,8 @@
 
 #include <barsc.h> 
 #include <barsread.h>
-#include <Usb_std.h>
-#include <CUsbClassControllerPlugIn.h>
+#include <usb_std.h>
+#include <cusbclasscontrollerplugin.h>
 #include <usbms.rsg>
 #include <usbmscfileresource.rsg>
 #include <data_caging_path_literals.hrh> 

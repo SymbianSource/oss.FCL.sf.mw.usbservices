@@ -25,9 +25,9 @@
 #include <cntdbobs.h>
 #include <badesca.h>
 #include <etel3rdparty.h>
-#include <RMmCustomAPI.h>
+#include <rmmcustomapi.h>
 #include <etelmm.h>
-#include <MmTsy_names.h>
+#include <mmtsy_names.h>
 #include <cmmanager.h>
 #include <cmdestination.h>
 #include <cmconnectionmethod.h>

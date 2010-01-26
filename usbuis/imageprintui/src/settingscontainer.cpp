@@ -18,10 +18,10 @@
 
 
 //INCLUDES
-#include <aknsdrawutils.h> 
+#include <AknsDrawUtils.h> 
 #include <AknsBasicBackgroundControlContext.h>
 #include <AknsConstants.h>
-#include <aknutils.h>
+#include <AknUtils.h>
 #include <eikenv.h>
 #include <eiklbo.h>
 

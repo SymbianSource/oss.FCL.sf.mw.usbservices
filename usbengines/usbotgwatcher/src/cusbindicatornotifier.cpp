@@ -56,10 +56,18 @@ CUsbIndicatorNotifier::~CUsbIndicatorNotifier()
     delete iIconBlinkingTimer;
     
     // Unsubscribe from VBus change notifications
-    iOtgWatcher->VBusObserver()->UnsubscribeL(this);
-    
-    // Unsubscribe from otg watcher states change notifications
-    iOtgWatcher->UnsubscribeL(this);
+    if(iOtgWatcher)
+        {
+        if(iOtgWatcher->VBusObserver())
+            {
+            TRAPD(err, iOtgWatcher->VBusObserver()->UnsubscribeL(this));
+            err=err; // to avoid warning;
+            }
+        
+        // Unsubscribe from otg watcher states change notifications
+        TRAPD(err, iOtgWatcher->UnsubscribeL(this));
+        err=err; // to avoid warning; 
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -235,6 +243,14 @@ void CUsbIndicatorNotifier::VBusObserverErrorL(TInt aError)
 void CUsbIndicatorNotifier::SetIndicatorL()
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::SetIndicatorL" ) );
+    
+    if (!(iOtgWatcher->IsDeviceA()))
+        {
+        // if B, than other party (usbwatcher) takes care of usb indicator
+        // in combined usbwatcher (if role swap allowed) one class has to manage usb indicator 
+        return;
+        }
+    
     // if VBus Up and we are host -> show indicator
     if ((iOtgWatcher->VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp) &&
             (iOtgWatcher->CurrentHostState()->Id() == EUsbStateHostAHost))

@@ -755,6 +755,8 @@ void CUsbWatcher::Start()
                 RProperty::Set( KPSUidUsbWatcher,
                         KUsbWatcherSelectedPersonality, iPersonalityId );
                 iStarted = ETrue;
+                // Restore personality to normal in charging mode
+                iSetPreviousPersonalityOnDisconnect = ETrue;
                 iPersonalityHandler->StartPersonality( iPersonalityId,
                     KUsbWatcherChangeOnConnectionOff, iStatus );
                 }

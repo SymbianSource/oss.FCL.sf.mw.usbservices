@@ -30,7 +30,8 @@ enum TUsbTimerId
     EDeviceAttachmentTimer,
     EInactiveTimer,
     EIconBlinkingTimer,
-    ETooMuchPowerRequiredTimer
+    ETooMuchPowerRequiredTimer,
+    EDriversNotFoundTimer
     };
 
 /**

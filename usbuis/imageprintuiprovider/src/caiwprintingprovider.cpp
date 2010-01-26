@@ -36,15 +36,15 @@
 #include <apaid.h>
 #include <apgcli.h>
 #include <w32std.h>
-#include <ImageConversion.h>
+#include <imageconversion.h>
 
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 #include <aknnotedialog.h>
-#include <aknStaticNoteDialog.h>
+#include <aknstaticnotedialog.h>
 #include <eikprogi.h>
 #include <aknnotewrappers.h>
 #include <StringLoader.h>
-#include <PathInfo.h> 
+#include <pathinfo.h> 
 
 #include "caiwimageprintif.h"
 #include "imageprintuidebug.h"

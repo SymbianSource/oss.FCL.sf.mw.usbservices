@@ -21,7 +21,7 @@
 #include <e32property.h>
 #include <tusbpersonalityparams.h>
 #include <startupdomainpskeys.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include "CUsbActiveMscHandlerMdrv.h"
 #include "CUsbMscPersonalityTimer.h"
 #include "debug.h"

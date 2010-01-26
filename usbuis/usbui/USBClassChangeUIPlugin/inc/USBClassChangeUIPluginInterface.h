@@ -20,7 +20,7 @@
 #define USBCLASSCHANGEUIPLUGININTERFACE_H
 
 // System includes
-#include <GSPluginInterface.h>
+#include <gsplugininterface.h>
 
 
 /**

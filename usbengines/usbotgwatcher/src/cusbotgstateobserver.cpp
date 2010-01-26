@@ -75,7 +75,7 @@ CUsbOtgStateObserver::~CUsbOtgStateObserver()
 
     iOtgState.Close();
 
-    iObservers.ResetAndDestroy();
+    iObservers.Close();
 
     }
 

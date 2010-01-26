@@ -25,7 +25,7 @@
 
 #include    <avkon.hrh>
 
-#include    <GSPluginInterface.h>
+#include    <gsplugininterface.h>
 
 const TUid KUidImpl = { 0x1027478F };   // implementation UID of the plugin
 

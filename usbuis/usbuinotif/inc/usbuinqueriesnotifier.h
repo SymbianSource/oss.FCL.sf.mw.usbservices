@@ -21,7 +21,7 @@
 // INCLUDES
 
 #include "usbnotifier.h"      // Base class
-#include <aknquerydialog.h>   // AVKON component
+#include <AknQueryDialog.h>   // AVKON component
 #include <aknmemorycarddialog.h>
 
 // CLASS DECLARATION

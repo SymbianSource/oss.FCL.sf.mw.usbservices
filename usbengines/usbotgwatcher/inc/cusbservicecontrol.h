@@ -65,20 +65,20 @@ public:
 
     /**
      * Starts usb service. When service is started call back function 
-     * MUsbServiceControlObserver::UsbServiceStarted will be called.
+     * MUsbServiceControlObserver::UsbServiceControlReqCompletedL will be called.
      * Client should not worry is usb service already started, or not,
      * and which one personality is started. Just request this API 
      * @param aPersonalityId personality id (required by RUsb API to start usb services) 
      * @return error code
      */
-    TInt Start(TInt aPersonalityId);
+    TInt StartL(TInt aPersonalityId);
 
     /**
      * Stops service. When service is stopped call back function 
-     * MUsbServiceControlObserver::UsbServiceStopped will be called
+     * MUsbServiceControlObserver::UsbServiceControlReqCompletedL will be called
      * @return error code
      */
-    TInt Stop();
+    TInt StopL();
 
 public:
 

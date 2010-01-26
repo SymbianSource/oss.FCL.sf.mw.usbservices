@@ -26,6 +26,7 @@ const TInt KTimeToDiscreteNote = 2000000; // 2 sec
 const TInt KMaxTimeAllowedForBusInactivity = 10000000; // 10 sec
 const TInt KUsbIndicatorBlinkingInterval = 600000; // 0.6 sec
 const TInt KTimeTooMuchPowerRequired = 10000000; // 10 sec
+const TInt KTimeDriversNotFound = 25000000; // 25 sec
 
 const TUint KFirst = 1;
 

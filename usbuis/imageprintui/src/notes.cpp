@@ -16,21 +16,21 @@
 */
 
 
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 #include <imageprintui.rsg>
 
 #include "imageprintui.hrh"
 #include "settingsview.h"
-#include <aknwaitdialog.h>
+#include <AknWaitDialog.h>
 #include <aknnotedialog.h>
 #include <aknprogresstimer.h>
 
 
 #include <e32std.h>
-#include <aknprogressdialog.h>
+#include <AknProgressDialog.h>
 #include <AknInfoPopupNoteController.h>
 
-#include <aknStaticNoteDialog.h>
+#include <aknstaticnotedialog.h>
 #include <eikprogi.h>
 #include <aknnotewrappers.h>
 #include <StringLoader.h>

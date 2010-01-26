@@ -20,7 +20,7 @@
 #include <dpsdefs.h>
 #include <s32file.h>
 #include <f32file.h>
-#include <COEUTILS.H>
+#include <coeutils.h>
 #include <imageprintui.rsg>
 
 #include "requestmanager.h"

@@ -16,7 +16,7 @@
  */
 
 // INCLUDE FILES
-#include <EikNotApi.h>
+#include <eiknotapi.h>
 #include <eikenv.h>
 
 #include "usbuincableconnectednotifier.h"

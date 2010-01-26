@@ -15,7 +15,7 @@
 // 
 //
 #include <e32base.h>
-#include <ecom/implementationProxy.h>
+#include <ecom/implementationproxy.h>
 #include "pamplugin.h"
 
 const TImplementationProxy ImplementationTable[] =

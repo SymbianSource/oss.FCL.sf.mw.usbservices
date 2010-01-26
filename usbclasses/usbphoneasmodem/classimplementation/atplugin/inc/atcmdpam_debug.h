@@ -19,9 +19,9 @@
 #define ATCMDPAM_DEBUG_H
 
 // INCLUDES
-#include <E32Std.h>
-#include <E32Base.h>
-#include <E32Svr.h>
+#include <e32std.h>
+#include <e32base.h>
+#include <e32svr.h>
 
 // FORWARD DECLARATIONS
 class CATCommand;

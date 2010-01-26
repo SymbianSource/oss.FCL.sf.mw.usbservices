@@ -26,8 +26,8 @@
 #include <featmgr.h>
 #include <hlplch.h>         // Help launcher
 #include <usbpersonalityids.h>
-#include <GSParentPlugin.h>
-#include <GSFWViewUIDs.h>
+#include <gsparentplugin.h>
+#include <gsfwviewuids.h>
 #include <USBClassChangeUIPlugin.rsg> // Resources
 
 #include "USBClassChangeUIPluginView.h"

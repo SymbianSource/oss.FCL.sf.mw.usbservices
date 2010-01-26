@@ -74,7 +74,7 @@ CUsbServiceControl* CUsbServiceControl::NewL(
 // 
 // ---------------------------------------------------------------------------
 //
-TInt CUsbServiceControl::Start(TInt aPersonalityId)
+TInt CUsbServiceControl::StartL(TInt aPersonalityId)
     {
         FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::Start aPersonalityId = %d" ), aPersonalityId));
 
@@ -117,15 +117,15 @@ TInt CUsbServiceControl::Start(TInt aPersonalityId)
 
             if (aPersonalityId == currentPersonality) // already started
                 {
-                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Personality already sterted" ) );
-                iObserver->UsbServiceControlReqCompletedL(KErrNone);
+                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Personality already started" ) );
+                iObserver->UsbServiceControlReqCompletedL(KErrInUse);
                 return KErrNone;
                 }
 
             // we need to stop current personality and start service with new personailty id
             iPersonalityId = aPersonalityId; // this will indicate that we want to start this personality after
 
-            Stop();
+            StopL();
 
             // start new personality in RunL() when state is Idle
 
@@ -176,7 +176,7 @@ TInt CUsbServiceControl::Start(TInt aPersonalityId)
 // 
 // ---------------------------------------------------------------------------
 //
-TInt CUsbServiceControl::Stop()
+TInt CUsbServiceControl::StopL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop" ) );
 
@@ -286,7 +286,7 @@ void CUsbServiceControl::RunL()
                     FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL Requested to start personality %d. Starting it." ), iPersonalityId));
                 TInt personalityId = iPersonalityId;
                 iPersonalityId = 0; // reset
-                err = Start(personalityId);
+                err = StartL(personalityId);
                 if(KErrNone != err)
                     {
                     iObserver->UsbServiceControlReqCompletedL(err);
@@ -324,7 +324,7 @@ void CUsbServiceControl::RunL()
             if (iPersonalityId == 0) // during service start requested to stop it
                 {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Requested to stop personality. Stopping." ) );
-                err = Stop();
+                err = StopL();
                 if(KErrNone != err)
                     {
                     FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while stopping personality err = %d" ), err));
@@ -338,7 +338,7 @@ void CUsbServiceControl::RunL()
             TInt personalityId = iPersonalityId;
             iPersonalityId = 0; // reset
             //User::LeaveIfError(Start(personalityId));
-            err = Start(personalityId);
+            err = StartL(personalityId);
             if(KErrNone != err)
                 {
                 FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while starting personality err = %d" ), err));

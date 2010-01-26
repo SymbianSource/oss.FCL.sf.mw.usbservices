@@ -20,7 +20,7 @@
 #define USBUINOTIFOTGWARNING_H
 
 // INCLUDES
-#include <AknNoteWrappers.h>
+#include <aknnotewrappers.h>
 #include <usbuinotif.h>
 
 #include "usbnotifier.h"   // Base class

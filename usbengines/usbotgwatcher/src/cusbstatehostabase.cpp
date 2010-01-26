@@ -169,7 +169,7 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
             }
 
             // OTGDI
-        case KErrUsbOtgPeriphNotSupported: //        = -6688
+        //case KErrUsbOtgPeriphNotSupported: //        = -6688
 
             // USBDI
         case KErrUsbRequestsPending:

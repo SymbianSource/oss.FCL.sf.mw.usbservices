@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <eikenv.h>          // Eikon environment
 #include <bautils.h>         // BAFL utils (for language file)
-#include <stringloader.h>    // Localisation stringloader
+#include <StringLoader.h>    // Localisation stringloader
 #include <centralrepository.h> 
 #include <coreapplicationuisdomainpskeys.h>
 #include <data_caging_path_literals.hrh> 
@@ -27,7 +27,7 @@
 
 #include "usbnotifier.h"     // Own class 
 #include "usbuinotifdebug.h"
-#include "AknKeyLock.h" //RAknKeyLock
+#include "aknkeylock.h" //RAknKeyLock
 // CONSTANTS
 
 // ================= MEMBER FUNCTIONS =========================================

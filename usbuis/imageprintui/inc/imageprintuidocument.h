@@ -20,7 +20,7 @@
 #ifndef IMAGEPRINTUIDOCUMENT_H
 #define IMAGEPRINTUIDOCUMENT_H
 
-#include <akndoc.h>
+#include <AknDoc.h>
 #include <pictbridge.h>
 #include <e32cmn.h>
 #include <AiwGenericParam.h>

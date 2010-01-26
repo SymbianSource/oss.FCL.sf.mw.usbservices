@@ -19,7 +19,7 @@
 #ifndef C_CIMAGEPRINTUIAPPUI_H
 #define C_CIMAGEPRINTUIAPPUI_H
 
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 #include <AknProgressDialog.h>
 #include <AknWaitDialog.h>
 #include <badesca.h>

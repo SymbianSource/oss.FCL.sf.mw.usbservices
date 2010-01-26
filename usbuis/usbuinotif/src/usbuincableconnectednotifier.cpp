@@ -18,28 +18,28 @@
 #include <eikenv.h>          // Eikon environment
 #include <bautils.h>         // BAFL utils (for language file)
 #include <aknlists.h>
-#include <aknpopup.h> 
-#include <stringloader.h>    // Localisation stringloader
+#include <aknPopup.h> 
+#include <StringLoader.h>    // Localisation stringloader
 #include <utf.h>             // Unicode character conversion utilities
-#include <aknsutils.h>
+#include <AknsUtils.h>
 #include <usb.h>
-#include <USBUINotif.rsg>                   // Own resources
+#include <usbuinotif.rsg>                   // Own resources
 #include <centralrepository.h> 
 #include <e32property.h>
 //for loading icons USB fork and empty
-#include <akniconarray.h>
+#include <AknIconArray.h>
 #include <avkon.mbg>
 #include <AknsConstants.h>
 #include <aknmessagequerydialog.h>
 //for cover display support
-#include <aknmediatorfacade.h>
-#include <secondarydisplay/USBUINotifSecondaryDisplay.h> // Dialog index for cover UI
+#include <AknMediatorFacade.h>
+#include <SecondaryDisplay/usbuinotifsecondarydisplay.h> // Dialog index for cover UI
 #include <akndiscreetpopup.h>
 #include <e32uid.h> // KExecutableImageUid
 #include <usbui.mbg>
 #include "usbuincableconnectednotifier.h"   // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
-#include "usbwatcherinternalcrkeys.h"
+#include "UsbWatcherInternalCRKeys.h"
 #include "usbpersonalityids.h"
 #include "usbuinotif.hrh"
 

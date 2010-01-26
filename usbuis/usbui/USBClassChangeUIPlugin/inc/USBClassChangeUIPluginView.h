@@ -24,7 +24,7 @@
 #include <aknview.h>            // AVKON components
 #include <AknQueryDialog.h>     // AVKON component
 #include <eikmenup.h>           // Menu pane definitions
-#include <GSPluginInterface.h>  // General Settings plugin
+#include <gsplugininterface.h>  // General Settings plugin
 #include <ConeResLoader.h>
 #include <data_caging_path_literals.hrh> 
 

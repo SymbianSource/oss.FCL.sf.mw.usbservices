@@ -22,7 +22,7 @@
 #include <data_caging_path_literals.hrh> 
 #include <usbman.h>
 #include <usbwatcher.h>
-#include <akncapserverclient.h>  
+#include <AknCapServerClient.h>  
 #include "usbuinotifdebug.h"
 // CONSTANTS
 // Literal resource filename 
