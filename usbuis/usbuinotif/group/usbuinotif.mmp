@@ -33,6 +33,10 @@ SOURCE          usbuinqueriesnotifiermdrv.cpp
 SOURCE          usbuinotifotgwarning.cpp
 SOURCE          usbuinotifotgerror.cpp 
 SOURCE          usbuinotifmsmmerror.cpp
+SOURCE          usbuinotifdialerwatcher.cpp
+
+
+
 // ECom resource file
 START RESOURCE ../data/102068DC.rss
 TARGET  usbuinotif.rsc 
@@ -74,6 +78,8 @@ LIBRARY usbman.lib                          // for personality IDs and descripti
 LIBRARY aknnotifierwrapper.lib              // Avkon's notifier wrapper
 LIBRARY         apparc.lib 
 LIBRARY akncapserverclient.lib              // for suppressing the application key
+LIBRARY viewcli.lib 
+LIBRARY featmgr.lib
 
 DEBUGLIBRARY flogger.lib                    // File logging services
 

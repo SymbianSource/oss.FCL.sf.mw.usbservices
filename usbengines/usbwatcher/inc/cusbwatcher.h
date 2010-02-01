@@ -30,7 +30,7 @@
 #include "debug.h"
 #include "musbwatchernotify.h"
 #include "cusbwatchersession.h"
-
+#include "tusbindicatorhandler.h"
 
 
 class CUsbActiveState;
@@ -438,7 +438,16 @@ private: // Data
      * OTG Watcher
      */
     CUsbOtgWatcher* iOtgWatcher; //OTG
-     
+    
+    /*
+     * USB indicator handler to handle device side indicator
+     */
+    TUsbIndicatorHandler iUsbIndicatorHandler;
+    
+    /*
+     * Starting mode is normal?
+     */
+    TBool iNormalStart;
     };
     
 #include "cusbwatcher.inl"

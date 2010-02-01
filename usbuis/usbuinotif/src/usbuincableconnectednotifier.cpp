@@ -75,7 +75,8 @@ CUSBUICableConnectedNotifier* CUSBUICableConnectedNotifier::NewL()
 // might leave.
 // ----------------------------------------------------------------------------
 //
-CUSBUICableConnectedNotifier::CUSBUICableConnectedNotifier()
+CUSBUICableConnectedNotifier::CUSBUICableConnectedNotifier(): 
+    iNoteVisible(EFalse)
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::default constructor"));
     }
@@ -145,7 +146,7 @@ void CUSBUICableConnectedNotifier::GetParamsL(const TDesC8& /*aBuffer*/,
 void CUSBUICableConnectedNotifier::RunL()
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunL"));
-
+    iNoteVisible = ETrue;
     DisableKeylock();
     SuppressAppSwitching(ETrue);
     RunQueryL();
@@ -163,7 +164,12 @@ void CUSBUICableConnectedNotifier::RunL()
 void CUSBUICableConnectedNotifier::Cancel()
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::Cancel() "));
-
+    // Not allowed to cancel this one before note is closed.
+    if ( iNoteVisible )
+        {
+        iNoteWaiter.Start();    
+        }
+        
     CompleteMessage(KErrCancel);
     CUSBUINotifierBase::Cancel();
 
@@ -212,10 +218,10 @@ void CUSBUICableConnectedNotifier::RunQueryL()
    TFileName usbUiIconFilename( KFileDrive );
    usbUiIconFilename += KDC_APP_BITMAP_DIR;
    usbUiIconFilename += KUSBUIconFileName;
+   iNoteVisible = ETrue;
    CAknDiscreetPopup::ShowGlobalPopupL(*header,*description,  KAknsIIDQgnPropUsb, AknIconUtils::AvkonIconFileName(),
-           EMbmAvkonQgn_prop_usb, EMbmAvkonQgn_prop_usb_mask,KAknDiscreetPopupDurationLong, EUSBUICmdDiscreetTapped,( MEikCommandObserver* ) this);
- 
-    CompleteMessage(KErrCancel);
+           EMbmAvkonQgn_prop_usb, EMbmAvkonQgn_prop_usb_mask,KAknDiscreetPopupDurationLong, EUSBUICmdDiscreetTapped,( MEikCommandObserver* ) this);    
+   
     CleanupStack::PopAndDestroy(description);
     CleanupStack::PopAndDestroy(header);
    
@@ -252,6 +258,13 @@ void CUSBUICableConnectedNotifier::ProcessCommandL(TInt aCommandId)
             TUidType uidtype(KExecutableImageUid, TUid::Uid(0x00),TUid::Uid(KUSBUIUid));
             CreateChosenViewL(KUSBExe(),uidtype);  
             }
+        case EAknDiscreetPopupCmdClose:                
+            if ( iNoteWaiter.IsStarted() )
+                {
+                iNoteWaiter.AsyncStop();
+                }
+            iNoteVisible = EFalse;    
+            CompleteMessage( KErrCancel );                    
             break;
         default:
                   

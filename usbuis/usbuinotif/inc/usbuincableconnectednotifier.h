@@ -120,6 +120,16 @@ private:
      *  C++ default constructor.
      */
     CUSBUICableConnectedNotifier();
+    
+    /**
+     * Waiter for canceling notifier. Canceling is not posible when note is visible
+     */
+    CActiveSchedulerWait    iNoteWaiter;    
+    
+    /**
+    * Note visible
+    */
+    TBool   iNoteVisible;
 
     };
 #endif // USBUINCABLECONNECTEDNOTIFIER_H

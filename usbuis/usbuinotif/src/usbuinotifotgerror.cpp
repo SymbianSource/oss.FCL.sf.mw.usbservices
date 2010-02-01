@@ -23,6 +23,7 @@
 #include <StringLoader.h>    // Localisation stringloader
 #include <AknQueryDialog.h> 
 #include <aknnotewrappers.h>
+#include <featmgr.h>
 
 #include <usbuinotif.h>                     // pck
 #include <usbuinotif.rsg>                   // Own resources
@@ -66,6 +67,8 @@ CUsbUiNotifOtgError::~CUsbUiNotifOtgError()
     //this virtual function call is to local CUsbUiNotifOtgError::Cancel, 
     //not to any possibly derived class implementation. 
     Cancel();
+    delete iDialerWatcher;    
+    delete iQuery;    
     }
 
 void CUsbUiNotifOtgError::ConstructL()
@@ -133,16 +136,29 @@ void CUsbUiNotifOtgError::RunL()
     {
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::RunL"));
     TInt returnValue = KErrNone;
-
+    FeatureManager::InitializeLibL();
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfKeypadNoSendKey ) )
+        {    
+        if (!iDialerWatcher)
+            {
+            iDialerWatcher = CUsbuinotifDialerWatcher::NewL(this);
+            }
+        }        
+    FeatureManager::UnInitializeLib(); 
+    iDismissed=EFalse;
     DisableKeylock();
     SuppressAppSwitching( ETrue );
 
     //Excute dialog and check return value
     returnValue = QueryUserResponseL();
-
-    SuppressAppSwitching( EFalse );
-    RestoreKeylock();
-    CompleteMessage( returnValue );
+    if (!iDismissed)
+        {
+        SuppressAppSwitching( EFalse );
+        RestoreKeylock();
+        delete iDialerWatcher;
+        iDialerWatcher = NULL;
+        CompleteMessage( returnValue );
+        }
 
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::RunL() completed"));
     }
@@ -154,15 +170,54 @@ void CUsbUiNotifOtgError::RunL()
 //
 void CUsbUiNotifOtgError::Cancel()
     {
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::Cancel"));
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::Cancel"));    
+    
+    // If dialog is not dismissed this is normal cancel and if query
+    // doesn't exsist notifier is canceled during dismission
+    if (!iDismissed || !iQuery )
+        {        
+        delete iDialerWatcher;
+        iDialerWatcher = NULL;
+        CompleteMessage( KErrCancel );
+        }        
     if (iQuery)
         {
         delete iQuery;
         iQuery = NULL;
         }
-    CompleteMessage( KErrCancel );
-
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::Cancel() completed"));
+    }
+
+// ----------------------------------------------------------------------------
+// CUsbUiNotifOtgError::DialerActivated
+// Release all own resources (member variables)
+// ----------------------------------------------------------------------------
+//
+void CUsbUiNotifOtgError::DialerActivated()
+    {
+    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::AppKeyPressed()"));
+    if ( iQuery )
+        {
+        iDismissed=ETrue;    
+        Cancel();
+        }    
+    }
+
+// ----------------------------------------------------------------------------
+// CUsbUiNotifOtgError::ReActivateDialog
+// Release all own resources (member variables)
+// ----------------------------------------------------------------------------
+//   
+void CUsbUiNotifOtgError::ReActivateDialog()
+    {    
+    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::ReActivateDialog()"));
+    if ( !IsActive())
+        {
+        SetActive();
+        iStatus = KRequestPending;
+        TRequestStatus* stat = &iStatus;
+        User::RequestComplete( stat, KErrNone );
+        }
     }
 
 // ----------------------------------------------------------------------------
@@ -175,9 +230,17 @@ TInt CUsbUiNotifOtgError::QueryUserResponseL()
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::QueryUserResponseL"));
     TInt returnValue = KErrNone;
     TInt resourceId = R_USB_QUERY_OTG_ERROR;
-
-    iQuery = CAknQueryDialog::NewL( CAknQueryDialog::EErrorTone );
-
+    if (iDismissed)
+        {
+        iQuery = CAknQueryDialog::NewL();
+        }
+    else
+        {
+        iQuery = CAknQueryDialog::NewL( CAknQueryDialog::EErrorTone );
+        }
+    
+    
+    iDismissed=EFalse;
     if (iCoverDisplaySupported)
         {
         iQuery->PublishDialogL( iErrorId, KUsbUiNotifOtgError );
