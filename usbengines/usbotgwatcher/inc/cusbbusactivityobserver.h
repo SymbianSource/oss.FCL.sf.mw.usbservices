@@ -82,13 +82,13 @@ public:
      * Adds subscriber for the notification
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbBusActivityObserver* aObserver);
+    void SubscribeL(MUsbBusActivityObserver& aObserver);
 
     /**
      * Removes observer
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbBusActivityObserver* aObserver);
+    void UnsubscribeL(MUsbBusActivityObserver& aObserver);
 
 private:
 

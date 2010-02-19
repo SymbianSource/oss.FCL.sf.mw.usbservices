@@ -88,7 +88,7 @@ void CUsbStateHostABase::AVBusErrorL()
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostABase::AVBusErrorL" ) );
     // No need to handle BusClearError error code, due to Bus will be dropped anyway
     iWatcher->Usb().BusClearError();
-    HandleL(EUsbWatcherErrDeviceRequiresTooMuchPower);
+    HandleL(EUsbWatcherErrDeviceRequiresTooMuchPower, EUsbStateHostHandle);
     }
 
 // From bus activity observer
@@ -164,12 +164,12 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
         case KErrUsbAttachmentFailureGeneralError:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostABase::MessageNotificationReceivedL ErrorInConnection" ) );
-            HandleL(EUsbWatcherErrorInConnection);
+            HandleL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
             break;
             }
 
             // OTGDI
-        //case KErrUsbOtgPeriphNotSupported: //        = -6688
+        case KErrUsbOtgPeriphNotSupported: //        = -6688
 
             // USBDI
         case KErrUsbRequestsPending:
@@ -196,7 +196,7 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
         case KErrUsbUnsupportedDevice:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostABase::MessageNotificationReceivedL UnsupportedDevice" ) );
-            HandleL(EUsbWatcherErrUnsupportedDevice);
+            HandleL(EUsbWatcherErrUnsupportedDevice, EUsbStateHostHandle);
             break;
             }
         default:
@@ -216,7 +216,7 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
 void CUsbStateHostABase::BadHubPositionL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostABase::BadHubPositionL" ) );
-    HandleL(EUsbWatcherHubsNotSupported);
+    HandleL(EUsbWatcherHubsNotSupported, EUsbStateHostHandle);
     }
 
 // ---------------------------------------------------------------------------
@@ -228,7 +228,7 @@ void CUsbStateHostABase::VBusErrorL()
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostABase::VBusErrorL" ) );
     // No error code handling after BusClearError call, due to bus will be dropped anyway
     iWatcher->Usb().BusClearError();
-    HandleL(EUsbWatcherErrDeviceRequiresTooMuchPower);
+    HandleL(EUsbWatcherErrDeviceRequiresTooMuchPower, EUsbStateHostHandle);
     }
 
 // ---------------------------------------------------------------------------
@@ -250,20 +250,9 @@ void CUsbStateHostABase::SessionRequestedL()
     if (KErrNone != err && KErrUsbOtgVbusAlreadyRaised != err) // sometimes this also comes...
         {
             FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostABase::SessionRequestedL BusRequestError err = %d" ), err));
-        iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+        iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
         return;
         }
 
         FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostABase::SessionRequestedL Session started OK (or VBUS already UP) err = %d" ), err));
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostABase::HandleL(TInt aWhat)
-    {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostABase::HandleL aWhat = %d" ), aWhat));
-
-    iWatcher->HandleHostProblemL(aWhat);
     }

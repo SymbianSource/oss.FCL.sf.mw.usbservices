@@ -349,25 +349,25 @@ public:
     /**
      * @return Handle state 
      */
-    CUsbStateHostHandle* HostHandle() const;
+    CUsbStateHostHandle* HostHandle(TUsbStateIds aStateId) const;
 
     /**
      * Handles problems in host functioning
      * @param aWhatKindOf problem Id to be handled
      */
-    void HandleHostProblemL(TInt aWhatKindOf);
+    void HandleHostProblemL(TInt aWhatKindOf, TUsbStateIds aInState);
     
     /**
      * Add observer to USb Otg state machine
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbOtgWatcherStateObserver* aObserver);
+    void SubscribeL(MUsbOtgWatcherStateObserver& aObserver);
 
     /**
      * Remove observer from UsbOtg state observer
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbOtgWatcherStateObserver* aObserver);
+    void UnsubscribeL(MUsbOtgWatcherStateObserver& aObserver);
 
     /**
      * Used for test purposes

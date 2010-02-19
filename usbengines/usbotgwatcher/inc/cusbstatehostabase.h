@@ -20,6 +20,7 @@
 #define C_USBSTATEHOSTABASE_H
 
 #include "cusbstate.h"
+#include "definitions.h"
 
 class CUsbOtgWatcher;
 /**
@@ -46,12 +47,6 @@ protected:
      * second phase construction
      */
     void ConstructL();
-
-    /**
-     * Handles special situation (error, or something else)
-     * @param aWhat to hande (id)
-     */
-    virtual void HandleL(TInt aWhat);
 
     //from CUsbState
     // From VBus observer

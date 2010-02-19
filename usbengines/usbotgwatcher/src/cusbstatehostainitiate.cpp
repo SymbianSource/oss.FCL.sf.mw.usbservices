@@ -101,7 +101,7 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
     if (KErrNone != err)
         {
             FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustAdvancedToThisStateL EnableFunctionDriverLoading error" ) );
-        iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+        iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
         return;
         }
 
@@ -117,6 +117,7 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
 
         while (count < maxTrial && KErrNone != busReqErr)
             {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate Calling RUsb::BusRequest()..." ) );
             busReqErr = iWatcher->Usb().BusRequest();
                 FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustAdvancedToThisStateL BusRequest() = %d" ), err));
 
@@ -125,7 +126,7 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
                 err = iWatcher->Usb().BusClearError();
                 if (KErrNone != err)
                     {
-                    iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+                    iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
                     return;
                     }
                 }
@@ -133,7 +134,7 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
             }
         if (KErrNone != busReqErr)
             {
-            iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+            iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
             return;
             }
         }

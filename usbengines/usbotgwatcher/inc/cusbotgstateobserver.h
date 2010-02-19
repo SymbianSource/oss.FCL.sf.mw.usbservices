@@ -101,13 +101,13 @@ public:
      * Subscribes for getting notifications
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbOtgStateObserver* aObserver);
+    void SubscribeL(MUsbOtgStateObserver& aObserver);
 
     /**
      * Unsubscribes from getting notifications
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbOtgStateObserver* aObserver);
+    void UnsubscribeL(MUsbOtgStateObserver& aObserver);
 
 private:
 

@@ -89,8 +89,6 @@ CUsbBusActivityObserver::~CUsbBusActivityObserver()
 CUsbBusActivityObserver::TBusActivity CUsbBusActivityObserver::BusActivity()
     {
 
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::BusActivity" ) );
-
     TInt val(0);
 
     TInt err = iBusActivity.Get(val);
@@ -111,11 +109,17 @@ CUsbBusActivityObserver::TBusActivity CUsbBusActivityObserver::BusActivity()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbBusActivityObserver::SubscribeL(MUsbBusActivityObserver* aObserver)
+void CUsbBusActivityObserver::SubscribeL(MUsbBusActivityObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::SubscribeL" ) );
-
-    User::LeaveIfError(iObservers.Append(aObserver));
+    // check if the same observer already exist in a list
+    if(KErrNotFound != iObservers.Find(&aObserver))
+        {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::SubscribeL Observer already exists." ) );
+        Panic(EObserverAlreadyExists);
+        return;
+        }
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -129,31 +133,21 @@ void CUsbBusActivityObserver::SubscribeL(MUsbBusActivityObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbBusActivityObserver::UnsubscribeL(MUsbBusActivityObserver* aObserver)
+void CUsbBusActivityObserver::UnsubscribeL(MUsbBusActivityObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::UnsubscribeL" ) );
 
-    if (0 == iObservers.Count()) // no items
+    TInt i(iObservers.Find(&aObserver));
+    if(KErrNotFound == i)
         {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::UnsubscribeL No observers" ) );
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::UnsubscribeL Observer not found." ) );
+        Panic(ECanNotFindIdPinObserver);
         return;
         }
-        
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
-
-    if (aObserver == iObservers[i]) // found
-        {
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::UnsubscribeL CanNotFindBusActivityObserver " ) );
-        Panic(ECanNotFindBusActivityObserver);
-        }
-
-    if (0 == iObservers.Count()) // no items
+    
+    iObservers.Remove(i);
+    
+    if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request
         Cancel();

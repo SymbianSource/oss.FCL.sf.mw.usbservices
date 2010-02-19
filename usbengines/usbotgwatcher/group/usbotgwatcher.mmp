@@ -49,6 +49,8 @@ SOURCE                  cusbstatehostahost.cpp
 SOURCE                  cusbstatehostaperipheral.cpp
 SOURCE                  cusbstatehostaidle.cpp
 SOURCE                  cusbstatehosthandle.cpp
+SOURCE					cusbstatehostdelayhandle.cpp
+SOURCE					cusbstatehostundefined.cpp
 
 SOURCE					cusbwaitnotifier.cpp
 SOURCE					cusbnotifmanager.cpp

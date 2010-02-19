@@ -182,6 +182,7 @@ TInt CUsbServiceControl::StopL()
 
     TUsbServiceState serviceState;
     TInt err = iUsb.GetServiceState(serviceState);
+    FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::StopL = %d; Usb service state = %d" ), err, serviceState));
 
     if (KErrNone != err)
         {
@@ -259,7 +260,6 @@ void CUsbServiceControl::RunL()
     FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL iStatus %d" ), iStatus.Int()));
     if (KErrNone != iStatus.Int())
         {
-        //User::Leave(iStatus.Int());
         iObserver->UsbServiceControlReqCompletedL(iStatus.Int());
         return;
         }
@@ -270,7 +270,6 @@ void CUsbServiceControl::RunL()
     if (KErrNone != err)
         {
             FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while getting service state %d" ), err));
-        //User::Leave(err);
         iObserver->UsbServiceControlReqCompletedL(err);
         return;            
         }
@@ -308,7 +307,6 @@ void CUsbServiceControl::RunL()
             if (KErrNone != err)
                 {
                 FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while getting PersonalityId err = %d" ), err));
-                //User::Leave(err);
                 iObserver->UsbServiceControlReqCompletedL(err);
                 return;                    
                 }
@@ -337,7 +335,6 @@ void CUsbServiceControl::RunL()
             FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL Requested to start personality %d. Starting it." ), iPersonalityId));
             TInt personalityId = iPersonalityId;
             iPersonalityId = 0; // reset
-            //User::LeaveIfError(Start(personalityId));
             err = StartL(personalityId);
             if(KErrNone != err)
                 {
@@ -364,7 +361,6 @@ void CUsbServiceControl::RunL()
         case EUsbServiceFatalError:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceFatalError" ) );
-            //User::Leave(KErrGeneral);
             iObserver->UsbServiceControlReqCompletedL(KErrGeneral);    
             break;
             }
@@ -383,7 +379,7 @@ void CUsbServiceControl::RunL()
 TInt CUsbServiceControl::RunError(TInt aError)
     {
         FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunError aError %d" ), aError ));
-        //TRAP_IGNORE(iObserver->UsbServiceControlReqCompletedL(aError));
+        TRAP_IGNORE(iObserver->UsbServiceControlReqCompletedL(aError));
 
     return KErrNone;
     }

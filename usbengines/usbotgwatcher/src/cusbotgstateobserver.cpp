@@ -108,11 +108,17 @@ TUsbOtgState CUsbOtgStateObserver::OtgState()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver* aObserver)
+void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::SubscribeL" ) );
-
-    User::LeaveIfError(iObservers.Append(aObserver));
+    // check if the same observer already exist in a list
+    if(KErrNotFound != iObservers.Find(&aObserver))
+        {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::SubscribeL Observer already exists." ) );
+        Panic(EObserverAlreadyExists);
+        return;
+        }
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -126,31 +132,21 @@ void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgStateObserver::UnsubscribeL(MUsbOtgStateObserver* aObserver)
+void CUsbOtgStateObserver::UnsubscribeL(MUsbOtgStateObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::UnsubscribeL" ) );
-
-        if (0 == iObservers.Count()) // no items
-                {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::UnsubscribeL No observers" ) );
-                return;
-                }
-        
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
-
-    if (aObserver == iObservers[i]) // found
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::UnsubscribeL" ) );
+    
+    TInt i(iObservers.Find(&aObserver));
+    if(KErrNotFound == i)
         {
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::UnsubscribeL CanNotFindOtgStateObserver" ) );
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL Observer not found." ) );
         Panic(ECanNotFindOtgStateObserver);
+        return;
         }
-
-    if (0 == iObservers.Count()) // no items
+    
+    iObservers.Remove(i);
+    
+    if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request
         Cancel();

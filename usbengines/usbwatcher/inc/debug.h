@@ -137,15 +137,16 @@ private:
     };
 #endif // LOG_TO_FILE
 
-#define LEAVE( exp )  {volatile TInt err = exp; \
-            LOG3( "LEAVE(%d) @file: %s, line: %d", err, __FILE__, __LINE__ );\
-            User::Leave( err );}
+#define LEAVE( exp )  {volatile TInt err_ = exp; \
+        LOG3( "LEAVE(%d) @file: %s, line: %d", err_, __FILE__, __LINE__ );\
+        User::Leave( err_ );}
 
-#define LEAVEIFERROR( exp ) {volatile TInt err = exp; if(err < 0) LEAVE(err);}
+#define LEAVEIFERROR( exp ) {volatile TInt err__ = exp; \
+		if(err__ < 0) LEAVE(err__);}
 
-#define PANIC( exp ) {volatile TInt err = exp; \
-            LOG3( "PANIC(%d) @file: %s, line: %d", err, __FILE__, __LINE__ );\
-            User::Panic( KUsbPanicModule, err );}
+#define PANIC( exp ) {volatile TInt err_ = exp; \
+        LOG3( "PANIC(%d) @file: %s, line: %d", err_, __FILE__, __LINE__ );\
+        User::Panic( KUsbPanicModule, err_ );}
 
 
 #define LOG_FUNC TFuncLogger __instrument(TPtrC8((TUint8*)__PRETTY_FUNCTION__));
