@@ -114,7 +114,7 @@ CUsbDevCon::CUsbDevCon() : CActive(EPriorityStandard),
 // Destruction
 // ---------------------------------------------------------------------------
 //
-CUsbDevCon::~CUsbDevCon()
+void CUsbDevCon::Destroy()
     {
         FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon" ) );
         
@@ -151,6 +151,11 @@ CUsbDevCon::~CUsbDevCon()
         FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon Timer" ) );
     
     }   
+
+CUsbDevCon::~CUsbDevCon()
+    {
+       Destroy();
+    }
 
 // ---------------------------------------------------------------------------
 // Acts accordingly to USB state
@@ -261,7 +266,7 @@ void CUsbDevCon::RunL()
         FLOG( _L( "[USBDEVCON]\tCUsbDevCon::RunL Exiting usbdevcon" ) );      
         
         // Shutdown timer is finished, exit program
-        CUsbDevCon:: ~CUsbDevCon(); // destruct resources
+        Destroy(); // destruct resources
         User::Exit(KErrNone);
         }
     }

@@ -136,6 +136,8 @@ private:
      */ 
      TInt RunError( TInt /*aError*/ );
 
+    void Destroy();
+
 private: // data
 
     /**
