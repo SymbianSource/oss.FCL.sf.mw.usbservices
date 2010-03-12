@@ -15,11 +15,9 @@
  *
  */
 
-#include "cusbstatehostundefined.h"
+#include "cusbstatehostdelaynotattachedhandle.h"
 
-#include "definitions.h"
 #include "errors.h"
-
 #include "debug.h"
 #include "panic.h"
 
@@ -27,8 +25,9 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostUndefined::CUsbStateHostUndefined(CUsbOtgWatcher& aWatcher) :
-    CUsbStateHostABase(aWatcher)
+CUsbStateHostDelayNotAttachedHandle::CUsbStateHostDelayNotAttachedHandle(
+        CUsbOtgWatcher& aWatcher) :
+    CUsbStateHostDelayHandle(aWatcher)
     {
     }
 
@@ -36,12 +35,13 @@ CUsbStateHostUndefined::CUsbStateHostUndefined(CUsbOtgWatcher& aWatcher) :
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostUndefined* CUsbStateHostUndefined::NewL(CUsbOtgWatcher& aWatcher)
+CUsbStateHostDelayNotAttachedHandle* CUsbStateHostDelayNotAttachedHandle::NewL(
+        CUsbOtgWatcher& aWatcher)
     {
     LOG_FUNC
 
-    CUsbStateHostUndefined* self = new (ELeave) CUsbStateHostUndefined(
-            aWatcher);
+    CUsbStateHostDelayNotAttachedHandle* self =
+            new (ELeave) CUsbStateHostDelayNotAttachedHandle(aWatcher);
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self);
@@ -52,11 +52,13 @@ CUsbStateHostUndefined* CUsbStateHostUndefined::NewL(CUsbOtgWatcher& aWatcher)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::ConstructL()
+void CUsbStateHostDelayNotAttachedHandle::ConstructL()
     {
     LOG_FUNC
 
-    CUsbStateHostABase::ConstructL();
+    CUsbStateHostDelayHandle::ConstructL();
+
+    iTooMuchPowerTimer = CUsbTimer::NewL(*this, ETooMuchPowerRequiredTimer);
 
     }
 
@@ -64,119 +66,111 @@ void CUsbStateHostUndefined::ConstructL()
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostUndefined::~CUsbStateHostUndefined()
+CUsbStateHostDelayNotAttachedHandle::~CUsbStateHostDelayNotAttachedHandle()
     {
     LOG_FUNC
+
+    delete iTooMuchPowerTimer;
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-TUsbStateIds CUsbStateHostUndefined::Id()
+TUsbStateIds CUsbStateHostDelayNotAttachedHandle::Id()
     {
-    return EUsbStateHostUndefined;
-    }
-
-// From VBus observer
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostUndefined::VBusDownL()
-    {
-    LOG_FUNC
+    return EUsbStateHostDelayNotAttachedHandle;
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::VBusUpL()
+void CUsbStateHostDelayNotAttachedHandle::JustBeforeLeavingThisStateL()
     {
     LOG_FUNC
+
+    iTooMuchPowerTimer->Cancel();
+
+    // do general things 
+    CUsbStateHostDelayHandle::JustBeforeLeavingThisStateL();
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::VBusErrorL()
+void CUsbStateHostDelayNotAttachedHandle::DoHandleL()
     {
     LOG_FUNC
-    iWatcher.Usb().BusClearError();
-    }
+    LOG1( "iWhat = %d" , iWhat);
 
-// From OTG state observer
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostUndefined::AVBusErrorL()
-    {
-    LOG_FUNC
-    iWatcher.Usb().BusClearError();
-    }
+    switch (iWhat)
+        {
+        case EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration:
+            {
+            LOG("EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration" );
 
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostUndefined::BIdleL()
-    {
-    LOG_FUNC
-    }
+            iTooMuchPowerTimer->After(KTimeTooMuchPowerRequired);
+            break;
+            }
 
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostUndefined::BPeripheralL()
-    {
-    LOG_FUNC
-    }
-
-// From host state observer
-void CUsbStateHostUndefined::DeviceDetachedL(TDeviceEventInformation /*aInfo*/)
-    {
-    LOG_FUNC
+        default:
+            {
+            LOG1("Unexpected request id = %d", iWhat);
+            Panic( EUnexpectedSituationToHandle);
+            break;
+            }
+        }
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::SrpReceivedL()
+void CUsbStateHostDelayNotAttachedHandle::AIdleL()
     {
     LOG_FUNC
+
+    // Exit on AIdle, due to Detachment not comes,
+    // because no corresponding attachment with err == KErrNone
+    ChangeHostStateL( EUsbStateHostAInitiate);
+
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::SessionRequestedL()
+void CUsbStateHostDelayNotAttachedHandle::DeviceDetachedL(
+        TDeviceEventInformation)
     {
     LOG_FUNC
+    Panic( EDeviceDetachedNotExpected);
+
     }
 
-// From message notification observer
+// From TimerObserver
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::MessageNotificationReceivedL(TInt aMessage)
+void CUsbStateHostDelayNotAttachedHandle::TimerElapsedL(TUsbTimerId aTimerId)
     {
     LOG_FUNC
-    LOG1( "Unhandled message aMessage = %d" , aMessage);
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostUndefined::BadHubPositionL()
-    {
-    LOG_FUNC
-    Panic( EBadHubPositionNotExpected);
+    switch (aTimerId)
+        {
+        case ETooMuchPowerRequiredTimer:
+            {
+            LOG("ETooMuchPowerRequiredTimer" );
+            HandleL(EUsbWatcherErrDeviceRequiresTooMuchPower,
+                    EUsbStateHostHandleDropping);
+            break;
+            }
+        default:
+            {
+            LOG1("Unknown timer id = %d", aTimerId );
+            Panic( EWrongTimerId);
+            }
+        }
     }

@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Base classes for Usb notifier wrapper  
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Base classes for Usb notifier wrapper  
+ *
+ */
 
 #ifndef C_CUSBNOTENOTIFIER_H
 #define C_CUSBNOTENOTIFIER_H
@@ -38,62 +37,67 @@ NONSHARABLE_CLASS( CUsbNoteNotifier) : public CUsbNotifier
      */
     class CNotifierActive : public CActive
         {
-        public:
-            /**
-             * Default constructor
-             * @param aNotifier RNotifier API
-             * @param aUsbNoteNotifier the note notifier container
-             */
-            CNotifierActive(RNotifier& aNotifier, CUsbNoteNotifier* aUsbNoteNotifier);
-            
-            /**
-             * Destructor
-             */
-            virtual ~CNotifierActive();
-        
-            /**
-             * Start to show the notifier
-             */
-            void StartL();
-            
-        protected:
-            // From base class CActive
-            /**
-             * Caled when outstanding request completed
-             */
-            void RunL();
+    public:
+        /**
+         * Default constructor
+         * @param aNotifier RNotifier API
+         * @param aUsbNoteNotifier the note notifier container
+         */
+        CNotifierActive(RNotifier& aNotifier, CUsbNoteNotifier& aUsbNoteNotifier);
 
-            /**
-             * Called when outstanding request cancelled
-             */
-            void DoCancel();
+        /**
+         * Destructor
+         */
+        virtual ~CNotifierActive();
 
-            /**
-             * Called when RunL leaves   
-             * @param aError errorcode
-             * @return errorcode 
-             */
-            TInt RunError(TInt aError);
+        /**
+         * Start to show the notifier
+         */
+        void StartL();
 
-        private:
-            // data
+    protected:
+        // From base class CActive
+        /**
+         * Caled when outstanding request completed
+         */
+        void RunL();
 
-            /**
-             * The note notifier container 
-             * Not Own 
-             */
-            CUsbNoteNotifier* iUsbNoteNotifier;
-            
-            /**
-             * RNotifier API
-             * Not Own 
-             */
-            RNotifier& iNotifier;
+        /**
+         * Called when outstanding request cancelled
+         */
+        void DoCancel();
+
+        /**
+         * Called when RunL leaves   
+         * @param aError errorcode
+         * @return errorcode 
+         */
+        TInt RunError(TInt aError);
+
+    private:
+        // data
+
+        /**
+         * The note notifier container 
+         * Not Own 
+         */
+        CUsbNoteNotifier& iUsbNoteNotifier;
+
+        /**
+         * RNotifier API
+         * Not Own 
+         */
+        RNotifier& iNotifier;
 
             /**
              * Response from notifier 
              */
             TPckg<TInt> iRes;
+            
+            /**
+             * Notifier id pckg buffer
+             */
+            TPckgBuf<TInt> iNotifIdPckg;
         };
 public:
 
@@ -122,14 +126,14 @@ protected:
      * @param acat Category
      * @param aNotidId id 
      */
-    CUsbNoteNotifier(RNotifier& aNotifier, CUsbNotifManager* aNotifManager,
+    CUsbNoteNotifier(RNotifier& aNotifier, CUsbNotifManager& aNotifManager,
             TUid aCat, TUint aNotifId);
 
     /**
      * 2nd phase constructor.
      */
     void ConstructL();
-    
+
 private:
     // data
 
@@ -138,7 +142,7 @@ private:
      * Own 
      */
     CNotifierActive* iNotifierActive;
-    
+
     /**
      * RNotifier API
      * Not Own 

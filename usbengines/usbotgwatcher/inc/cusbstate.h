@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Base class for states in state machine
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Base class for states in state machine
+ *
+ */
 
 #ifndef C_USBSTATE_H
 #define C_USBSTATE_H
@@ -70,25 +69,25 @@ public:
      * This might be used in switching states in watcher. New state object searched by its id
      * @return Id
      */
-    virtual TUsbStateIds Id();
-    
+    virtual TUsbStateIds Id() = 0;
+
     /**
      * Destruction
      */
     virtual ~CUsbState();
-    
+
     /**
      * Two-phased constructor.
      * @param aWatcher owner
      */
-    static CUsbState* NewL(CUsbOtgWatcher* aWatcher);
+    //static CUsbState* NewL(CUsbOtgWatcher& aWatcher);
 
 protected:
     /**
      * default constructor is protected to be able to be inherited be child classes
      * @param aOwner owner of the state
      */
-    CUsbState(CUsbOtgWatcher* aOwner);
+    CUsbState(CUsbOtgWatcher& aOwner);
 
     /* *
      * Changes state in Device state machine
@@ -101,19 +100,13 @@ protected:
      * @param aNewStateId new host state
      */
     void ChangeHostStateL(TUsbStateIds aNewStateId);
-    
+
     /**
      * Handles special situation (error, or something else)
      * @param aWhat to hande (id)
+     * @param aWhereTohandle state id where to handle
      */
     virtual void HandleL(TInt aWhat, TUsbStateIds aWhereTohandle);
-
-private:
-    
-    /**
-     * 2nd phase construction
-     */
-    void ConstructL();
 
     /**
      * State machine calls this, state object to perform any initial  
@@ -133,6 +126,11 @@ private:
      * Following virtual functions are called by UsbOtgWatcher
      * on getting accodring event. Those are implemented in concret states.
      */
+
+    /**
+     * 2nd phase construction
+     */
+    void ConstructL();
 
     /**
      * Sets personality
@@ -277,7 +275,7 @@ protected:
      * Owner
      * Not own.  
      */
-    CUsbOtgWatcher* iWatcher;
+    CUsbOtgWatcher& iWatcher;
 
     };
 

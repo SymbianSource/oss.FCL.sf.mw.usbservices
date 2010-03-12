@@ -20,4 +20,3 @@
 #include "../usbuinotif/group/bld.inf"
 #include "../imageprintuiprovider/group/bld.inf"
 #include "../imageprintui/group/bld.inf"
-#include "../rndisui/group/bld.inf"

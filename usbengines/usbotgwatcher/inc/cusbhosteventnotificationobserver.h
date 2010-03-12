@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Monitors host events
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Monitors host events
+ *
+ */
 
 #ifndef C_USBHOSTEVENTNOTIFICATIONOBSERVER_H
 #define C_USBHOSTEVENTNOTIFICATIONOBSERVER_H
@@ -63,11 +62,11 @@ public:
      *  @param aInfo additional information
      */
     virtual void DriverLoadFailureL(TDeviceEventInformation aInfo) = 0;
-    
+
     /**
-      *  Called when error happens while observing
-      *  @param aError error code
-      */
+     *  Called when error happens while observing
+     *  @param aError error code
+     */
     virtual void HostEventNotificationErrorL(TInt aError) = 0;
 
     };
@@ -142,7 +141,7 @@ private:
 
     /**
      * The observer reports changes to own observers
-     * Owns
+     * Not owns
      */
     RPointerArray<MUsbHostEventNotificationObserver> iObservers;
 

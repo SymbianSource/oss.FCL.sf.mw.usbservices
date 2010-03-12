@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -387,11 +387,13 @@ void CUsbWatcher::RunL()
         case EUsbStarting:
             LOG( "Personality started" );
             Notify( ret );
-            iState = EUsbStarted;
             if( iStopStartScenario )
                 {
                 iStopStartScenario = EFalse;
                 }
+            //check if StartPersonality() fails     
+            LEAVEIFERROR( ret );
+            iState = EUsbStarted;
             break;
 
         case EUsbStopping:
@@ -453,10 +455,21 @@ void CUsbWatcher::RunL()
 // This method is not called cause RunL() never leaves.
 // ----------------------------------------------------------------------------
 //
-TInt CUsbWatcher::RunError(TInt /*aError*/)
+TInt CUsbWatcher::RunError(TInt aError)
     {
     LOG_FUNC
-    // Left empty cause this can't happend
+    
+    LOG2("Returned error: %d, iState: %d", aError, iState);
+    if ( iState == EUsbStarting )
+        {
+        RProperty::Set( KPSUidUsbWatcher,
+                KUsbWatcherSelectedPersonality,
+                KUsbWatcherSelectedPersonalityNone );
+        LOG( "personality set to none" );
+
+        iState = EUsbIdle;
+        }
+    
     return KErrNone;
     }
 

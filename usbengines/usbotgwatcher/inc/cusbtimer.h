@@ -1,19 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  timer
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  timer
+ *
+ */
 
 #ifndef C_USBTIMER_H
 #define C_USBTIMER_H
@@ -65,7 +65,7 @@ public:
      * @param aObserver will get call back
      * @param aTimerId timer id
      */
-    static CUsbTimer * NewL(MUsbTimerObserver* aObserver,
+    static CUsbTimer * NewL(MUsbTimerObserver& aObserver,
             TUsbTimerId aTimerId);
 
     /**
@@ -106,7 +106,7 @@ private:
      * @param aObserver will get call back
      * @param aTimerId timer id 
      */
-    CUsbTimer(MUsbTimerObserver* aObserver, TUsbTimerId aTimerId);
+    CUsbTimer(MUsbTimerObserver& aObserver, TUsbTimerId aTimerId);
 
     /**
      * 2nd phase construction
@@ -120,7 +120,7 @@ private:
      * Observer
      * not own
      */
-    MUsbTimerObserver* iObserver;
+    MUsbTimerObserver& iObserver;
 
     /**
      * RTimer API

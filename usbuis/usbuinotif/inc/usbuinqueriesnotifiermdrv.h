@@ -106,7 +106,7 @@ private:
      * @return KErrNone - accepted, KErrCancel - Cancel or End call key
      */
     TInt QueryUserResponseL(const TDesC& aStringHolder, TInt aCoverDialogId,
-            TBool aIsCancelKey);
+            TBool aIsCancelKey, TBool aIsErrorQuery);
 
     /**
      * Get attributes for the query dialog
@@ -117,7 +117,7 @@ private:
      * @param aIsCancelKey    Returned info about showing the Cancel key.
      * @return                The string holder for the query. 
      */
-    HBufC* GetQueryAttributesLC(TInt& aCoverDialogId, TBool& aIsCancelKey);
+    HBufC* GetQueryAttributesLC(TInt& aCoverDialogId, TBool& aIsCancelKey, TBool& aIsErrorQuery);
 
 private:
     // Data

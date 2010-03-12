@@ -1,24 +1,23 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Base classes for Usb notifier wrapper
+ * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Base classes for Usb notifier wrapper
+ *
+ */
 
 #include "cusbnotifmanager.h"
 #include "cusbnotifier.h"
- 
+
 #include "debug.h"
 #include "panic.h"
 
@@ -30,7 +29,7 @@
 //
 CUsbNotifier::~CUsbNotifier()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifier::~CUsbNotifier" ) );
+    LOG_FUNC
     }
 
 // ---------------------------------------------------------------------------
@@ -46,12 +45,11 @@ TBool CUsbNotifier::IsFeedbackNeeded() const
 // C++ constructor
 // ---------------------------------------------------------------------------
 //
-CUsbNotifier::CUsbNotifier(CUsbNotifManager* aNotifManager, TUid aCat,
+CUsbNotifier::CUsbNotifier(CUsbNotifManager& aNotifManager, TUid aCat,
         TUint aNotifId) :
     iNotifManager(aNotifManager), iCat(aCat), iNotifId(aNotifId),
             iIsFeedbackNeeded(EFalse)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifier::CUsbNotifier" ) );
     }
 
 // ---------------------------------------------------------------------------
@@ -60,7 +58,6 @@ CUsbNotifier::CUsbNotifier(CUsbNotifManager* aNotifManager, TUid aCat,
 //
 void CUsbNotifier::SetFeedbackNeeded()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifier::SetFeedbackNeeded" ) );
     iIsFeedbackNeeded = ETrue;
     }
 

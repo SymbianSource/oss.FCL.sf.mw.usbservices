@@ -13,6 +13,7 @@
         <unit unitID="lcdo.usbservices.usbclasses.usbosdescriptorhandler" mrp="" bldFile="&layer_real_source_path;/usbclasses/usbosdescriptorhandler/group" filter="!sf_build" name="usbservices_usbclasses_usbosdescriptorhandler" />
         <unit unitID="lcdo.usbservices.usbclasses.msmmplugin" mrp="" bldFile="&layer_real_source_path;/usbclasses/msmmplugin/group" filter="!sf_build" name="usbservices_usbclasses_msmmplugin" />
         <unit unitID="lcdo.usbservices.usbclasses.usbhidclassdriver" mrp="" bldFile="&layer_real_source_path;/usbclasses/usbhidclassdriver/group" filter="!sf_build" name="usbservices_usbclasses_usbhidclassdriver" />
+        <unit unitID="lcdo.usbservices.usbuis.rndisui" mrp="" bldFile="&layer_real_source_path;/usbuis/rndisui/group" filter="!sf_build" name="usbservices_usbuis_rndisui" />
       </module>      
     </layer>
     <layer name="api_test_layer">

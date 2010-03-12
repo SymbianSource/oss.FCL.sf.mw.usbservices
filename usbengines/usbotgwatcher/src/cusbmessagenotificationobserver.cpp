@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbman.h>
 #include <d32usbdi_errors.h>
@@ -42,8 +41,7 @@ CUsbMessageNotificationObserver::CUsbMessageNotificationObserver(RUsb* aUsb) :
 //
 void CUsbMessageNotificationObserver::ConstructL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::ConstructL" ) );
+    LOG_FUNC
 
     }
 
@@ -54,8 +52,7 @@ void CUsbMessageNotificationObserver::ConstructL()
 CUsbMessageNotificationObserver* CUsbMessageNotificationObserver::NewL(
         RUsb* aUsb)
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::NewL" ) );
+    LOG_FUNC
 
     CUsbMessageNotificationObserver* self =
             new (ELeave) CUsbMessageNotificationObserver(aUsb);
@@ -71,8 +68,7 @@ CUsbMessageNotificationObserver* CUsbMessageNotificationObserver::NewL(
 //
 CUsbMessageNotificationObserver::~CUsbMessageNotificationObserver()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::~CUsbMessageNotificationObserver" ) );
+    LOG_FUNC
 
     Cancel();
 
@@ -87,16 +83,16 @@ CUsbMessageNotificationObserver::~CUsbMessageNotificationObserver()
 void CUsbMessageNotificationObserver::SubscribeL(
         MUsbMessageNotificationObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::SubscribeL" ) );
+    LOG_FUNC
 
-        // check if the same observer already exist in a list
-        if(KErrNotFound != iObservers.Find(&aObserver))
-            {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::SubscribeL Observer already exists." ) );
-            Panic(EObserverAlreadyExists);
-            return;
-            }
-        iObservers.AppendL(&aObserver);
+    // check if the same observer already exist in a list
+    if (KErrNotFound != iObservers.Find(&aObserver))
+        {
+        LOG("Observer already exists");
+        Panic( EObserverAlreadyExists);
+        return;
+        }
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -112,17 +108,17 @@ void CUsbMessageNotificationObserver::SubscribeL(
 void CUsbMessageNotificationObserver::UnsubscribeL(
         MUsbMessageNotificationObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::UnsubscribeL" ) );
+    LOG_FUNC
 
-        TInt i(iObservers.Find(&aObserver));
-        if(KErrNotFound == i)
-            {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL Observer not found." ) );
-            Panic(ECanNotFindMessageNotificationObserver);
-            return;
-            }
-        
-        iObservers.Remove(i);
+    TInt i(iObservers.Find(&aObserver));
+    if (KErrNotFound == i)
+        {
+        LOG("Observer not found" )
+        Panic( ECanNotFindMessageNotificationObserver);
+        return;
+        }
+
+    iObservers.Remove(i);
 
     if (0 == iObservers.Count()) // no items
         {
@@ -137,13 +133,16 @@ void CUsbMessageNotificationObserver::UnsubscribeL(
 //
 void CUsbMessageNotificationObserver::RunL()
     {
+    // Log the event
+    LOG1( "Message notification observer iMessage = %d" , iMessage);
+
     // if error occured, tell to Observers
-    if(KErrNone != iStatus.Int()) 
+    if (KErrNone != iStatus.Int())
         {
         for (TInt i(0); i < iObservers.Count(); ++i)
-             {
-             iObservers[i]->MessageNotificationErrorL(iStatus.Int());
-             }
+            {
+            iObservers[i]->MessageNotificationErrorL(iStatus.Int());
+            }
         return;
         }
 
@@ -153,15 +152,12 @@ void CUsbMessageNotificationObserver::RunL()
     iUsb->MessageNotification(iStatus, iMessage);
     SetActive();
 
-        // Log the event
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::RunL iMessage = %d" ), message));
-
     // then process property change
     switch (message)
         {
         case KErrUsbBadHubPosition:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::RunL HubBadPosition" ) );
+            LOG("HubBadPosition" );
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -171,7 +167,7 @@ void CUsbMessageNotificationObserver::RunL()
             }
         case KErrUsbOtgVbusError:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::RunL VBusError" ) );
+            LOG( "VBusError");
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -181,7 +177,7 @@ void CUsbMessageNotificationObserver::RunL()
             }
         case KUsbMessageSrpReceived:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::RunL SRP received" ) );
+            LOG("SRP received" );
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -191,7 +187,7 @@ void CUsbMessageNotificationObserver::RunL()
             }
         case KUsbMessageRequestSession:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::RunL Session Requested" ) );
+            LOG("Session requested" );
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -202,6 +198,7 @@ void CUsbMessageNotificationObserver::RunL()
             // notify states with other messages  
         default:
             {
+
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->MessageNotificationReceivedL(message);
@@ -228,8 +225,9 @@ void CUsbMessageNotificationObserver::DoCancel()
 //
 TInt CUsbMessageNotificationObserver::RunError(TInt aError)
     {
+    LOG_FUNC
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::RunError aError = %d" ), aError));
+    LOG1( "aError = %d" , aError);
 
     // try to recover and continue	
     return KErrNone;

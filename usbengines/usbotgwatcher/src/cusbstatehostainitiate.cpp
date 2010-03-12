@@ -1,32 +1,33 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
+#include <usbuinotif.h>
 
 #include "cusbstatehostainitiate.h"
 #ifndef STIF
-#include "cusbnotifmanager.h"
 #include "cusbtimer.h"
+#include "cusbnotifmanager.h"
 #else
 #include "mockcusbnotifmanager.h"
 #include "mockcusbtimer.h"
 #endif
-#include "definitions.h"
 
+#include "definitions.h"
 #include "errors.h"
+
 #include "debug.h"
 #include "panic.h"
 
@@ -34,8 +35,8 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAInitiate::CUsbStateHostAInitiate(CUsbOtgWatcher* aWatcher) :
-    CUsbStateHostAInitiateBase(aWatcher)
+CUsbStateHostAInitiate::CUsbStateHostAInitiate(CUsbOtgWatcher& aWatcher) :
+    CUsbStateHostABase(aWatcher)
     {
     }
 
@@ -45,18 +46,21 @@ CUsbStateHostAInitiate::CUsbStateHostAInitiate(CUsbOtgWatcher* aWatcher) :
 //
 void CUsbStateHostAInitiate::ConstructL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::ConstructL" ) );
+    LOG_FUNC
 
-    CUsbStateHostAInitiateBase::ConstructL();
+    CUsbStateHostABase::ConstructL();
+
+    iAttachmentTimer = CUsbTimer::NewL(*this, EDeviceAttachmentTimer);
+
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAInitiate* CUsbStateHostAInitiate::NewL(CUsbOtgWatcher* aWatcher)
+CUsbStateHostAInitiate* CUsbStateHostAInitiate::NewL(CUsbOtgWatcher& aWatcher)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::NewL" ) );
+    LOG_FUNC
 
     CUsbStateHostAInitiate* self = new (ELeave) CUsbStateHostAInitiate(
             aWatcher);
@@ -72,7 +76,9 @@ CUsbStateHostAInitiate* CUsbStateHostAInitiate::NewL(CUsbOtgWatcher* aWatcher)
 //
 CUsbStateHostAInitiate::~CUsbStateHostAInitiate()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::~CUsbStateHostAInitiate" ) );
+    LOG_FUNC
+
+    delete iAttachmentTimer;
     }
 
 // ---------------------------------------------------------------------------
@@ -81,9 +87,21 @@ CUsbStateHostAInitiate::~CUsbStateHostAInitiate()
 //
 TUsbStateIds CUsbStateHostAInitiate::Id()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::Id" ) );
-
     return EUsbStateHostAInitiate;
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::JustBeforeLeavingThisStateL()
+    {
+    LOG_FUNC
+
+    iAttachmentTimer->Cancel();
+
+    // do general things 
+    CUsbStateHostABase::JustBeforeLeavingThisStateL();
     }
 
 // ---------------------------------------------------------------------------
@@ -92,24 +110,24 @@ TUsbStateIds CUsbStateHostAInitiate::Id()
 //
 void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustAdvancedToThisStateL" ) );
+    LOG_FUNC
 
-    iWatcher->PrintStateToLog();
+    // do general things 
+    CUsbStateHostABase::JustAdvancedToThisStateL();
 
-    TInt err = iWatcher->Usb().EnableFunctionDriverLoading();
+    TInt err = iWatcher.Usb().EnableFunctionDriverLoading();
 
     if (KErrNone != err)
         {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustAdvancedToThisStateL EnableFunctionDriverLoading error" ) );
-        iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
+        LOG1( "EnableFunctionDriverLoading err = %d", err );
+        iWatcher.HandleHostProblemL(EUsbWatcherCanNotEnableDriverLoading,
+                EUsbStateHostHandleDropping);
         return;
         }
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustAdvancedToThisStateL EnableFunctionDriverLoading(); = %d" ), err));
-
     // do BusRequest, if down
 
-    if (CUsbVBusObserver::EVBusUp != iWatcher->VBusObserver()->VBus())
+    if (CUsbVBusObserver::EVBusUp != iWatcher.VBusObserver()->VBus())
         {
         const TUint maxTrial = 3;
         TInt busReqErr(KErrGeneral);
@@ -117,16 +135,17 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
 
         while (count < maxTrial && KErrNone != busReqErr)
             {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate Calling RUsb::BusRequest()..." ) );
-            busReqErr = iWatcher->Usb().BusRequest();
-                FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustAdvancedToThisStateL BusRequest() = %d" ), err));
+            busReqErr = iWatcher.Usb().BusRequest();
+            LOG1( "BusRequest() err = %d" , err);
 
             if (KErrNone != busReqErr)
                 {
-                err = iWatcher->Usb().BusClearError();
+                err = iWatcher.Usb().BusClearError();
                 if (KErrNone != err)
                     {
-                    iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
+                    iWatcher.HandleHostProblemL(
+                            EUsbWatcherCanNotClearBusError,
+                            EUsbStateHostHandleDropping);
                     return;
                     }
                 }
@@ -134,7 +153,8 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
             }
         if (KErrNone != busReqErr)
             {
-            iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
+            iWatcher.HandleHostProblemL(EUsbWatcherCanNotRaiseVBus,
+                    EUsbStateHostHandleDropping);
             return;
             }
         }
@@ -144,13 +164,127 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
 
     }
 
+// From TimerObserver
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAInitiate::JustBeforeLeavingThisStateL()
+void CUsbStateHostAInitiate::TimerElapsedL(TUsbTimerId aTimerId)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiate::JustBeforeLeavingThisStateL" ) );
-    
-        CUsbStateHostAInitiateBase::JustBeforeLeavingThisStateL();
+    LOG_FUNC
+
+    switch (aTimerId)
+        {
+        case EDeviceAttachmentTimer:
+            {
+            LOG("AttachmentTimer" );
+            HandleL(EUsbWatcherErrDandlingCable, EUsbStateHostHandleDropping);
+            break;
+            }
+        default:
+            {
+            LOG1( "Unknown timer id = %d", aTimerId );
+            Panic( EWrongTimerId);
+            }
+        }
+    }
+
+// From VBus observer
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::VBusUpL()
+    {
+    LOG_FUNC
+    }
+
+// From Host Event notification observer
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::DeviceAttachedL(TDeviceEventInformation aTdi)
+    {
+    LOG_FUNC
+
+    iAttachmentTimer->Cancel();
+
+    // check if an OTG device connected
+    TOtgDescriptor otgDescriptor;
+
+    // ignore all the errors, assume we connected to not otg
+    TInt err = iWatcher.Usb().GetOtgDescriptor(aTdi.iDeviceId, otgDescriptor);
+    LOG1("GetOtgDescriptor() err = %d", err );
+
+    TBool hnpSupported(otgDescriptor.iAttributes & EUsbOtgHNPSupported);
+    TBool srpSupported(otgDescriptor.iAttributes & EUsbOtgSRPSupported);
+
+    // OTG device supports both hnp and srp
+    if (hnpSupported && srpSupported)
+        {
+
+        HandleL(EUsbWatcherConnectedToOTG, EUsbStateHostHandleDropping);
+        return;
+        }
+
+    if (KErrNone != aTdi.iError)
+        {
+        switch (aTdi.iError)
+            // error in attachement
+            {
+            case KErrBadPower:
+                {
+                LOG( "TooMuchPower" );
+                HandleL(
+                        EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration,
+                        EUsbStateHostDelayNotAttachedHandle);
+                break;
+                }
+            default:
+                {
+                LOG1("AttachmentError aTdi.iError = %d" , aTdi.iError );
+                HandleL(EUsbWatcherErrUnsupportedDevice,
+                        EUsbStateHostHandleDropping);
+                break;
+                }
+            }
+
+        return;
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::DriverLoadSuccessL(TDeviceEventInformation)
+    {
+    LOG_FUNC
+    ChangeHostStateL( EUsbStateHostAHost);
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::DriverLoadPartialSuccessL(
+        TDeviceEventInformation)
+    {
+    LOG_FUNC
+    iWatcher.NotifManager()->ShowNotifierL(KUsbUiNotifOtgWarning,
+            EUsbOtgPartiallySupportedDevice, NULL);
+    ChangeHostStateL( EUsbStateHostAHost);
+
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::DriverLoadFailureL(TDeviceEventInformation aDei)
+    {
+    LOG_FUNC
+
+    HandleL(EUsbWatcherErrDriversNotFound, EUsbStateHostDelayAttachedHandle);
     }

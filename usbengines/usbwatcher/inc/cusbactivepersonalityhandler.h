@@ -212,6 +212,11 @@ private:    // Data
     TPtrC8 iDummy;
     
     /**
+     * Dummy descriptor buf
+     */
+    TBuf8<1> iDummyBuf;
+    
+    /**
      * Buffer where selected personality is stored by the ask
      * on connection.
      */    
@@ -252,6 +257,11 @@ private:    // Data
      */                
     TUsbActivePersonalityState iState;
     
+	/**
+	 * Cleanup process or normal process in various states
+	 */        
+    TBool isFailureCleanup;
+    
     /**
      * Request to be completed.
      */                
@@ -271,6 +281,11 @@ private:    // Data
      * The device state.
      */                    
     TUsbDeviceState iDeviceState;
+    
+    /**
+     * Packages for queries
+     */
+    TUSBQueriesNotifierParamsPckg iQueryParams;
     };
 
 #endif   // CUSBACTIVEPERSONALITYHANDLER_H

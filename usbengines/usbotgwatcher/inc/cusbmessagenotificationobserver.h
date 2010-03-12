@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Observes notifications from usb
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Observes notifications from usb
+ *
+ */
 
 #ifndef C_USBMESSAGENOTIFICATIONOBSERVER_H
 #define C_USBMESSAGENOTIFICATIONOBSERVER_H
@@ -58,12 +57,12 @@ public:
      * Called when session requested
      */
     virtual void SessionRequestedL() = 0;
-    
+
     /**
-      * Called when error happened
-      * @param aError error code
-      */
-     virtual void MessageNotificationErrorL(TInt aError) = 0;    
+     * Called when error happened
+     * @param aError error code
+     */
+    virtual void MessageNotificationErrorL(TInt aError) = 0;
     };
 
 /**
@@ -139,7 +138,7 @@ private:
 
     /**
      * The observer reports to own observers
-     * Owns
+     * Not owns
      */
     RPointerArray<MUsbMessageNotificationObserver> iObservers;
 

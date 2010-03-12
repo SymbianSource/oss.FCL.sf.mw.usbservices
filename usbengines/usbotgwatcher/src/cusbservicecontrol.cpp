@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbman.h>
 
@@ -26,7 +25,7 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbServiceControl::CUsbServiceControl(MUsbServiceControlObserver* aObserver,
+CUsbServiceControl::CUsbServiceControl(MUsbServiceControlObserver& aObserver,
         RUsb& aUsb) :
     CActive(CActive::EPriorityStandard), iObserver(aObserver), iUsb(aUsb),
             iPersonalityId(0)
@@ -40,7 +39,8 @@ CUsbServiceControl::CUsbServiceControl(MUsbServiceControlObserver* aObserver,
 //
 CUsbServiceControl::~CUsbServiceControl()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::~CUsbServiceControl" ) );
+    LOG_FUNC
+
     Cancel();
     }
 
@@ -50,7 +50,7 @@ CUsbServiceControl::~CUsbServiceControl()
 //
 void CUsbServiceControl::ConstructL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::ConstructL" ) );
+    LOG_FUNC
     }
 
 // ---------------------------------------------------------------------------
@@ -58,9 +58,9 @@ void CUsbServiceControl::ConstructL()
 // ---------------------------------------------------------------------------
 //
 CUsbServiceControl* CUsbServiceControl::NewL(
-        MUsbServiceControlObserver* aObserver, RUsb& aUsb)
+        MUsbServiceControlObserver& aObserver, RUsb& aUsb)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::NewL" ) );
+    LOG_FUNC
 
     CUsbServiceControl* self = new (ELeave) CUsbServiceControl(aObserver,
             aUsb);
@@ -76,7 +76,9 @@ CUsbServiceControl* CUsbServiceControl::NewL(
 //
 TInt CUsbServiceControl::StartL(TInt aPersonalityId)
     {
-        FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::Start aPersonalityId = %d" ), aPersonalityId));
+    LOG_FUNC
+
+    LOG1( "aPersonalityId = %d" , aPersonalityId);
 
     TUsbServiceState serviceState;
     TInt err = iUsb.GetServiceState(serviceState);
@@ -90,12 +92,12 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
         {
         case EUsbServiceIdle:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceIdle" ) );
+            LOG( "UsbServiceState == EUsbServiceIdle" );
 
             iPersonalityId = aPersonalityId; // when request completed, this will indicate that we started what we wanted
             if (IsActive())
                 {
-                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Request is outstanding, cancelling first." ) );
+                LOG("Request is outstanding, cancelling first" );
                 Cancel();
                 }
             iUsb.TryStart(aPersonalityId, iStatus);
@@ -105,20 +107,20 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
 
         case EUsbServiceStarted:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceStarted" ) );
+            LOG("UsbServiceState == EUsbServiceStarted");
 
             TInt currentPersonality(0);
             err = iUsb.GetCurrentPersonalityId(currentPersonality);
             if (KErrNone != err)
                 {
-                    FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Error getting current personality err = %d" ), err));
+                LOG1( "Error getting current personality err = %d" , err);
                 return err;
                 }
 
             if (aPersonalityId == currentPersonality) // already started
                 {
-                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Personality already started" ) );
-                iObserver->UsbServiceControlReqCompletedL(KErrInUse);
+                LOG("Personality already started" );
+                iObserver.UsbServiceControlReqCompletedL(KErrInUse);
                 return KErrNone;
                 }
 
@@ -133,13 +135,13 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
             }
         case EUsbServiceStarting:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceStarting" ) );
+            LOG("UsbServiceState == EUsbServiceStarting" );
             // do exactly the same as in case of EUsbServiceStopping;
             // break statement is not required here
             }
         case EUsbServiceStopping:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceStopping" ) );
+            LOG( "UsbServiceState == EUsbServiceStopping" );
 
             // subscribe for usb service state change, and start new usb service once current one started/stopped
             iPersonalityId = aPersonalityId; // this will indicate that we want to start this personality
@@ -147,7 +149,7 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
             // this check is needed due to usb service might be stopping by other client  
             if (IsActive())
                 {
-                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Request outstanding. Waiting for completion." ) );
+                LOG( "Request outstanding. Waiting for completion" );
                 return KErrNone; // when the outstanding request get completed, we start usb services with iPersonalityId
                 }
 
@@ -159,12 +161,12 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
             }
         case EUsbServiceFatalError:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceFatalError" ) );
+            LOG( "UsbServiceState == EUsbServiceFatalError" );
             return KErrGeneral;
             }
         default:
             {
-            Panic(EUnknownUsbServiceState);
+            Panic( EUnknownUsbServiceState);
             }
         }
 
@@ -178,11 +180,12 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
 //
 TInt CUsbServiceControl::StopL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop" ) );
+    LOG_FUNC
 
     TUsbServiceState serviceState;
     TInt err = iUsb.GetServiceState(serviceState);
-    FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::StopL = %d; Usb service state = %d" ), err, serviceState));
+
+    LOG2("err = %d; serviceState = %d" , err, serviceState);
 
     if (KErrNone != err)
         {
@@ -193,18 +196,18 @@ TInt CUsbServiceControl::StopL()
         {
         case EUsbServiceIdle:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop UsbServiceState == EUsbServiceIdle" ) );
+            LOG("UsbServiceState == EUsbServiceIdle" );
 
             return KErrNone;
             }
 
         case EUsbServiceStarted:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop UsbServiceState == EUsbServiceStarted" ) );
+            LOG("UsbServiceState == EUsbServiceStarted" );
 
             if (IsActive())
                 {
-                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop Request is outstanding, cancelling it." ) );
+                LOG("Request is outstanding, cancelling it" );
                 Cancel();
                 }
             iUsb.TryStop(iStatus);
@@ -214,13 +217,13 @@ TInt CUsbServiceControl::StopL()
             }
         case EUsbServiceStopping:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop UsbServiceState == EUsbServiceStopping" ) );
+            LOG( "UsbServiceState == EUsbServiceStopping" );
             // do exactly the same as in case of EUsbServiceStarting;
             // break statement is not required here
             }
         case EUsbServiceStarting:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop UsbServiceState == EUsbServiceStarting" ) );
+            LOG("UsbServiceState == EUsbServiceStarting" );
 
             // subscribe for usb service state change, and stop usb service once current one started
             iPersonalityId = 0; // this will indicate that we do not want to start this personality
@@ -228,7 +231,7 @@ TInt CUsbServiceControl::StopL()
             // this check is needed due to usb service might be starting by other client  
             if (IsActive())
                 {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Stop Request is outstanding, waiting for completion. " ) );
+                LOG("Request is outstanding, waiting for completion" );
                 return KErrNone; // when this request get completed, we request to stop usb services
                 }
 
@@ -240,12 +243,12 @@ TInt CUsbServiceControl::StopL()
             }
         case EUsbServiceFatalError:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceFatalError" ) );
+            LOG("UsbServiceState == EUsbServiceFatalError" );
             return KErrGeneral;
             }
         default:
             {
-            Panic(EUnknownUsbServiceState);
+            Panic( EUnknownUsbServiceState);
             }
         }
     return KErrNone;
@@ -257,10 +260,13 @@ TInt CUsbServiceControl::StopL()
 //
 void CUsbServiceControl::RunL()
     {
-    FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL iStatus %d" ), iStatus.Int()));
+    LOG_FUNC
+
+    LOG1("iStatus = %d" , iStatus.Int());
+
     if (KErrNone != iStatus.Int())
         {
-        iObserver->UsbServiceControlReqCompletedL(iStatus.Int());
+        iObserver.UsbServiceControlReqCompletedL(iStatus.Int());
         return;
         }
 
@@ -269,104 +275,104 @@ void CUsbServiceControl::RunL()
 
     if (KErrNone != err)
         {
-            FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while getting service state %d" ), err));
-        iObserver->UsbServiceControlReqCompletedL(err);
-        return;            
+        LOG1("Error while getting service state %d" , err);
+        iObserver.UsbServiceControlReqCompletedL(err);
+        return;
         }
 
     switch (serviceState)
         {
         case EUsbServiceIdle: // usb service stopped
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL UsbServiceState == EUsbServiceIdle" ) );
+            LOG("UsbServiceState == EUsbServiceIdle" );
 
             if (iPersonalityId != 0) // during service stopping, requested to start it
                 {
-                    FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL Requested to start personality %d. Starting it." ), iPersonalityId));
+                LOG1("Requested to start personality %d. Starting it." , iPersonalityId);
                 TInt personalityId = iPersonalityId;
                 iPersonalityId = 0; // reset
                 err = StartL(personalityId);
-                if(KErrNone != err)
+                if (KErrNone != err)
                     {
-                    iObserver->UsbServiceControlReqCompletedL(err);
+                    iObserver.UsbServiceControlReqCompletedL(err);
                     }
                 return;
                 }
 
             // otherwise, we've done, notify
-            iObserver->UsbServiceControlReqCompletedL(KErrNone);
+            iObserver.UsbServiceControlReqCompletedL(KErrNone);
             break;
             }
 
         case EUsbServiceStarted:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceStarted" ) );
+            LOG("UsbServiceState == EUsbServiceStarted" );
 
             TInt currentPersonality(0);
             err = iUsb.GetCurrentPersonalityId(currentPersonality);
             if (KErrNone != err)
                 {
-                FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while getting PersonalityId err = %d" ), err));
-                iObserver->UsbServiceControlReqCompletedL(err);
-                return;                    
+                LOG1("Error while getting PersonalityId err = %d" , err);
+                iObserver.UsbServiceControlReqCompletedL(err);
+                return;
                 }
 
             if (iPersonalityId == currentPersonality) // already done
                 {
-                    FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Personality already started." ) );
+                LOG("Personality already started" );
                 iPersonalityId = 0;
-                iObserver->UsbServiceControlReqCompletedL(KErrNone);
+                iObserver.UsbServiceControlReqCompletedL(KErrNone);
                 return;
                 }
 
             if (iPersonalityId == 0) // during service start requested to stop it
                 {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start Requested to stop personality. Stopping." ) );
+                LOG("Requested to stop personality. Stopping." );
                 err = StopL();
-                if(KErrNone != err)
+                if (KErrNone != err)
                     {
-                    FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while stopping personality err = %d" ), err));
-                    iObserver->UsbServiceControlReqCompletedL(err);
+                    LOG1("Error while stopping personality err = %d" , err);
+                    iObserver.UsbServiceControlReqCompletedL(err);
                     }
                 return;
                 }
 
             // otherwise, during service start, requested to start it with another personality
-            FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL Requested to start personality %d. Starting it." ), iPersonalityId));
+            LOG1( "Requested to start personality %d. Starting it.", iPersonalityId);
             TInt personalityId = iPersonalityId;
             iPersonalityId = 0; // reset
             err = StartL(personalityId);
-            if(KErrNone != err)
+            if (KErrNone != err)
                 {
-                FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunL error while starting personality err = %d" ), err));
-                iObserver->UsbServiceControlReqCompletedL(err);
+                LOG1("Error while starting personality err = %d" , err);
+                iObserver.UsbServiceControlReqCompletedL(err);
                 }
             break;
             }
 
         case EUsbServiceStarting:
             {
-                // do exactly same as in EUsbServiceStopping
-                // break statement is not required here
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start State == EUsbServiceStarting. Continue." ) );
+            // do exactly same as in EUsbServiceStopping
+            // break statement is not required here
+            LOG("State == EUsbServiceStarting. Continue." );
             }
         case EUsbServiceStopping:
             {
-                // we are not interested in these states, just continue monitoring
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start State == EUsbServiceStopping. Continue." ) );
+            // we are not interested in these states, just continue monitoring
+            LOG("State == EUsbServiceStopping. Continue." );
             iUsb.ServiceStateNotification(iServiceState, iStatus);
             SetActive();
             break;
             }
         case EUsbServiceFatalError:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::Start UsbServiceState == EUsbServiceFatalError" ) );
-            iObserver->UsbServiceControlReqCompletedL(KErrGeneral);    
+            LOG("UsbServiceState == EUsbServiceFatalError" );
+            iObserver.UsbServiceControlReqCompletedL(KErrGeneral);
             break;
             }
         default:
             {
-            Panic(EUnknownUsbServiceState);
+            Panic( EUnknownUsbServiceState);
             }
         }
 
@@ -378,8 +384,9 @@ void CUsbServiceControl::RunL()
 //
 TInt CUsbServiceControl::RunError(TInt aError)
     {
-        FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbServiceControl::RunError aError %d" ), aError ));
-        TRAP_IGNORE(iObserver->UsbServiceControlReqCompletedL(aError));
+    LOG_FUNC
+    LOG1("aError = %d", aError );
+    TRAP_IGNORE(iObserver.UsbServiceControlReqCompletedL(aError));
 
     return KErrNone;
     }
@@ -390,10 +397,10 @@ TInt CUsbServiceControl::RunError(TInt aError)
 //
 void CUsbServiceControl::DoCancel()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::DoCancel Cancelling interest to Usb TryStart."))
+    LOG( "Cancelling interest to Usb TryStart.")
     iUsb.CancelInterest(RUsb::ETryStart);
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::DoCancel Cancelling interest to Usb TrySop."))
+    LOG( "Cancelling interest to Usb TrySop.")
     iUsb.CancelInterest(RUsb::ETryStop);
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbServiceControl::DoCancel Cancelling interest to usb states notifications."))
+    LOG("Cancelling interest to usb states notifications.")
     iUsb.ServiceStateNotificationCancel();
     }
