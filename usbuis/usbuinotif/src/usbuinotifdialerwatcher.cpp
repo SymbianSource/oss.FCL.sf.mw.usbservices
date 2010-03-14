@@ -19,13 +19,18 @@
 #include <w32std.h>  
 #include <eikenv.h> 
 #include <coeaui.h> 
-#include <aiscutdefs.h>
 #include <vwsdef.H>
 
 
 #include "usbuinotifdialerwatcher.h"
 #include "debug.h"
 #include "usbuinotifdebug.h"
+
+const TUid KDiallerUid  = { 0x100058B3 };
+const TUid KDiallerViewId = { 0x10282D81 };
+const TUid KDiallerViewCommand  = { 0x1 };
+
+
 
 // ======== MEMBER FUNCTIONS ========
 // ---------------------------------------------------------------------------
@@ -115,8 +120,8 @@ TKeyResponse CUsbuinotifDialerWatcher::OfferKeyEventL(const TKeyEvent& aKeyEvent
             iwsSession = CVwsSessionWrapper::NewL(*this);
             }
         iNotified=EFalse;
-        const TVwsViewId viewId(KScutDiallerUid, KScutDiallerViewId );
-        TUid msgId = KScutDiallerViewCommand;            
+        const TVwsViewId viewId(KDiallerUid, KDiallerViewId );
+        TUid msgId = KDiallerViewCommand;            
         iwsSession->CreateActivateViewEvent( viewId, msgId, KNullDesC8  );            
         CCoeAppUi* appui=CEikonEnv::Static()->AppUi();                        
         iNotify->DialerActivated();

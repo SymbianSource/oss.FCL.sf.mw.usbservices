@@ -104,7 +104,7 @@ void CUsbStateHostAIdle::JustAdvancedToThisStateL()
             err = iWatcher->Usb().BusClearError();
             if (KErrNone != err)
                 {
-                iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+                iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
                 }
             }
         }

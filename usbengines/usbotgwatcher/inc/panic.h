@@ -110,7 +110,11 @@ enum TUsbWatcherPanic
     EUnexpectedUsbServiceState,    //69
     EUnexpectedUsbSwitchPersonalityState, //70
     
-    ECanNotFindUsbOtgWatcherStateObserver //71
+    ECanNotFindUsbOtgWatcherStateObserver, //71
+    ENoObserverToUnsubscribe, // 72
+    EObserverAlreadyExists, //73
+    EIdForNotDefinedStateRequested, //74
+    ECanNotFindHostEventNotificationObserver //75
 
     };
 

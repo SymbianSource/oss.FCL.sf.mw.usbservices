@@ -76,7 +76,7 @@ void CUsbTimer::After(TInt aMilliseconds)
     {
 //        FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbTimer::After aMilliseconds %d, timerId=%d" ), aMilliseconds, iTimerId))
 
-    if (IsActive()) // should we panic here? or just restart timer
+    if (IsActive()) 
         {
         Cancel();
         }

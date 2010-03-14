@@ -84,11 +84,19 @@ CUsbHostEventNotificationObserver::~CUsbHostEventNotificationObserver()
 // ---------------------------------------------------------------------------
 //
 void CUsbHostEventNotificationObserver::SubscribeL(
-        MUsbHostEventNotificationObserver* aObserver)
+        MUsbHostEventNotificationObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::SubscribeL" ) );
 
-    User::LeaveIfError(iObservers.Append(aObserver));
+        // check if the same observer already exist in a list
+        if(KErrNotFound != iObservers.Find(&aObserver))
+            {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::SubscribeL Observer already exists." ) );
+            Panic(EObserverAlreadyExists);
+            return;
+            }
+        
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -103,34 +111,24 @@ void CUsbHostEventNotificationObserver::SubscribeL(
 // ---------------------------------------------------------------------------
 //
 void CUsbHostEventNotificationObserver::UnsubscribeL(
-        MUsbHostEventNotificationObserver* aObserver)
+        MUsbHostEventNotificationObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::UnsubscribeL" ) );
-    if (0 == iObservers.Count()) // no items
-        {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::UnsubscribeL No observers" ) );
-        return;
-        }
-        
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
-
-    if (aObserver == iObservers[i]) // found
-        {
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::UnsubscribeL CanNotFindIdPinObserver" ) );
-        Panic(ECanNotFindIdPinObserver);
-        }
-
-    if (0 == iObservers.Count()) // no items
-        {
-        // cancel pending request
-        Cancel();
-        }
+        TInt i(iObservers.Find(&aObserver));
+        if(KErrNotFound == i)
+                {
+                FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::UnsubscribeL Observer not found." ) );
+                Panic(ECanNotFindHostEventNotificationObserver);
+                return;
+                }
+            
+            iObservers.Remove(i);
+            
+            if (0 == iObservers.Count()) // no observers anymore
+                {
+                // cancel pending request
+                Cancel();
+                }
     }
 
 // ---------------------------------------------------------------------------

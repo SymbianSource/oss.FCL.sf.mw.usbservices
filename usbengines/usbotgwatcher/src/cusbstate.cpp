@@ -66,7 +66,8 @@ void CUsbState::ConstructL()
 //
 TUsbStateIds CUsbState::Id()
     {
-    return EUsbStateUndefined;
+    Panic(EIdForNotDefinedStateRequested);
+    return EUsbStateHostUndefined;
     }
 
 // ---------------------------------------------------------------------------
@@ -105,6 +106,17 @@ void CUsbState::ChangeHostStateL(TUsbStateIds aNewStateId)
 
     iWatcher->ChangeHostStateL(aNewStateId);
 
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbState::HandleL(TInt aWhat, TUsbStateIds aWhereToHandle)
+    {
+    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbState::HandleL aWhat = %d aWhere = %d" ), aWhat, aWhereToHandle));
+
+    iWatcher->HandleHostProblemL(aWhat, aWhereToHandle);
     }
 
 // ---------------------------------------------------------------------------
@@ -188,6 +200,7 @@ void CUsbState::VBusDownL()
 void CUsbState::VBusUpL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbState::VBusUpL" ) );
+        Panic(EVBusUpNotExpected);
     }
 
 // From OTG state observer

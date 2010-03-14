@@ -85,10 +85,10 @@ CUsbVBusObserver::~CUsbVBusObserver()
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbVBusObserver::TState CUsbVBusObserver::VBus() /* not const, because for some reason RProperty::Get is not const! */
+CUsbVBusObserver::TState CUsbVBusObserver::VBus() /* not const, because for some reason RProperty::Get is not const */
     {
 
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::VBus" ) );
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::VBus" ) );
 
     TInt val(0);
 
@@ -96,13 +96,12 @@ CUsbVBusObserver::TState CUsbVBusObserver::VBus() /* not const, because for some
 
     if (KErrNone != err)
         {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::VBus CanNotGetVBusProperty" ) );
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::VBus CanNotGetVBusProperty" ) );
         Panic(ECanNotGetVBusProperty);
         }
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbVBusObserver::VBus = %d" ), val ));
+    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbVBusObserver::VBus = %d" ), val ));
 
-    // not found in docs clear definition of this property. Verification is needed   
     return (0 == val ? EVBusDown : EVBusUp);
     }
 
@@ -110,14 +109,20 @@ CUsbVBusObserver::TState CUsbVBusObserver::VBus() /* not const, because for some
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbVBusObserver::SubscribeL(MUsbVBusObserver* aObserver)
+void CUsbVBusObserver::SubscribeL(MUsbVBusObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::SubscribeL" ) );
-
-    User::LeaveIfError(iObservers.Append(aObserver));
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::SubscribeL" ) );
     
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::SubscribeL Observer appended." ) );
+    // check if the same observer already exist in a list
+    if(KErrNotFound != iObservers.Find(&aObserver))
+        {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::SubscribeL Observer already exists." ) );
+        Panic(EObserverAlreadyExists);
+        return;
+        }
 
+    iObservers.AppendL(&aObserver);
+    
     if (KFirst == iObservers.Count()) // first item
         {
         iVBus.Subscribe(iStatus);
@@ -129,39 +134,24 @@ void CUsbVBusObserver::SubscribeL(MUsbVBusObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbVBusObserver::UnsubscribeL(MUsbVBusObserver* aObserver)
+void CUsbVBusObserver::UnsubscribeL(MUsbVBusObserver& aObserver)
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::UnsubscribeL" ) );
     
-    if (0 == iObservers.Count()) // no items
+    TInt i(iObservers.Find(&aObserver));
+    if(KErrNotFound == i)
         {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::UnsubscribeL No observers" ) );
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::UnsubscribeL Observer not found." ) );
+        Panic(ECanNotFindVBusObserver);
         return;
         }
     
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        {
-        ++i;
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbVBusObserver::UnsubscribeL i = %d" ), i ));
-        }
-
-    if (aObserver == iObservers[i]) // found
-        {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::UnsubscribeL Removing item" ) );
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbVBusObserver::UnsubscribeL CanNotFindVBusObserver" ) );
-        Panic(ECanNotFindVBusObserver);
-        }
+    iObservers.Remove(i);
     
     if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request, if any
         Cancel();
-        return;
         }
     }
 
@@ -219,6 +209,7 @@ void CUsbVBusObserver::RunL()
 
         default:
             {
+                FLOG(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::RunL WrongVBusState"));
             Panic(EWrongVBusState);
             }
         }

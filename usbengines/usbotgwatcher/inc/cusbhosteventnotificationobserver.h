@@ -96,13 +96,13 @@ public:
      * Add observer to list of observers
      * @param aObserver observer
      */
-    void SubscribeL(MUsbHostEventNotificationObserver* aObserver);
+    void SubscribeL(MUsbHostEventNotificationObserver& aObserver);
 
     /**
      * Removes observer from list of observers 
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbHostEventNotificationObserver* aObserver);
+    void UnsubscribeL(MUsbHostEventNotificationObserver& aObserver);
 
 private:
 

@@ -251,7 +251,7 @@ void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,
                     aStateOld);
                 break;
                 }
-			LOG1( "Starting USB personality in device state: %d", aStateNew );
+            LOG1( "Starting USB personality in device state: %d", aStateNew );
             iPersonalityHandler->StateChangeNotify( aStateOld, aStateNew );
             // Check AskOnConnection setting every time
             if( ( iSupportedPersonalities.Count() > 1 ) &&
@@ -1030,6 +1030,40 @@ TBool CUsbWatcher::IsDeviceA()
     //NOT LOGGED
     // return EFalse in non-OTG configuration otherwise ask UsbOtgWatcher
     return iOtgWatcher ? iOtgWatcher->IsDeviceA() : EFalse;
+    }
+
+// ----------------------------------------------------------------------------
+// Write new personality to central repository.
+// ----------------------------------------------------------------------------
+//
+TInt CUsbWatcher::WritePersonalityId( TInt aPersonalityId )
+    {
+    LOG_FUNC
+    
+    // Save as the default personality only if it is not hidden
+    TUint32 property(0);
+    TInt ret =  iUsbMan.GetPersonalityProperty( aPersonalityId, property );
+    if ( ret == KErrNone )
+        {
+        LOG2( "Personality %d property: 0x%x", aPersonalityId, property );
+        }
+    else
+        {
+        //Not fatal, treat as non-hidden
+        LOG1( "ERROR: GetPersonalityProperty = %d", ret );
+        property = 0;
+        }
+    if ( property & KUsbPersonalityPropertyHidden ) //Bitwise AND
+        {
+        LOG( "Hidden personality not saved to central repository" );
+        ret = KErrNone;
+        }
+    else
+        {
+        ret =  iPersonalityRepository->Set( KUsbWatcherPersonality,
+            aPersonalityId );
+        }
+    return ret;
     }
 
 // End of file

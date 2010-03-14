@@ -35,8 +35,7 @@
  *
  */
 NONSHARABLE_CLASS( CUsbStateHostHandle ) : public CUsbState,
-        MWaitNotifierObserver,
-        MUsbTimerObserver
+        MWaitNotifierObserver 
 // this means only one wait notifier at a time can be shown by this state, might be redesigned
     {
     friend class CtUsbOtgWatcher;
@@ -68,60 +67,47 @@ public:
      */
     void WaitNotifierCompletedL(TInt aFeedback);
 
-    // From MUsbTimerObserver
-    /**
-     * Call back when timer expired
-     * @param aTimerId timer id
-     */
-    void TimerElapsedL(TUsbTimerId aTimerId);
-
-private:
-
     // From VBus observer
     /**
      * VBus down
      */
-    void VBusDownL();
+    virtual void VBusUpL();
+    /**
+     * VBus down
+     */
+    virtual void VBusDownL();
+    /**
+     * VBus error happened
+     */
+    virtual void VBusErrorL();
 
     // From OTG state observer
     /**
      * Became to Idle when A
      */
-    void AIdleL();
+    virtual void AIdleL();
     /**
      * Became a Host when A
      */
-    void AHostL();
+    virtual void AHostL();
     /**
      * Became a peripheral when A
      */
-    void APeripheralL();
+    virtual void APeripheralL();
     /**
      * VBus error happen
      */
-    void AVBusErrorL();
-    /**
-     * Became to Idle when B
-     */
-    void BIdleL();
-    /**
-     * Became a peripheral when B
-     */
-    void BPeripheralL();
-    /**
-     * Became a Host when B
-     */
-    void BHostL();
+    virtual void AVBusErrorL();
 
     // From bus activity observer
     /**
      * Bus is in idle
      */
-    void BusIdleL();
+    virtual void BusIdleL();
     /**
      * Bus active
      */
-    void BusActiveL();
+    virtual void BusActiveL();
 
     // From Host Event notification observer
     /**
@@ -139,40 +125,61 @@ private:
       * Drivers successfully loaded
       * @param aInfo Device event data
       */
-     virtual void DriverLoadSuccessL(TDeviceEventInformation aInfo);
+    virtual void DriverLoadSuccessL(TDeviceEventInformation aInfo);
      /**
       * Drivers loaded partially
       * @param aInfo Device event data
       */
-     virtual void DriverLoadPartialSuccessL(TDeviceEventInformation aInfo);
+    virtual void DriverLoadPartialSuccessL(TDeviceEventInformation aInfo);
      /**
       * Drivers loading failed
       * @param aInfo Device event data
       */
-     virtual void DriverLoadFailureL(TDeviceEventInformation aInfo);
+    virtual void DriverLoadFailureL(TDeviceEventInformation aInfo);
 
     // From message notification observer
     /**
      * Message received
      * @param aMessage message id
      */
-    void MessageNotificationReceivedL(TInt aMessage);
-    /**
-     * Connected to hub in wrong level 
-     */
-    void BadHubPositionL();
-    /**
-     * VBus error happened
-     */
-    void VBusErrorL();
+    virtual void MessageNotificationReceivedL(TInt aMessage);
+
     /**
      * SRP request received
      */
-    void SrpReceivedL();
+    virtual void SrpReceivedL();
     /**
      * Session request received
      */
-    void SessionRequestedL();
+    virtual void SessionRequestedL();
+
+    //from CUsbState
+    /**
+     * State id
+     * @return state id
+     */
+    virtual TUsbStateIds Id();
+
+    /**
+     * This is called when switched to this state, 
+     * because If all conditions for transition to another state exist, nothing will 
+     * trigger it and transition will not happen. This forces the transition in such cases.
+     *
+     */
+    virtual void JustAdvancedToThisStateL();
+
+    /**
+     * This is called when leaving this state, 
+     *
+     */
+    virtual void JustBeforeLeavingThisStateL();
+
+    /**
+     * handles issue
+     */
+    virtual void DoHandleL();
+
+protected:
 
     /**
      * Default constructor
@@ -185,33 +192,7 @@ private:
      */
     void ConstructL();
 
-    //from CUsbState
-    /**
-     * State id
-     * @return state id
-     */
-    TUsbStateIds Id();
-
-    /**
-     * This is called when switched to this state, 
-     * because If all conditions for transition to another state exist, nothing will 
-     * trigger it and transition will not happen. This forces the transition in such cases.
-     *
-     */
-    void JustAdvancedToThisStateL();
-
-    /**
-     * This is called when leaving this state, 
-     *
-     */
-    void JustBeforeLeavingThisStateL();
-
-    /**
-     * handles issue
-     */
-    void DoHandleL();
-
-private:
+protected:
     // data
 
     /**
@@ -219,17 +200,6 @@ private:
      */
     TInt iWhat;
 
-    /** 
-     * too much power timer
-     * own
-     */
-    CUsbTimer* iTooMuchPowerTimer;
-    
-    /** 
-     * drivers not found
-     * own
-     */
-    CUsbTimer* iDriversNotFoundTimer;
     };
 
 #endif //  C_USBSTATEHOSTHANDLE_H

@@ -170,7 +170,7 @@ public:
      * @param aPersonalityId Current personality id setting
      * @return KErrNone in case of success
      */
-    inline TInt WritePersonalityId( TInt aPersonalityId );
+    TInt WritePersonalityId( TInt aPersonalityId );
 
     /**
      * This method is called by the CUsbActiveState class when there is

@@ -93,7 +93,7 @@ void CUsbStateHostAInitiateBase::TimerElapsedL(TUsbTimerId aTimerId)
         case EDeviceAttachmentTimer:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiateBase::TimerElapsedL - AttachmentTimer" ) );
-            HandleL(EUsbWatcherErrDandlingCable);
+            HandleL(EUsbWatcherErrDandlingCable, EUsbStateHostHandle);
             break;
             }
         default:
@@ -177,7 +177,8 @@ void CUsbStateHostAInitiateBase::DeviceAttachedL(TDeviceEventInformation aTdi)
     // OTG device supports both hnp and srp
     if(hnpSupported && srpSupported)
         {
-        HandleL(EUsbWatcherConnectedToOTG);
+        
+        HandleL(EUsbWatcherConnectedToOTG, EUsbStateHostHandle);
         return;
         }
             
@@ -189,13 +190,13 @@ void CUsbStateHostAInitiateBase::DeviceAttachedL(TDeviceEventInformation aTdi)
             case KErrBadPower:
                 {
                     FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiateBase::DeviceAttachedL TooMuchPower" ) );
-                    HandleL(EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration);
+                    HandleL(EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration, EUsbStateHostDelayHandle);
                     break;
                 }
             default:
                 {
                     FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiateBase::DeviceAttachedL AttachmentError" ) );
-                    HandleL(EUsbWatcherErrUnsupportedDevice);
+                    HandleL(EUsbWatcherErrUnsupportedDevice, EUsbStateHostHandle);
                     break;
                 }
 
@@ -243,7 +244,7 @@ void CUsbStateHostAInitiateBase::DriverLoadFailureL(
   /*  if (KErrNone != iUsbPersonalitySwitch->SwitchPersonalityL(aDei.iDeviceId,
             KUsbPersonalityIdMS ))
         {*/
-        HandleL(EUsbWatcherErrDriversNotFound);
+        HandleL(EUsbWatcherErrDriversNotFound, EUsbStateHostDelayHandle);
       //  }
     }
 
@@ -260,7 +261,7 @@ void CUsbStateHostAInitiateBase::SrpReceivedL()
         if (KErrNone != err)
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiateBase::SrpReceivedL BusRespondSrp error" ) );
-            iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+            iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
             }
         }
     }
@@ -288,7 +289,7 @@ void CUsbStateHostAInitiateBase::UsbPersonalitySwitchStateChangedL(
             if (KErrNotFound == aData)
                 {
                 // no supported or needed personality/ies in the peripheral
-                HandleL(EUsbWatcherErrDriversNotFound);
+                HandleL(EUsbWatcherErrDriversNotFound, EUsbStateHostDelayHandle);
                 }
             break;
             }
@@ -306,7 +307,7 @@ void CUsbStateHostAInitiateBase::UsbPersonalitySwitchStateChangedL(
         case ERequestFailed:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAInitiateBase::UsbPersonalitySwitchStateChangedL ERequestFailed" ) );
-            HandleL(EUsbWatcherErrDriversNotFound);
+            HandleL(EUsbWatcherErrDriversNotFound, EUsbStateHostDelayHandle);
             break;
             }
         default:

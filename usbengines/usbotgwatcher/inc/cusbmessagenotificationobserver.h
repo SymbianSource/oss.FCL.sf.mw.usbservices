@@ -90,13 +90,13 @@ public:
      * Subscribes for notifications
      * @param aObserver observer
      */
-    void SubscribeL(MUsbMessageNotificationObserver* aObserver);
+    void SubscribeL(MUsbMessageNotificationObserver& aObserver);
 
     /**
      * Unsubscribe from notifications
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbMessageNotificationObserver* aObserver);
+    void UnsubscribeL(MUsbMessageNotificationObserver& aObserver);
 
 private:
 
