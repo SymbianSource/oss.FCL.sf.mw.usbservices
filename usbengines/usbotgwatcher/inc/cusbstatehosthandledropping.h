@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -73,6 +73,11 @@ private:
      */
     void VBusDownL();
 
+    /**
+     * VBus error happen
+     */
+    void AVBusErrorL();
+
     // From Host Event notification observer
     /**
      * Device is attached
@@ -111,12 +116,17 @@ private:
      */
     void MessageNotificationReceivedL(TInt aMessage);
 
+    /**
+     * VBus error happened
+     */
+    void VBusErrorL();
+
     //from CUsbState
     /**
      * State id
      * @return state id
      */
-    virtual TUsbStateIds Id();
+    TUsbStateIds Id();
 
     /**
      * This is called when leaving this state, 

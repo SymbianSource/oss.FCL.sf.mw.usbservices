@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -15,6 +15,7 @@
  *
  */
 
+#include "cusbotgwatcher.h"
 #include "cusbstate.h"
 
 #include "panic.h"
@@ -148,7 +149,7 @@ void CUsbState::SetPreviousPreviousPersonalityOnDisconnectL()
 void CUsbState::IdPinOffL()
     {
     LOG_FUNC
-    Panic(EIdPinOffNotExpected);
+    PANIC(EIdPinOffNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -158,7 +159,7 @@ void CUsbState::IdPinOffL()
 void CUsbState::IdPinOnL()
     {
     LOG_FUNC
-    Panic(EIdPinOnNotExpected);
+    PANIC(EIdPinOnNotExpected);
     }
 
 // From VBus observer
@@ -169,7 +170,7 @@ void CUsbState::IdPinOnL()
 void CUsbState::VBusDownL()
     {
     LOG_FUNC
-    Panic(EVBusDownNotExpected);
+    PANIC(EVBusDownNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -179,7 +180,7 @@ void CUsbState::VBusDownL()
 void CUsbState::VBusUpL()
     {
     LOG_FUNC
-    Panic(EVBusUpNotExpected);
+    PANIC(EVBusUpNotExpected);
     }
 
 // From OTG state observer
@@ -190,7 +191,7 @@ void CUsbState::VBusUpL()
 void CUsbState::AIdleL()
     {
     LOG_FUNC
-    Panic(EAIdleNotExpected);
+    PANIC(EAIdleNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -200,7 +201,7 @@ void CUsbState::AIdleL()
 void CUsbState::AHostL()
     {
     LOG_FUNC
-    Panic(EAHostNotExpected);
+    PANIC(EAHostNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -210,7 +211,7 @@ void CUsbState::AHostL()
 void CUsbState::APeripheralL()
     {
     LOG_FUNC
-    Panic(EAPeripheralNotExpected);
+    PANIC(EAPeripheralNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -220,7 +221,7 @@ void CUsbState::APeripheralL()
 void CUsbState::AVBusErrorL()
     {
     LOG_FUNC
-    Panic(EAVBusErrorNotExpected);
+    PANIC(EAVBusErrorNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -230,7 +231,7 @@ void CUsbState::AVBusErrorL()
 void CUsbState::BIdleL()
     {
     LOG_FUNC
-    Panic(EBIdleNotExpected);
+    PANIC(EBIdleNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -240,7 +241,7 @@ void CUsbState::BIdleL()
 void CUsbState::BPeripheralL()
     {
     LOG_FUNC
-    Panic(EBPeripheralNotExpected);
+    PANIC(EBPeripheralNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -250,7 +251,7 @@ void CUsbState::BPeripheralL()
 void CUsbState::BHostL()
     {
     LOG_FUNC
-    Panic(EBHostNotExpected);
+    PANIC(EBHostNotExpected);
     }
 
 // From bus activity observer
@@ -261,7 +262,7 @@ void CUsbState::BHostL()
 void CUsbState::BusIdleL()
     {
     LOG_FUNC
-    Panic(EBusIdleNotExpected);
+    PANIC(EBusIdleNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -271,7 +272,7 @@ void CUsbState::BusIdleL()
 void CUsbState::BusActiveL()
     {
     LOG_FUNC
-    Panic(EBusActiveNotExpected);
+    PANIC(EBusActiveNotExpected);
     }
 
 // From Host Event notification observer
@@ -282,7 +283,7 @@ void CUsbState::BusActiveL()
 void CUsbState::DeviceAttachedL(TDeviceEventInformation)
     {
     LOG_FUNC
-    Panic(EDeviceAttachedNotExpected);
+    PANIC(EDeviceAttachedNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -292,7 +293,7 @@ void CUsbState::DeviceAttachedL(TDeviceEventInformation)
 void CUsbState::DeviceDetachedL(TDeviceEventInformation)
     {
     LOG_FUNC
-    Panic(EDeviceDetachedNotExpected);
+    PANIC(EDeviceDetachedNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -302,7 +303,7 @@ void CUsbState::DeviceDetachedL(TDeviceEventInformation)
 void CUsbState::DriverLoadSuccessL(TDeviceEventInformation)
     {
     LOG_FUNC
-    Panic(EDriverLoadSuccessNotExpected);
+    PANIC(EDriverLoadSuccessNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -312,7 +313,7 @@ void CUsbState::DriverLoadSuccessL(TDeviceEventInformation)
 void CUsbState::DriverLoadPartialSuccessL(TDeviceEventInformation)
     {
     LOG_FUNC
-    Panic(EDriverLoadPartialSuccessNotExpected);
+    PANIC(EDriverLoadPartialSuccessNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -322,7 +323,7 @@ void CUsbState::DriverLoadPartialSuccessL(TDeviceEventInformation)
 void CUsbState::DriverLoadFailureL(TDeviceEventInformation)
     {
     LOG_FUNC
-    Panic(EDriverLoadFailureNotExpected);
+    PANIC(EDriverLoadFailureNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -332,7 +333,7 @@ void CUsbState::DriverLoadFailureL(TDeviceEventInformation)
 void CUsbState::BadHubPositionL()
     {
     LOG_FUNC
-    Panic(EBadHubPositionNotExpected);
+    PANIC(EBadHubPositionNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -342,7 +343,7 @@ void CUsbState::BadHubPositionL()
 void CUsbState::VBusErrorL()
     {
     LOG_FUNC
-    Panic(EVBusErrorNotExpected);
+    PANIC(EVBusErrorNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -352,7 +353,7 @@ void CUsbState::VBusErrorL()
 void CUsbState::MessageNotificationReceivedL(TInt)
     {
     LOG_FUNC
-    Panic(EMessageNotificationNotExpected);
+    PANIC(EMessageNotificationNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -362,7 +363,7 @@ void CUsbState::MessageNotificationReceivedL(TInt)
 void CUsbState::SrpReceivedL()
     {
     LOG_FUNC
-    Panic(ESrpNotExpected);
+    PANIC(ESrpNotExpected);
     }
 
 // ---------------------------------------------------------------------------
@@ -372,5 +373,5 @@ void CUsbState::SrpReceivedL()
 void CUsbState::SessionRequestedL()
     {
     LOG_FUNC
-    Panic(ESessionRequestNotExpected);
+    PANIC(ESessionRequestNotExpected);
     }

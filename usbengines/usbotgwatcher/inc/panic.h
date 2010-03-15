@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -14,10 +14,12 @@
  * Description:  Central place for debug-type macros & functions
  *
  */
-#ifndef USBWATCHER_PANIC_H
-#define USBWATCHER_PANIC_H
+#ifndef C_PANIC_H
+#define C_PANIC_H
+
 #include <e32base.h>
 #include <e32debug.h>
+
 _LIT(KUsbWatcherPanic, "UsbOTGWatcher");
 
 enum TUsbWatcherPanic
@@ -118,10 +120,4 @@ enum TUsbWatcherPanic
 
     };
 
-/**
- * Shows application name and panic code
- * @param aPanicId panic id
- */
-void Panic(TUsbWatcherPanic aPanicId);
-
-#endif // USBWATCHER_PANIC_H
+#endif // C_PANIC_H

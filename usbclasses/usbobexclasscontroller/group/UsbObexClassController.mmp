@@ -28,6 +28,7 @@ UID             0x10009d8d 0x10281F29
 SOURCEPATH      ../src
 SOURCE          CUsbObexClassImpCollection.cpp
 SOURCE          CUsbObexClassController.cpp
+SOURCE          obexsmwatcher.cpp
 
 USERINCLUDE     ../inc
 

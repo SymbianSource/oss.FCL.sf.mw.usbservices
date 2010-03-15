@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -65,12 +65,12 @@ protected:
     virtual void AVBusErrorL();
 
     /**
-     * VBus error happen
+     * Become A host
      */
     virtual void AHostL();
 
     /**
-     * VBus error happen
+     * become A peripheral
      */
     virtual void APeripheralL();
 
@@ -90,18 +90,22 @@ protected:
      * @param aMessage message id
      */
     virtual void MessageNotificationReceivedL(TInt aMessage);
+
     /**
      * SRP request received
      */
     virtual void SrpReceivedL();
+
     /**
      * Connected to hub in wrong level 
      */
     virtual void BadHubPositionL();
+
     /**
      * VBus error happened
      */
     virtual void VBusErrorL();
+
     /**
      * Session request received
      */

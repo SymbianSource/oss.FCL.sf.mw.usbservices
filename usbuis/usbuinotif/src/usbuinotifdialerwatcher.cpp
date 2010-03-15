@@ -19,7 +19,7 @@
 #include <w32std.h>  
 #include <eikenv.h> 
 #include <coeaui.h> 
-#include <vwsdef.H>
+#include <vwsdef.h>
 
 
 #include "usbuinotifdialerwatcher.h"

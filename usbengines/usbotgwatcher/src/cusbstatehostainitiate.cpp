@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -15,8 +15,11 @@
  *
  */
 #include <usbuinotif.h>
+#include <usbhosterrors.h>
 
+#include "cusbotgwatcher.h"
 #include "cusbstatehostainitiate.h"
+
 #ifndef STIF
 #include "cusbtimer.h"
 #include "cusbnotifmanager.h"
@@ -36,7 +39,7 @@
 // ---------------------------------------------------------------------------
 //
 CUsbStateHostAInitiate::CUsbStateHostAInitiate(CUsbOtgWatcher& aWatcher) :
-    CUsbStateHostABase(aWatcher)
+    CUsbStateHostABase(aWatcher), iDeviceAttached(EFalse)
     {
     }
 
@@ -115,6 +118,10 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
     // do general things 
     CUsbStateHostABase::JustAdvancedToThisStateL();
 
+    // clear this attribute, and wait for attachment
+    // one attchment has to correspond to only one detachment
+    iDeviceAttached = EFalse; // to catch not corresponding Detachment, if any 
+
     TInt err = iWatcher.Usb().EnableFunctionDriverLoading();
 
     if (KErrNone != err)
@@ -136,7 +143,7 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
         while (count < maxTrial && KErrNone != busReqErr)
             {
             busReqErr = iWatcher.Usb().BusRequest();
-            LOG1( "BusRequest() err = %d" , err);
+            LOG1( "BusRequest() busReqErr = %d" , busReqErr);
 
             if (KErrNone != busReqErr)
                 {
@@ -184,7 +191,7 @@ void CUsbStateHostAInitiate::TimerElapsedL(TUsbTimerId aTimerId)
         default:
             {
             LOG1( "Unknown timer id = %d", aTimerId );
-            Panic( EWrongTimerId);
+            PANIC( EWrongTimerId);
             }
         }
     }
@@ -208,6 +215,7 @@ void CUsbStateHostAInitiate::DeviceAttachedL(TDeviceEventInformation aTdi)
     {
     LOG_FUNC
 
+    iDeviceAttached = ETrue;
     iAttachmentTimer->Cancel();
 
     // check if an OTG device connected
@@ -228,30 +236,55 @@ void CUsbStateHostAInitiate::DeviceAttachedL(TDeviceEventInformation aTdi)
         return;
         }
 
-    if (KErrNone != aTdi.iError)
+    switch (aTdi.iError)
+        // error in attachement
         {
-        switch (aTdi.iError)
-            // error in attachement
+        case KErrNone:
             {
-            case KErrBadPower:
-                {
-                LOG( "TooMuchPower" );
-                HandleL(
-                        EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration,
-                        EUsbStateHostDelayNotAttachedHandle);
-                break;
-                }
-            default:
-                {
-                LOG1("AttachmentError aTdi.iError = %d" , aTdi.iError );
-                HandleL(EUsbWatcherErrUnsupportedDevice,
-                        EUsbStateHostHandleDropping);
-                break;
-                }
+            break;
             }
-
-        return;
+        case KErrUsbDeviceDetachedDuringDriverLoading:
+            {
+            //do not show error, due to device is already detached
+            // Device Detachment will not come after this (it was not attached yet)
+            // therefore emulate detachment
+            // content of aTdi is not important, due to detachment anyway
+            DeviceDetachedL(aTdi);
+            break;
+            }
+        case KErrBadPower:
+            {
+            LOG( "TooMuchPower" );
+            HandleL(EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration,
+                    EUsbStateHostDelayNotAttachedHandle);
+            break;
+            }
+        default:
+            {
+            LOG1("AttachmentError aTdi.iError = %d" , aTdi.iError );
+            HandleL(EUsbWatcherErrUnsupportedDevice,
+                    EUsbStateHostHandleDropping);
+            }
         }
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostAInitiate::DeviceDetachedL(TDeviceEventInformation aTdi)
+    {
+    LOG_FUNC
+
+    // iDeviceAttached is used here to avoid one more state creation (init->attached->detached)
+    // due to purpose of this state only to wait for drivers load
+    if (!iDeviceAttached)
+        {
+        PANIC(EDeviceDetachedNotExpected)
+        }
+
+    // go out, and go in to the same state
+    ChangeHostStateL( EUsbStateHostAInitiate);
     }
 
 // ---------------------------------------------------------------------------
@@ -269,11 +302,23 @@ void CUsbStateHostAInitiate::DriverLoadSuccessL(TDeviceEventInformation)
 // ---------------------------------------------------------------------------
 //
 void CUsbStateHostAInitiate::DriverLoadPartialSuccessL(
-        TDeviceEventInformation)
+        TDeviceEventInformation aDei)
     {
     LOG_FUNC
-    iWatcher.NotifManager()->ShowNotifierL(KUsbUiNotifOtgWarning,
-            EUsbOtgPartiallySupportedDevice, NULL);
+
+    switch (aDei.iError)
+        {
+        case KErrUsbDeviceDetachedDuringDriverLoading:
+            {
+            //do not show warning, due to device is already detached
+            break;
+            }
+        default:
+            {
+            iWatcher.NotifManager()->ShowNotifierL(KUsbUiNotifOtgWarning,
+                    EUsbOtgPartiallySupportedDevice, NULL);
+            }
+        }
     ChangeHostStateL( EUsbStateHostAHost);
 
     }

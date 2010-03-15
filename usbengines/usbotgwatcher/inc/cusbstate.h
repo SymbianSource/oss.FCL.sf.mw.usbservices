@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -20,24 +20,11 @@
 
 #include <e32base.h>
 #include <usbotgdefs.h>
+#include <usbman.h>
 
-#include "cusbotgwatcher.h"
+#include "definitions.h"
 
-#ifndef STIF
-#include "cusbidpinobserver.h"
-#include "cusbvbusobserver.h"
-#include "cusbotgstateobserver.h"
-#include "cusbbusactivityobserver.h"
-#include "cusbhosteventnotificationobserver.h"
-#include "cusbmessagenotificationobserver.h"
-#else
-#include "mockcusbidpinobserver.h"
-#include "mockcusbvbusobserver.h"
-#include "mockcusbotgstateobserver.h"
-#include "mockcusbbusactivityobserver.h"
-#include "mockcusbhosteventnotificationobserver.h"
-#include "mockcusbmessagenotificationobserver.h"
-#endif
+class CUsbOtgWatcher;
 
 /**
  *  Base class for usb states
@@ -75,12 +62,6 @@ public:
      * Destruction
      */
     virtual ~CUsbState();
-
-    /**
-     * Two-phased constructor.
-     * @param aWatcher owner
-     */
-    //static CUsbState* NewL(CUsbOtgWatcher& aWatcher);
 
 protected:
     /**

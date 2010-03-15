@@ -26,6 +26,7 @@
 #include <UsbWatcherInternalPSKeys.h>
 #include <e32property.h>
 #include <startupdomainpskeys.h> //for global system state
+#include <featmgr.h> //FeatureManager
 
 #include "cusbwatcher.h"
 #include "cusbactivestate.h"
@@ -1007,9 +1008,28 @@ void CUsbWatcher::StartPersonality()
 TInt CUsbWatcher::GetChargingPersonalityId( TInt& aPersonalityId )
     {
     LOG_FUNC
+    
+    TUint32 chargingKey( KUsbWatcherChargingDefaultPersonality );
+    // Check if it is now in certificate test mode
+    TRAPD(ret, FeatureManager::InitializeLibL());
+    LOG1( "FeatureManager::InitializeLibL(): %d", ret );
+    if ( KErrNone == ret )
+        {
+        if( FeatureManager::FeatureSupported(
+             KFeatureIdEnableIsiCommunicationInUsbChargingMode  ) )
+            {
+            chargingKey = KUsbWatcherCertTestChargingPersonality;
+            LOG( "KFeatureIdEnableIsiCommunicationInUsbChargingMode true" );
+            }
+        else
+            {
+            LOG( "KFeatureIdEnableIsiCommunicationInUsbChargingMode false" );
+            }
+        FeatureManager::UnInitializeLib();
+        }
 
-    TInt ret = iPersonalityRepository->Get(
-            KUsbWatcherChargingDefaultPersonality, aPersonalityId );
+    ret = iPersonalityRepository->Get( chargingKey, aPersonalityId );
+    LOG2( "ret = %d ( aPersonalityId: %d )", ret, aPersonalityId );
     return ret;
     }
 

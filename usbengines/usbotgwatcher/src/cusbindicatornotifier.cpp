@@ -182,7 +182,7 @@ void CUsbIndicatorNotifier::TimerElapsedL(TUsbTimerId aTimerId)
         default:
             {
             LOG1("Unknown timer id = %d", aTimerId)
-            Panic(EWrongTimerId);
+            PANIC(EWrongTimerId);
             }
         }
     }
@@ -244,9 +244,9 @@ void CUsbIndicatorNotifier::VBusObserverErrorL(TInt aError)
 //  
 void CUsbIndicatorNotifier::SetIndicatorL()
     {
-    if (!(iOtgWatcher.IsDeviceA()))
+    if (!(iOtgWatcher.IsDeviceA()) || iOtgWatcher.CurrentHostState()->Id() == EUsbStateHostAPeripheral)
         {
-        // if B, than other party (usbwatcher) takes care of usb indicator
+        // if B or peripheral, than other party (usbwatcher) takes care of usb indicator
         // in combined usbwatcher (if role swap allowed) one class has to manage usb indicator 
         return;
         }

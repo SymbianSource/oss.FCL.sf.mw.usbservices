@@ -80,6 +80,7 @@ void CUsbUiNotifOtgError::ConstructL()
     iStringIds.AppendL( R_USB_OTG_ERROR_HUB_UNSUPPORTED);
     iStringIds.AppendL( R_USB_OTG_ERROR_UNRECOVERABLE);
     iStringIds.AppendL( R_USB_OTG_ERROR_ATTACH_TIMEDOUT);
+    iStringIds.AppendL( R_USB_ERROR_MEMORY_NOT_ENOUGH);
     }
 
 // ----------------------------------------------------------------------------

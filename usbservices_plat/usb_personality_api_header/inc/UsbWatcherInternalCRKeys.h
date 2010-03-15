@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,6 +29,8 @@ const TUint32 KUsbWatcherChangeOnConnectionSetting = 0x00000001;
 const TUint32 KUsbWatcherPersonality = 0x00000002;
 
 const TUint32 KUsbWatcherChargingDefaultPersonality = 0x00000003;
+
+const TUint32 KUsbWatcherCertTestChargingPersonality = 0x00000004;
 
 #endif      // USBWATCHERINTERNALCRKEYS_H
 
