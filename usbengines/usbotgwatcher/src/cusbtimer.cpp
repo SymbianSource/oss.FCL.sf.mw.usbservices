@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include "cusbtimer.h"
 
@@ -24,7 +23,7 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbTimer::CUsbTimer(MUsbTimerObserver* aObserver, TUsbTimerId aTimerId) :
+CUsbTimer::CUsbTimer(MUsbTimerObserver& aObserver, TUsbTimerId aTimerId) :
     CActive(CActive::EPriorityStandard), iObserver(aObserver), iTimerId(
             aTimerId)
     {
@@ -37,7 +36,7 @@ CUsbTimer::CUsbTimer(MUsbTimerObserver* aObserver, TUsbTimerId aTimerId) :
 //
 CUsbTimer::~CUsbTimer()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbTimer::~CUsbTimer" ) );
+    LOG_FUNC
     Cancel();
     iTimer.Close();
     }
@@ -48,7 +47,7 @@ CUsbTimer::~CUsbTimer()
 //
 void CUsbTimer::ConstructL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbTimer::ConstructL" ) );
+    LOG_FUNC
     User::LeaveIfError(iTimer.CreateLocal());
     }
 
@@ -56,12 +55,11 @@ void CUsbTimer::ConstructL()
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbTimer* CUsbTimer::NewL(MUsbTimerObserver* anObserver,
-        TUsbTimerId aTimerId)
+CUsbTimer* CUsbTimer::NewL(MUsbTimerObserver& aObserver, TUsbTimerId aTimerId)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbTimer::NewL" ) );
+    LOG_FUNC
 
-    CUsbTimer* self = new (ELeave) CUsbTimer(anObserver, aTimerId);
+    CUsbTimer* self = new (ELeave) CUsbTimer(aObserver, aTimerId);
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self); // pop self
@@ -74,9 +72,7 @@ CUsbTimer* CUsbTimer::NewL(MUsbTimerObserver* anObserver,
 //
 void CUsbTimer::After(TInt aMilliseconds)
     {
-//        FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbTimer::After aMilliseconds %d, timerId=%d" ), aMilliseconds, iTimerId))
-
-    if (IsActive()) // should we panic here? or just restart timer
+    if (IsActive())
         {
         Cancel();
         }
@@ -93,13 +89,12 @@ void CUsbTimer::After(TInt aMilliseconds)
 void CUsbTimer::RunL()
     {
 
-    if(KErrNone != iStatus.Int())
+    if (KErrNone != iStatus.Int())
         {
-        FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbTimer::RunL iStatus %d" ), iStatus.Int()));
         User::Leave(iStatus.Int());
         }
 
-    iObserver->TimerElapsedL(iTimerId);
+    iObserver.TimerElapsedL(iTimerId);
     }
 
 // ---------------------------------------------------------------------------
@@ -108,7 +103,8 @@ void CUsbTimer::RunL()
 //
 TInt CUsbTimer::RunError(TInt aError)
     {
-        FTRACE(FPrint(_L( "[USBOTGWATCHER]\tCUsbTimer::RunError aError %d" ), aError ));
+    LOG_FUNC
+    LOG1( "aError = %d" , aError );
 
     return KErrNone;
     }
@@ -119,6 +115,5 @@ TInt CUsbTimer::RunError(TInt aError)
 //
 void CUsbTimer::DoCancel()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbTimer::DoCancel" ) )
     iTimer.Cancel();
     }

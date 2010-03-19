@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include "cusbstate.h"
 
@@ -25,7 +24,7 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbState::CUsbState(CUsbOtgWatcher* aWatcher) :
+CUsbState::CUsbState(CUsbOtgWatcher& aWatcher) :
     iWatcher(aWatcher)
     {
     }
@@ -42,19 +41,6 @@ CUsbState::~CUsbState()
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbState* CUsbState::NewL(CUsbOtgWatcher* aWatcher)
-    {
-    CUsbState* self = new (ELeave) CUsbState(aWatcher);
-    CleanupStack::PushL(self);
-    self->ConstructL();
-    CleanupStack::Pop(self);
-    return self;
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
 void CUsbState::ConstructL()
     {
 
@@ -64,17 +50,9 @@ void CUsbState::ConstructL()
 // 
 // ---------------------------------------------------------------------------
 //
-TUsbStateIds CUsbState::Id()
-    {
-    return EUsbStateUndefined;
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
 void CUsbState::JustAdvancedToThisStateL()
     {
+    iWatcher.PrintStateToLog();
     }
 
 // ---------------------------------------------------------------------------
@@ -92,7 +70,7 @@ void CUsbState::JustBeforeLeavingThisStateL()
 void CUsbState::ChangeStateL(TUsbStateIds aNewStateId)
     {
 
-    iWatcher->ChangeStateL(aNewStateId);
+    iWatcher.ChangeStateL(aNewStateId);
 
     }
 
@@ -103,8 +81,21 @@ void CUsbState::ChangeStateL(TUsbStateIds aNewStateId)
 void CUsbState::ChangeHostStateL(TUsbStateIds aNewStateId)
     {
 
-    iWatcher->ChangeHostStateL(aNewStateId);
+    iWatcher.ChangeHostStateL(aNewStateId);
 
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbState::HandleL(TInt aWhat, TUsbStateIds aWhereToHandle)
+    {
+    LOG_FUNC
+
+    LOG2( "aWhat = %d aWhere = %d" , aWhat, aWhereToHandle);
+
+    iWatcher.HandleHostProblemL(aWhat, aWhereToHandle);
     }
 
 // ---------------------------------------------------------------------------
@@ -156,7 +147,7 @@ void CUsbState::SetPreviousPreviousPersonalityOnDisconnectL()
 //
 void CUsbState::IdPinOffL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::IdPinOffL" ) );
+    LOG_FUNC
     Panic(EIdPinOffNotExpected);
     }
 
@@ -166,7 +157,7 @@ void CUsbState::IdPinOffL()
 //
 void CUsbState::IdPinOnL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::IdPinOnL" ) );
+    LOG_FUNC
     Panic(EIdPinOnNotExpected);
     }
 
@@ -177,7 +168,7 @@ void CUsbState::IdPinOnL()
 //
 void CUsbState::VBusDownL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::VBusDownL" ) );
+    LOG_FUNC
     Panic(EVBusDownNotExpected);
     }
 
@@ -187,7 +178,8 @@ void CUsbState::VBusDownL()
 //
 void CUsbState::VBusUpL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::VBusUpL" ) );
+    LOG_FUNC
+    Panic(EVBusUpNotExpected);
     }
 
 // From OTG state observer
@@ -197,7 +189,7 @@ void CUsbState::VBusUpL()
 //
 void CUsbState::AIdleL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::AIdleL" ) );
+    LOG_FUNC
     Panic(EAIdleNotExpected);
     }
 
@@ -207,7 +199,7 @@ void CUsbState::AIdleL()
 //
 void CUsbState::AHostL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::AHostL" ) );
+    LOG_FUNC
     Panic(EAHostNotExpected);
     }
 
@@ -217,7 +209,7 @@ void CUsbState::AHostL()
 //
 void CUsbState::APeripheralL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::APeripheralL" ) );
+    LOG_FUNC
     Panic(EAPeripheralNotExpected);
     }
 
@@ -227,7 +219,7 @@ void CUsbState::APeripheralL()
 //
 void CUsbState::AVBusErrorL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::AVBusErrorL" ) );
+    LOG_FUNC
     Panic(EAVBusErrorNotExpected);
     }
 
@@ -237,7 +229,7 @@ void CUsbState::AVBusErrorL()
 //
 void CUsbState::BIdleL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::BIdleL" ) );
+    LOG_FUNC
     Panic(EBIdleNotExpected);
     }
 
@@ -247,7 +239,7 @@ void CUsbState::BIdleL()
 //
 void CUsbState::BPeripheralL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::BPeripheralL" ) );
+    LOG_FUNC
     Panic(EBPeripheralNotExpected);
     }
 
@@ -257,7 +249,7 @@ void CUsbState::BPeripheralL()
 //
 void CUsbState::BHostL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::BHostL" ) );
+    LOG_FUNC
     Panic(EBHostNotExpected);
     }
 
@@ -268,7 +260,7 @@ void CUsbState::BHostL()
 //
 void CUsbState::BusIdleL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::BusIdleL" ) );
+    LOG_FUNC
     Panic(EBusIdleNotExpected);
     }
 
@@ -278,7 +270,7 @@ void CUsbState::BusIdleL()
 //
 void CUsbState::BusActiveL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::BusActiveL" ) );
+    LOG_FUNC
     Panic(EBusActiveNotExpected);
     }
 
@@ -289,7 +281,7 @@ void CUsbState::BusActiveL()
 //
 void CUsbState::DeviceAttachedL(TDeviceEventInformation)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::DeviceAttachedL" ) );
+    LOG_FUNC
     Panic(EDeviceAttachedNotExpected);
     }
 
@@ -299,7 +291,7 @@ void CUsbState::DeviceAttachedL(TDeviceEventInformation)
 //
 void CUsbState::DeviceDetachedL(TDeviceEventInformation)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::DeviceDetachedL" ) );
+    LOG_FUNC
     Panic(EDeviceDetachedNotExpected);
     }
 
@@ -309,7 +301,7 @@ void CUsbState::DeviceDetachedL(TDeviceEventInformation)
 //
 void CUsbState::DriverLoadSuccessL(TDeviceEventInformation)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::DriverLoadSuccessL" ) );
+    LOG_FUNC
     Panic(EDriverLoadSuccessNotExpected);
     }
 
@@ -319,7 +311,7 @@ void CUsbState::DriverLoadSuccessL(TDeviceEventInformation)
 //
 void CUsbState::DriverLoadPartialSuccessL(TDeviceEventInformation)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::DriverLoadPartialSuccessL" ) );
+    LOG_FUNC
     Panic(EDriverLoadPartialSuccessNotExpected);
     }
 
@@ -329,7 +321,7 @@ void CUsbState::DriverLoadPartialSuccessL(TDeviceEventInformation)
 //
 void CUsbState::DriverLoadFailureL(TDeviceEventInformation)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::DriverLoadFailureL" ) );
+    LOG_FUNC
     Panic(EDriverLoadFailureNotExpected);
     }
 
@@ -339,7 +331,7 @@ void CUsbState::DriverLoadFailureL(TDeviceEventInformation)
 //
 void CUsbState::BadHubPositionL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::BadHubPositionL" ) );
+    LOG_FUNC
     Panic(EBadHubPositionNotExpected);
     }
 
@@ -349,7 +341,7 @@ void CUsbState::BadHubPositionL()
 //
 void CUsbState::VBusErrorL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::VBusErrorL" ) );
+    LOG_FUNC
     Panic(EVBusErrorNotExpected);
     }
 
@@ -359,7 +351,7 @@ void CUsbState::VBusErrorL()
 //
 void CUsbState::MessageNotificationReceivedL(TInt)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::MessageNotificationReceivedL" ) );
+    LOG_FUNC
     Panic(EMessageNotificationNotExpected);
     }
 
@@ -369,7 +361,7 @@ void CUsbState::MessageNotificationReceivedL(TInt)
 //
 void CUsbState::SrpReceivedL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::SrpReceivedL" ) );
+    LOG_FUNC
     Panic(ESrpNotExpected);
     }
 
@@ -379,6 +371,6 @@ void CUsbState::SrpReceivedL()
 //
 void CUsbState::SessionRequestedL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbState::SessionRequestedL" ) );
+    LOG_FUNC
     Panic(ESessionRequestNotExpected);
     }

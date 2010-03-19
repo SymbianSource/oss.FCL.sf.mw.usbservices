@@ -47,4 +47,8 @@ backup_registration.xml  /epoc32/release/winscw/urel/z/private/101F9696/backup_r
 
 ../rom/mtp_symbian_temp.iby CORE_MW_LAYER_IBY_EXPORT_PATH(mtp_symbian_temp.iby)
 
+// usbacmconfiguration.hby is included by usbacm.iby to define ACM configuration
+// We use this one to overwrite the os default one
+../rom/usbacmconfiguration.hby CORE_MW_LAYER_IBY_EXPORT_PATH(usbacmconfiguration.hby)
+
 // End of file

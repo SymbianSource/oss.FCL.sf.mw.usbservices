@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Usb waiting notifier implementation
+ * Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Usb waiting notifier implementation
+ *
+ */
 
 #ifndef C_USBWAITNOTIFIER_H
 #define C_USBWAITNOTIFIER_H
@@ -39,7 +38,7 @@ public:
      * @return Pointer to the new instance of CUsbWaitNotifier
      */
     static CUsbWaitNotifier* NewL(RNotifier& aNotifier,
-            CUsbNotifManager* aNotifManager, TUint aNotifId);
+            CUsbNotifManager& aNotifManager, TUint aNotifId);
 
     /**
      * Destructor.
@@ -54,7 +53,7 @@ private:
      * @param aNotifManager Owner of the class, will destroy the object when needed
      * @param aNotifId Id of the notifier
      */
-    CUsbWaitNotifier(RNotifier& aNotifier, CUsbNotifManager* aNotifManager,
+    CUsbWaitNotifier(RNotifier& aNotifier, CUsbNotifManager& aNotifManager,
             TUint aNotifId);
 
     /**

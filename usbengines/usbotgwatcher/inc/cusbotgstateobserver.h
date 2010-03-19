@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Observes OTG states
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Observes OTG states
+ *
+ */
 
 #ifndef C_USBOTGSTATEOBSERVER_H
 #define C_USBOTGSTATEOBSERVER_H
@@ -64,12 +63,12 @@ public:
      * Local device is B, and get to Host state
      */
     virtual void BHostL() = 0;
-    
+
     /**
      * Error handler
      * @param aError error code
      */
-    virtual void OtgStateErrorL(TInt aError) = 0;    
+    virtual void OtgStateErrorL(TInt aError) = 0;
     };
 
 /**
@@ -101,13 +100,13 @@ public:
      * Subscribes for getting notifications
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbOtgStateObserver* aObserver);
+    void SubscribeL(MUsbOtgStateObserver& aObserver);
 
     /**
      * Unsubscribes from getting notifications
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbOtgStateObserver* aObserver);
+    void UnsubscribeL(MUsbOtgStateObserver& aObserver);
 
 private:
 
@@ -151,7 +150,7 @@ private:
 
     /**
      * The observer reports state changes to own observers
-     * Owns
+     * Not owns
      */
     RPointerArray<MUsbOtgStateObserver> iObservers;
 

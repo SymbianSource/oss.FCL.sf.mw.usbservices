@@ -28,14 +28,4 @@ inline const RArray<TUsbSupportedPersonalityInf>& CUsbWatcher::Personalities()
     return iSupportedPersonalities;
     }
 
-// ----------------------------------------------------------------------------
-// Write new personality to central repository.
-// ----------------------------------------------------------------------------
-//
-inline TInt CUsbWatcher::WritePersonalityId( TInt aPersonalityId )
-    {
-    return iPersonalityRepository->Set( KUsbWatcherPersonality,
-            aPersonalityId);
-    }
-
 // End of file

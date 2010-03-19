@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Usb waiting notifier implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Usb waiting notifier implementation
+ *
+ */
 
 #include <e32std.h>
 #include <usbuinotif.h>
@@ -32,9 +31,9 @@
 // -----------------------------------------------------------------------------
 //
 CUsbWaitNotifier* CUsbWaitNotifier::NewL(RNotifier& aNotifier,
-        CUsbNotifManager* aNotifManager, TUint aNotifId)
+        CUsbNotifManager& aNotifManager, TUint aNotifId)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbWaitNotifier::NewL" ) );
+    LOG_FUNC
 
     CUsbWaitNotifier* self = new (ELeave) CUsbWaitNotifier(aNotifier,
             aNotifManager, aNotifId);
@@ -50,7 +49,7 @@ CUsbWaitNotifier* CUsbWaitNotifier::NewL(RNotifier& aNotifier,
 //
 CUsbWaitNotifier::~CUsbWaitNotifier()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbWaitNotifier::~CUsbWaitNotifier" ) );
+    LOG_FUNC
     }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +57,7 @@ CUsbWaitNotifier::~CUsbWaitNotifier()
 // ---------------------------------------------------------------------------
 //
 CUsbWaitNotifier::CUsbWaitNotifier(RNotifier& aNotifier,
-        CUsbNotifManager* aNotifManager, TUint aNotifId) :
+        CUsbNotifManager& aNotifManager, TUint aNotifId) :
     CUsbNoteNotifier(aNotifier, aNotifManager, KUsbUiNotifOtgError, aNotifId)
     {
     SetFeedbackNeeded();
@@ -70,7 +69,7 @@ CUsbWaitNotifier::CUsbWaitNotifier(RNotifier& aNotifier,
 //
 void CUsbWaitNotifier::ConstructL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbWaitNotifier::ConstructL" ) );
+    LOG_FUNC
 
     CUsbNoteNotifier::ConstructL();
     }

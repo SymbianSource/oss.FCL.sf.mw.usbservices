@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation 
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation 
+ *
+ */
 
 #ifndef C_USBSERVICECONTROL_H
 #define C_USBSERVICECONTROL_H
@@ -50,12 +49,19 @@ NONSHARABLE_CLASS( CUsbServiceControl ) : public CActive
 
 public:
 
+    enum TUsbServiceRequest
+        {
+        ERequestUndefined,
+        EStartUsbService,
+        EStopUsbService
+        };
+
     /**
      * Two-phased constructor.
      * @param aObserver Observer
      * @param aUsb RUsb API
      */
-    static CUsbServiceControl* NewL(MUsbServiceControlObserver* aObserver,
+    static CUsbServiceControl* NewL(MUsbServiceControlObserver& aObserver,
             RUsb& aUsb);
 
     /**
@@ -107,7 +113,7 @@ private:
      * @param aObserver receives call back when service started or stopped
      * @param aUsb usbman API
      */
-    CUsbServiceControl(MUsbServiceControlObserver* aObserver, RUsb& aUsb);
+    CUsbServiceControl(MUsbServiceControlObserver& aObserver, RUsb& aUsb);
 
     /**
      * 2nd phase construction
@@ -120,7 +126,7 @@ private:
      * Observer
      * not own
      */
-    MUsbServiceControlObserver* iObserver;
+    MUsbServiceControlObserver& iObserver;
 
     /**
      * RUsb API

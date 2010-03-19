@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Base classes for Usb notifier wrapper  
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Base classes for Usb notifier wrapper  
+ *
+ */
 
 #ifndef C_CUSBNOTIFIER_H
 #define C_CUSBNOTIFIER_H
@@ -62,7 +61,7 @@ protected:
      * @param acat Category
      * @param aNotidId id 
      */
-    CUsbNotifier(CUsbNotifManager* aNotifManager, TUid aCat, TUint aNotifId);
+    CUsbNotifier(CUsbNotifManager& aNotifManager, TUid aCat, TUint aNotifId);
 
     /**
      * Set by child-class if the concrete notifier needs feedback from end-user
@@ -77,7 +76,7 @@ protected:
      * All notifiers are created, destroied and manupulated by the manager.  
      * Not own 
      */
-    CUsbNotifManager* iNotifManager;
+    CUsbNotifManager& iNotifManager;
 
     /**
      * Category of the notifier. Needed for cancelling 

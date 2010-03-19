@@ -23,8 +23,6 @@
 
 #include "usbnotifier.h"      // Base class
 #include <AknQueryDialog.h>   // AVKON component
-#include "usbuinotifdialerwatcher.h"
-
 #define KUsbUiNotifOtgGeneralQueryGranularity 3
 // CLASS DECLARATION
 
@@ -34,7 +32,7 @@
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUsbUiNotifOtgError) : public CUSBUINotifierBase, public MDialerNotifier
+NONSHARABLE_CLASS(CUsbUiNotifOtgError) : public CUSBUINotifierBase
     {
 public:
     // Constructors and destructor
@@ -87,23 +85,6 @@ private:
      */
     void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
-    
-private:
-    
-    /**
-     * From MDialerNotifier     
-     * The function to be when Dialaer is activated
-     *          
-     */
-    void DialerActivated();
-    
-    /**
-     * From MDialerNotifier     
-     * The function to be when Dialaer is deactivated
-     * and note can be shown again
-     *          
-     */
-    void ReActivateDialog();
 
 private:
 
@@ -130,14 +111,5 @@ private:
     CAknQueryDialog* iQuery; 
     RArray<TInt> iStringIds;
     TInt iErrorId;
-    /**
-     * Dialer watcher 
-     * Own.
-     */
-    CUsbuinotifDialerWatcher* iDialerWatcher;
-    /**
-     * Dialog is dismissed. 
-     */
-    TBool iDismissed;
     };
 #endif // USBUINOTIFOTGERROR_H

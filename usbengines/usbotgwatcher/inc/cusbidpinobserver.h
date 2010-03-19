@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Monitors ID pin change
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Monitors ID pin change
+ *
+ */
 
 #ifndef C_USBIDPINOBSERVER_H
 #define C_USBIDPINOBSERVER_H
@@ -39,13 +38,12 @@ public:
      * IdPin appeared
      */
     virtual void IdPinOnL() = 0;
-    
+
     /**
      * IdPin error
      * @param aError error code
      */
     virtual void IdPinErrorL(TInt aError) = 0;
-    
 
     };
 
@@ -67,7 +65,7 @@ public:
      * @return instance of the objects of this class
      */
     static CUsbIdPinObserver* NewL();
-    
+
     /**
      * Destructor.
      */
@@ -83,13 +81,13 @@ public:
      * Add observer
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbIdPinObserver* aObserver);
+    void SubscribeL(MUsbIdPinObserver& aObserver);
 
     /**
      * Remove observer
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbIdPinObserver* aObserver);
+    void UnsubscribeL(MUsbIdPinObserver& aObserver);
 
 private:
 
@@ -128,7 +126,7 @@ private:
 
     /**
      *  The observer reports state changes to its own observers
-     * Own
+     * Not own
      */
     RPointerArray<MUsbIdPinObserver> iObservers;
 

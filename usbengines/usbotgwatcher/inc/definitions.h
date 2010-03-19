@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Definitions for otgwatcher
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Definitions for otgwatcher
+ *
+ */
 
 #ifndef DEFENITIONS_H
 #define DEFENITIONS_H
@@ -38,14 +37,15 @@ const TUint KFirst = 1;
  */
 enum TUsbStateIds
     {
-    EUsbStateUndefined,
-    
+    EUsbStateHostUndefined,
+
     EUsbStateHostAInitiate,
     EUsbStateHostAHost,
     EUsbStateHostAPeripheral,
-    EUsbStateHostAIdle,
 
-    EUsbStateHostHandle
+    EUsbStateHostDelayAttachedHandle,
+    EUsbStateHostDelayNotAttachedHandle,
+    EUsbStateHostHandleDropping
     };
 
 const TInt KUsbWatcherPeripheralIsNotConnected = 0; // means not(KUsbWatcherPeripheralIsConnected)

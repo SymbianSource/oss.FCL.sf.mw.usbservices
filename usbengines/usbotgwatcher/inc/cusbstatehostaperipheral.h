@@ -1,31 +1,26 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implements concrete state
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implements concrete state
+ *
+ */
 
 #ifndef C_USBSTATEHOSTAPERIPHERAL_H
 #define C_USBSTATEHOSTAPERIPHERAL_H
 
-#include "cusbotgwatcher.h"
 #include "cusbstatehostabase.h"
-#ifndef STIF
-#include "cusbtimer.h"
-#else
-#include "mockcusbtimer.h"
-#endif
+
+class CUsbOtgWatcher;
 
 /**
  *  This class implements behaviour when A device performs peripheral role, from OTG point of view
@@ -40,7 +35,7 @@ public:
      * Two-phased constructor.
      * @param aWatcher owner
      */
-    static CUsbStateHostAPeripheral* NewL(CUsbOtgWatcher* aWatcher);
+    static CUsbStateHostAPeripheral* NewL(CUsbOtgWatcher& aWatcher);
 
     /**
      * Destructor.
@@ -53,19 +48,12 @@ private:
      * default constructor
      * @param aWatcher owner
      */
-    CUsbStateHostAPeripheral(CUsbOtgWatcher* aWatcher);
+    CUsbStateHostAPeripheral(CUsbOtgWatcher& aWatcher);
 
     /**
      * 2nd phase construction
      */
     void ConstructL();
-
-    /**
-     * State machine calls this, state object to perform any initial  
-     * activity, once just entered this state
-     *
-     */
-    void JustAdvancedToThisStateL();
 
     //from CUsbState
     /**

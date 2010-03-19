@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Manages notifiers
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Manages notifiers
+ *
+ */
 
 #ifndef C_USBNOTIFMANAGER_H
 #define C_USBNOTIFMANAGER_H
@@ -58,7 +57,7 @@ public:
      * aObserver will receive notification when completed 
      */
     static CWaitNotifierInfo* NewL(CUsbNotifier* aWaitNotifier,
-            MWaitNotifierObserver* aObserver);
+            MWaitNotifierObserver& aObserver);
 
     /**
      * Destructor
@@ -83,7 +82,7 @@ private:
      * @param aObserver Observer
      */
     CWaitNotifierInfo(CUsbNotifier* aWaitNotifier,
-            MWaitNotifierObserver* aObserver);
+            MWaitNotifierObserver& aObserver);
 
     /**
      * 2nd phase construction
@@ -102,7 +101,7 @@ private:
      * observer
      * not owns
      */
-    MWaitNotifierObserver* iObserver;
+    MWaitNotifierObserver& iObserver;
     };
 
 /**
@@ -119,7 +118,7 @@ public:
      * 2phase construction
      * @param aOtgWatcher OtgWatcher is a parent class
      */
-    static CUsbNotifManager* NewL(CUsbOtgWatcher* aOtgWatcher);
+    static CUsbNotifManager* NewL(CUsbOtgWatcher& aOtgWatcher);
 
     /**
      * Destructor
@@ -133,20 +132,20 @@ public:
      * @param aObserver will receive notifications
      */
     void ShowNotifierL(TUid aCat, TUint aNotifId,
-            MWaitNotifierObserver* aObserver = NULL);
+            MWaitNotifierObserver* aObserver);
 
     /**
      * Closes and deletes all the notifiers
      */
     void CloseAllNotifiers();
-    
+
     /** 
      * Calls back Notifier show is over
      * @param aWaitNotifier wait notifier
      * @param aResult result (was any errors or not)
      * @param aFeedback user press (cancel or any other) 
      */
-    void NotifierShowCompletedL(CUsbNotifier* aWaitNotifier, TInt aResult,
+    void NotifierShowCompletedL(CUsbNotifier& aWaitNotifier, TInt aResult,
             TInt aFeedback);
 
 private:
@@ -160,7 +159,7 @@ private:
     /**
      * Second phase construction
      */
-    void ConstructL(CUsbOtgWatcher* aOtgWatcher);
+    void ConstructL(CUsbOtgWatcher& aOtgWatcher);
 
 private:
     // data

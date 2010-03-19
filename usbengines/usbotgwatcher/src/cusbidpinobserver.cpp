@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbotgdefs.h>
 
@@ -40,8 +39,7 @@ CUsbIdPinObserver::CUsbIdPinObserver() :
 //
 void CUsbIdPinObserver::ConstructL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::ConstructL" ) );
+    LOG_FUNC
 
     User::LeaveIfError(iIdPin.Attach(KUidUsbManCategory,
             KUsbOtgIdPinPresentProperty));
@@ -54,8 +52,7 @@ void CUsbIdPinObserver::ConstructL()
 //
 CUsbIdPinObserver* CUsbIdPinObserver::NewL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::NewL" ) );
+    LOG_FUNC
 
     CUsbIdPinObserver* self = new (ELeave) CUsbIdPinObserver();
     CleanupStack::PushL(self);
@@ -70,8 +67,7 @@ CUsbIdPinObserver* CUsbIdPinObserver::NewL()
 //
 CUsbIdPinObserver::~CUsbIdPinObserver()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::~CUsbIdPinObserver" ) );
+    LOG_FUNC
 
     Cancel();
 
@@ -89,33 +85,35 @@ CUsbIdPinObserver::TState CUsbIdPinObserver::IdPin()
 /* this getter is not const, because for some reason RProperty::Get is not const */
     {
 
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::IdPin" ) );
-
     TInt val(0);
 
     TInt err = iIdPin.Get(val);
 
     if (KErrNone != err)
         {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::IdPin CanNotGetIdPinProperty" ) );
-        Panic(ECanNotGetIdPinProperty);
+        LOG("CanNotGetIdPinProperty" );
+        Panic( ECanNotGetIdPinProperty);
         }
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::IdPin = %d" ), val ));
-
-    // not found in docs clear definition of this property. Verification is needed   
-    return (0 == val ? EIdPinOff : EIdPinOn);
+    return (EFalse == val ? EIdPinOff : EIdPinOn);
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //   
-void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver* aObserver)
+void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::SubscribeL" ) );
+    LOG_FUNC
 
-    User::LeaveIfError(iObservers.Append(aObserver));
+    // check if the same observer already exist in a list
+    if (KErrNotFound != iObservers.Find(&aObserver))
+        {
+        LOG("Observer already exists" );
+        Panic( EObserverAlreadyExists);
+        return;
+        }
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -129,30 +127,21 @@ void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbIdPinObserver::UnsubscribeL(MUsbIdPinObserver* aObserver)
+void CUsbIdPinObserver::UnsubscribeL(MUsbIdPinObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL" ) );
-    if (0 == iObservers.Count()) // no items
+    LOG_FUNC
+
+    TInt i(iObservers.Find(&aObserver));
+    if (KErrNotFound == i)
         {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL No observers" ) );
+        LOG("Observer not found");
+        Panic( ECanNotFindIdPinObserver);
         return;
         }
-    
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
 
-    if (aObserver == iObservers[i]) // found
-        {
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL CanNotGetIdPinObserver" ) );
-        Panic(ECanNotFindIdPinObserver);
-        }
+    iObservers.Remove(i);
 
-    if (0 == iObservers.Count()) // no items
+    if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request
         Cancel();
@@ -165,17 +154,19 @@ void CUsbIdPinObserver::UnsubscribeL(MUsbIdPinObserver* aObserver)
 //
 void CUsbIdPinObserver::RunL()
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::RunL iStatus = %d" ), iStatus.Int()));
+    LOG_FUNC
 
-        // if error occured, tell to Observers
-        if(KErrNone != iStatus.Int()) 
+    LOG1( "iStatus = %d" , iStatus.Int());
+
+    // if error occured, tell to Observers
+    if (KErrNone != iStatus.Int())
+        {
+        for (TInt i(0); i < iObservers.Count(); ++i)
             {
-            for (TInt i(0); i < iObservers.Count(); ++i)
-                 {
-                 iObservers[i]->IdPinErrorL(iStatus.Int());
-                 }
-            return;
+            iObservers[i]->IdPinErrorL(iStatus.Int());
             }
+        return;
+        }
 
     // re-issue request first
     iIdPin.Subscribe(iStatus);
@@ -189,7 +180,7 @@ void CUsbIdPinObserver::RunL()
         {
         case EIdPinOn:
             {
-                FLOG(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::RunL IdPin ON"));
+            LOG("IdPin ON");
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -201,7 +192,7 @@ void CUsbIdPinObserver::RunL()
 
         case EIdPinOff:
             {
-                FLOG(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::RunL IdPin OFF"));
+            LOG("IdPin OFF");
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -213,8 +204,8 @@ void CUsbIdPinObserver::RunL()
 
         default:
             {
-                FLOG(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::RunL WrongIdPinState"));
-            Panic(EWrongIdPinState);
+            LOG("WrongIdPinState");
+            Panic( EWrongIdPinState);
             }
         }
 
@@ -235,8 +226,9 @@ void CUsbIdPinObserver::DoCancel()
 //
 TInt CUsbIdPinObserver::RunError(TInt aError)
     {
+    LOG_FUNC
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::RunError aError = %d" ), aError));
+    LOG1( "aError = %d", aError);
 
     // try to continue	
     return KErrNone;

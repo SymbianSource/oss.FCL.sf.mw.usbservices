@@ -24,7 +24,6 @@
 #include <AknQueryDialog.h> 
 #include <aknnotewrappers.h>
 #include <usb/hostms/srverr.h> 
-#include <featmgr.h>
 
 #include <usbuinotif.h>                     // pck
 #include <usbuinotif.rsg>                   // Own resources
@@ -68,8 +67,6 @@ CUsbUiNotifMSMMError::~CUsbUiNotifMSMMError()
     //this virtual function call is to local CUsbUiNotifMSMMError::Cancel, 
     //not to any possibly derived class implementation. 
     Cancel();
-    delete iDialerWatcher;    
-    delete iQuery;    
     }
 
 void CUsbUiNotifMSMMError::ConstructL()
@@ -144,28 +141,16 @@ void CUsbUiNotifMSMMError::RunL()
     {
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::RunL"));
     TInt returnValue = KErrNone;
-    FeatureManager::InitializeLibL();
-    if ( FeatureManager::FeatureSupported( KFeatureIdFfKeypadNoSendKey ) )
-        { 
-        if (!iDialerWatcher)
-            {
-            iDialerWatcher = CUsbuinotifDialerWatcher::NewL(this);
-            }
-        }        
-    iDismissed=EFalse;
+
     DisableKeylock();
     SuppressAppSwitching( ETrue );
 
     //Excute dialog and check return value
     returnValue = QueryUserResponseL();
-    if (!iDismissed)
-        {
-        SuppressAppSwitching( EFalse );
-        RestoreKeylock();
-        delete iDialerWatcher;
-        iDialerWatcher = NULL;
-        CompleteMessage( returnValue );
-        }
+
+    SuppressAppSwitching( EFalse );
+    RestoreKeylock();
+    CompleteMessage( returnValue );
 
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::RunL() completed"));
     }
@@ -178,55 +163,16 @@ void CUsbUiNotifMSMMError::RunL()
 void CUsbUiNotifMSMMError::Cancel()
     {
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel"));
-    // If dialog is not dismissed this is normal cancel and if query
-    // doesn't exsist notifier is canceled during dismission
-    if (!iDismissed || !iQuery )
-        {        
-        delete iDialerWatcher;
-        iDialerWatcher = NULL;
-        CompleteMessage( KErrCancel );
-        }        
     if (iQuery)
         {
         delete iQuery;
         iQuery = NULL;
         }
-
+    CompleteMessage( KErrCancel );
 
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel() completed"));
     }
 
-// ----------------------------------------------------------------------------
-// CUsbUiNotifOtgError::DialerActivated
-// Release all own resources (member variables)
-// ----------------------------------------------------------------------------
-//
-void CUsbUiNotifMSMMError::DialerActivated()
-    {
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::AppKeyPressed()"));
-    if ( iQuery )
-        {
-        iDismissed=ETrue;    
-        Cancel();
-        }    
-    }
-
-// ----------------------------------------------------------------------------
-// CUsbUiNotifOtgError::ReActivateDialog
-// Release all own resources (member variables)
-// ----------------------------------------------------------------------------
-//	
-void CUsbUiNotifMSMMError::ReActivateDialog()
-    {    
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::ReActivateDialog()"));
-    if ( !IsActive())
-        {
-        SetActive();
-        iStatus = KRequestPending;
-        TRequestStatus* stat = &iStatus;
-        User::RequestComplete( stat, KErrNone );
-        }
-    }	
 // ----------------------------------------------------------------------------
 // CUsbUiNotifMSMMError::QueryUserResponseL
 // Show query dialog. 
@@ -237,17 +183,9 @@ TInt CUsbUiNotifMSMMError::QueryUserResponseL()
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::QueryUserResponseL"));
     TInt returnValue = KErrNone;
     TInt resourceId = R_USB_QUERY_OTG_ERROR;
-    if (iDismissed)
-        {
-        iQuery = CAknQueryDialog::NewL();
-        }
-    else
-        {
-        iQuery = CAknQueryDialog::NewL( CAknQueryDialog::EErrorTone );
-        }
-    
-    
-    iDismissed=EFalse;
+
+    iQuery = CAknQueryDialog::NewL( CAknQueryDialog::EErrorTone );
+
     if (iCoverDisplaySupported)
         {
         iQuery->PublishDialogL( iErrorId, KUsbUiNotifMsmmError );

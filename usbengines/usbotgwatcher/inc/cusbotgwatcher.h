@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  OTG watcher state machine owner
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  OTG watcher state machine owner
+ *
+ */
 
 #ifndef C_USBOTGWATCHER_H
 #define C_USBOTGWATCHER_H
@@ -88,17 +87,20 @@ class CUsbOtgWatcher : public CBase,
     friend class CtUsbOtgWatcher;
 
 public:
+
     /**
      * Two-phased constructor.
      * @param aUsb usbman API
      */
-    IMPORT_C static CUsbOtgWatcher* NewL(RUsb& aUsb);
+    IMPORT_C
+    static CUsbOtgWatcher* NewL(RUsb& aUsb);
 
     /**
      * Check ID-Pin state
      * @return ETrue if the ID-Pin is present (A-Device)
      */
-    IMPORT_C TBool IsDeviceA();
+    IMPORT_C
+    TBool IsDeviceA();
 
     /**
      * Destructor.
@@ -159,7 +161,7 @@ public:
     /**
      * Id Pin On
      * @param aError
-     */    
+     */
     void IdPinErrorL(TInt aError);
 
     // From VBus observer
@@ -225,7 +227,7 @@ public:
     /**
      * error
      * @param aError error happened
-     */    
+     */
     void BusActivityErrorL(TInt aError);
 
     // From Host Event notification observer
@@ -257,7 +259,7 @@ public:
     /**
      * Error happened during observing
      * @param aError error code
-     */    
+     */
     void HostEventNotificationErrorL(TInt aError);
 
     // From message notification observer
@@ -285,9 +287,9 @@ public:
     /**
      * Error handler
      * @param error code
-     */    
+     */
     void MessageNotificationErrorL(TInt aError);
-    
+
     // From CUsbServiceControl
     /**
      * called when request for usb services is completed
@@ -348,32 +350,34 @@ public:
     CUsbNotifManager* NotifManager();
     /**
      * @return Handle state 
+     * @param aStateId state id 
      */
-    CUsbStateHostHandle* HostHandle() const;
+    CUsbStateHostHandle* HostHandle(TUsbStateIds aStateId) const;
 
     /**
      * Handles problems in host functioning
      * @param aWhatKindOf problem Id to be handled
+     * @param aInState state id where to handle
      */
-    void HandleHostProblemL(TInt aWhatKindOf);
-    
+    void HandleHostProblemL(TInt aWhatKindOf, TUsbStateIds aInState);
+
     /**
      * Add observer to USb Otg state machine
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbOtgWatcherStateObserver* aObserver);
+    void SubscribeL(MUsbOtgWatcherStateObserver& aObserver);
 
     /**
      * Remove observer from UsbOtg state observer
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbOtgWatcherStateObserver* aObserver);
+    void UnsubscribeL(MUsbOtgWatcherStateObserver& aObserver);
 
     /**
      * Used for test purposes
      */
     void PrintStateToLog();
-    
+
 private:
 
     /**
@@ -405,12 +409,12 @@ private:
      * @param aNewStateId new host state (id)
      */
     void ChangeHostStateL(TUsbStateIds aNewStateId);
-    
+
     /**
      * Used for test purposes
      * @return KErrNone if test is OK, otherwise errorcode
      */
-     TInt SelfTestL();
+    TInt SelfTestL();
 
 private:
     // data
@@ -491,12 +495,18 @@ private:
      * Own.  
      */
     CUsbServiceControl* iUsbServiceControl;
-    
+
     /**
      * The observer reports state changes to its own observers
      * Not Own
      */
     RPointerArray<MUsbOtgWatcherStateObserver> iOtgStateObservers;
+
+    /**
+     * The observer reports state changes to its own observers
+     * Not Own
+     */
+    CUsbServiceControl::TUsbServiceRequest iUsbServiceRequest;
     };
 
 #endif //  C_USBOTGWATCHER_H

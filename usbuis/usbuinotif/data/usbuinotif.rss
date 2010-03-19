@@ -244,8 +244,8 @@ RESOURCE TBUF r_usb_otg_error_hub_unsupported {
 RESOURCE TBUF r_usb_otg_error_unrecoverable { 
     buf = qtn_usb_otg_error_unrecoverable; }
 
-RESOURCE TBUF r_usb_otg_warning_partial_supported { 
-    buf = qtn_usb_otg_warning_partial_supported; }
+RESOURCE TBUF r_usb_otg_warning_partial_support { 
+    buf = qtn_usb_otg_warning_partial_support; }
 
 RESOURCE TBUF r_usb_no_memory_card {
     buf = qtn_usb_mode_query_no_memory_card; }
@@ -262,4 +262,7 @@ RESOURCE TBUF r_usb_msmm_error_general_mass_storage_error {
 RESOURCE TBUF r_usb_msmm_error_out_of_memory { 
     buf = qtn_memlo_not_enough_memory; }
 
+RESOURCE TBUF r_usb_error_memory_not_enough { 
+    buf = qtn_usb_error_memory_not_enough; }
+	
 // End of File

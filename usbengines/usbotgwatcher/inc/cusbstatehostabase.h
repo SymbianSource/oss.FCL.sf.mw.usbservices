@@ -1,25 +1,25 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation of the conctet state
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation of the conctet state
+ *
+ */
 
 #ifndef C_USBSTATEHOSTABASE_H
 #define C_USBSTATEHOSTABASE_H
 
 #include "cusbstate.h"
+#include "definitions.h"
 
 class CUsbOtgWatcher;
 /**
@@ -40,20 +40,13 @@ protected:
      * default construction
      * @param aWatcher owner
      */
-    CUsbStateHostABase(CUsbOtgWatcher* aWatcher);
+    CUsbStateHostABase(CUsbOtgWatcher& aWatcher);
 
     /**
      * second phase construction
      */
     void ConstructL();
 
-    /**
-     * Handles special situation (error, or something else)
-     * @param aWhat to hande (id)
-     */
-    virtual void HandleL(TInt aWhat);
-
-    //from CUsbState
     // From VBus observer
     /**
      * VBus down
@@ -71,6 +64,16 @@ protected:
      */
     virtual void AVBusErrorL();
 
+    /**
+     * VBus error happen
+     */
+    virtual void AHostL();
+
+    /**
+     * VBus error happen
+     */
+    virtual void APeripheralL();
+
     // From bus activity observer
     /**
      * Bus is in idle
@@ -87,6 +90,10 @@ protected:
      * @param aMessage message id
      */
     virtual void MessageNotificationReceivedL(TInt aMessage);
+    /**
+     * SRP request received
+     */
+    virtual void SrpReceivedL();
     /**
      * Connected to hub in wrong level 
      */

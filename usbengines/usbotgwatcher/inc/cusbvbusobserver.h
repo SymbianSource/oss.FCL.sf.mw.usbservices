@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implements VBus observer
+ * Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implements VBus observer
+ *
+ */
 
 #ifndef C_USBVBUSOBSERVER_H
 #define C_USBVBUSOBSERVER_H
@@ -41,7 +40,7 @@ public:
     /**
      * error handler
      * @param aError error code
-     */   
+     */
     virtual void VBusObserverErrorL(TInt aError)=0;
 
     };
@@ -80,13 +79,13 @@ public:
      * Adds observer to a list
      * @param aObserver observer
      */
-    void SubscribeL(MUsbVBusObserver* aObserver);
+    void SubscribeL(MUsbVBusObserver& aObserver);
 
     /**
      * removes observer from list
      * @param aObserver observer
      */
-    void UnsubscribeL(MUsbVBusObserver* aObserver);
+    void UnsubscribeL(MUsbVBusObserver& aObserver);
 
 private:
 
@@ -128,7 +127,7 @@ private:
 
     /**
      * The observer reports state changes to own observers
-     * Own
+     * Not owns
      */
     RPointerArray<MUsbVBusObserver> iObservers;
 

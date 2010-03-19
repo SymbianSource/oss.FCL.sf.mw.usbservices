@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,14 +29,11 @@ VENDORID	VID_DEFAULT
 SOURCEPATH      ../src
 SOURCE          usbuinmain.cpp
 SOURCE	        usbnotifier.cpp
+SOURCE          usbuincableconnectednotifier.cpp
 SOURCE          usbuinqueriesnotifiermdrv.cpp
 SOURCE          usbuinotifotgwarning.cpp
 SOURCE          usbuinotifotgerror.cpp 
 SOURCE          usbuinotifmsmmerror.cpp
-SOURCE          usbuinotifdialerwatcher.cpp
-
-
-
 // ECom resource file
 START RESOURCE ../data/102068DC.rss
 TARGET  usbuinotif.rsc 
@@ -51,8 +48,9 @@ END
 
 USERINCLUDE     ../inc
 
-SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(SecondaryDisplay/)    //for internal and private API headers
-SYSTEMINCLUDE   /epoc32/include/ecom
+SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(secondarydisplay/)    //for internal and private API headers
+SYSTEMINCLUDE   /EPOC32/INCLUDE/ECOM
+SYSTEMINCLUDE   /epoc32/include/mw/hb/hbcore 
 MW_LAYER_SYSTEMINCLUDE
 
 
@@ -67,7 +65,6 @@ LIBRARY eikdlg.lib                          // Eikon dialogs
 LIBRARY estor.lib                           // for Cover Display UI support
 LIBRARY FeatMgr.lib                         // for fetching if Cover Display is supported
 LIBRARY centralrepository.lib               // Central Repository
-LIBRARY aknmemorycardui.lib                 // for unlocking the MMC
 LIBRARY efsrv.lib                           // File server
 LIBRARY eikcore.lib                         // for icons
 LIBRARY aknskins.lib 
@@ -78,8 +75,7 @@ LIBRARY usbman.lib                          // for personality IDs and descripti
 LIBRARY aknnotifierwrapper.lib              // Avkon's notifier wrapper
 LIBRARY         apparc.lib 
 LIBRARY akncapserverclient.lib              // for suppressing the application key
-LIBRARY viewcli.lib 
-LIBRARY featmgr.lib
+LIBRARY hbcore.lib
 
 DEBUGLIBRARY flogger.lib                    // File logging services
 

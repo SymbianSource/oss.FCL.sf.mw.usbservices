@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Usb warning notifier implementation
+ * Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Usb warning notifier implementation
+ *
+ */
 
 #ifndef C_USBWARNINGNOTIFIER_H
 #define C_USBWARNINGNOTIFIER_H
@@ -40,7 +39,7 @@ public:
      * @return Pointer to the new instance of CUsbWarningNotifier
      */
     static CUsbWarningNotifier* NewL(RNotifier& aNotifier,
-            CUsbNotifManager* aNotifManager, TUint aNotifId);
+            CUsbNotifManager& aNotifManager, TUint aNotifId);
 
     /**
      * Destructor.
@@ -56,7 +55,7 @@ private:
      * @param aNotifId Id of the notifier
      */
     CUsbWarningNotifier(RNotifier& aNotifier,
-            CUsbNotifManager* aNotifManager, TUint aNotifId);
+            CUsbNotifManager& aNotifManager, TUint aNotifId);
 
     /**
      * 2nd phase construction

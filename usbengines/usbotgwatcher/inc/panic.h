@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Central place for debug-type macros & functions
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Central place for debug-type macros & functions
+ *
+ */
 #ifndef USBWATCHER_PANIC_H
 #define USBWATCHER_PANIC_H
 #include <e32base.h>
@@ -107,10 +106,15 @@ enum TUsbWatcherPanic
     EWrongTimerId, //66
     EUnexpectedNotifId, //67
     EUnknownUsbServiceState, //68
-    EUnexpectedUsbServiceState,    //69
+    EUnexpectedUsbServiceState, //69
     EUnexpectedUsbSwitchPersonalityState, //70
-    
-    ECanNotFindUsbOtgWatcherStateObserver //71
+
+    ECanNotFindUsbOtgWatcherStateObserver, //71
+    ENoObserverToUnsubscribe, // 72
+    EObserverAlreadyExists, //73
+    EIdForNotDefinedStateRequested, //74
+    ECanNotFindHostEventNotificationObserver, //75
+    ENoTimersDefinedForThisClass    //76
 
     };
 

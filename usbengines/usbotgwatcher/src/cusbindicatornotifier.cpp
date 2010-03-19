@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Blink/show Usb indicator notifier implementation
+ * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Blink/show Usb indicator notifier implementation
+ *
+ */
 
 #include <AknSmallIndicator.h>
 #include <avkon.hrh>
@@ -33,11 +32,13 @@
 // Two-phased constructor.
 // -----------------------------------------------------------------------------
 //
-CUsbIndicatorNotifier* CUsbIndicatorNotifier::NewL(CUsbNotifManager* aNotifManager, CUsbOtgWatcher* aOtgWatcher)
+CUsbIndicatorNotifier* CUsbIndicatorNotifier::NewL(
+        CUsbNotifManager& aNotifManager, CUsbOtgWatcher& aOtgWatcher)
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::NewL" ));
+    LOG_FUNC
 
-    CUsbIndicatorNotifier* self = new (ELeave) CUsbIndicatorNotifier(aNotifManager, aOtgWatcher);
+    CUsbIndicatorNotifier* self = new (ELeave) CUsbIndicatorNotifier(
+            aNotifManager, aOtgWatcher);
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self);
@@ -50,34 +51,30 @@ CUsbIndicatorNotifier* CUsbIndicatorNotifier::NewL(CUsbNotifManager* aNotifManag
 //
 CUsbIndicatorNotifier::~CUsbIndicatorNotifier()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::~CUsbIndicatorNotifier" ) );
-        
+    LOG_FUNC
+
     Close();
     delete iIconBlinkingTimer;
-    
-    // Unsubscribe from VBus change notifications
-    if(iOtgWatcher)
+
+    if (iOtgWatcher.VBusObserver())
         {
-        if(iOtgWatcher->VBusObserver())
-            {
-            TRAPD(err, iOtgWatcher->VBusObserver()->UnsubscribeL(this));
-            err=err; // to avoid warning;
-            }
-        
-        // Unsubscribe from otg watcher states change notifications
-        TRAPD(err, iOtgWatcher->UnsubscribeL(this));
-        err=err; // to avoid warning; 
+        TRAP_IGNORE(iOtgWatcher.VBusObserver()->UnsubscribeL(*this));
         }
+
+    // Unsubscribe from otg watcher states change notifications
+    TRAP_IGNORE(iOtgWatcher.UnsubscribeL(*this));
     }
 
 // ---------------------------------------------------------------------------
 // C++ constructor
 // ---------------------------------------------------------------------------
 //
-CUsbIndicatorNotifier::CUsbIndicatorNotifier(CUsbNotifManager* aNotifManager, CUsbOtgWatcher* aOtgWatcher) :
-    CUsbNotifier(aNotifManager, KUsbUiNotifOtgIndicator, NULL), iOtgWatcher(aOtgWatcher)
+CUsbIndicatorNotifier::CUsbIndicatorNotifier(CUsbNotifManager& aNotifManager,
+        CUsbOtgWatcher& aOtgWatcher) :
+    CUsbNotifier(aNotifManager, KUsbUiNotifOtgIndicator, NULL), iOtgWatcher(
+            aOtgWatcher)
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::CUsbIndicatorNotifier" ) );
+    LOG_FUNC
 
     //To be changed to EAknIndicatorStateAnimate and remove iIconBlinkingTimer
     //when AVKON implements animation form of usb indicator.
@@ -90,16 +87,16 @@ CUsbIndicatorNotifier::CUsbIndicatorNotifier(CUsbNotifManager* aNotifManager, CU
 //
 void CUsbIndicatorNotifier::ConstructL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::ConstructL" ) );
-    
-    // Subscribe for VBus change notifications
-    iOtgWatcher->VBusObserver()->SubscribeL(this);
-    
-    // Subscribe for otg watcher states change notifications
-    iOtgWatcher->SubscribeL(this);
+    LOG_FUNC
 
-    iIconBlinkingTimer = CUsbTimer::NewL(this, EIconBlinkingTimer);
-    
+    // Subscribe for VBus change notifications
+    iOtgWatcher.VBusObserver()->SubscribeL(*this);
+
+    // Subscribe for otg watcher states change notifications
+    iOtgWatcher.SubscribeL(*this);
+
+    iIconBlinkingTimer = CUsbTimer::NewL(*this, EIconBlinkingTimer);
+
     // check here for condition to set usb indicator
     SetIndicatorL();
 
@@ -113,11 +110,15 @@ void CUsbIndicatorNotifier::ConstructL()
 //
 void CUsbIndicatorNotifier::ShowStaticL(TBool aVisible)
     {
-    FTRACE( FPrint (_L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::ShowStaticL, aVisible=%d" ), aVisible));
+    LOG_FUNC
+
+    LOG1("aVisible = %d" , aVisible);
 
     iIconBlinkingTimer->Cancel();
 
-    SetIndicatorStateL(aVisible ? EAknIndicatorStateOn : EAknIndicatorStateOff);    
+    SetIndicatorStateL(aVisible
+                                ? EAknIndicatorStateOn
+                                   : EAknIndicatorStateOff);
     }
 
 // ---------------------------------------------------------------------------
@@ -126,7 +127,7 @@ void CUsbIndicatorNotifier::ShowStaticL(TBool aVisible)
 //
 void CUsbIndicatorNotifier::BlinkL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::BlinkL" ));
+    LOG_FUNC
 
     // Will be canceled if active in After()
     iIconBlinkingTimer->After(0);
@@ -138,8 +139,8 @@ void CUsbIndicatorNotifier::BlinkL()
 //
 void CUsbIndicatorNotifier::ShowL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::ShowL" ) );
-    
+    LOG_FUNC
+
     ShowStaticL(ETrue);
     }
 
@@ -149,8 +150,8 @@ void CUsbIndicatorNotifier::ShowL()
 //
 void CUsbIndicatorNotifier::Close()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::Close" ) );
-    
+    LOG_FUNC
+
     iIconBlinkingTimer->Cancel();
     TRAP_IGNORE( ShowStaticL(EFalse) );
     }
@@ -165,10 +166,14 @@ void CUsbIndicatorNotifier::TimerElapsedL(TUsbTimerId aTimerId)
         {
         case EIconBlinkingTimer:
             {
-            SetIndicatorStateL(iIndicatorState ? EAknIndicatorStateOn : EAknIndicatorStateOff);    
+            SetIndicatorStateL(iIndicatorState
+                                               ? EAknIndicatorStateOn
+                                                  : EAknIndicatorStateOff);
 
-            iIndicatorState = (iIndicatorState == EAknIndicatorStateOn
-                                    ? EAknIndicatorStateOff : EAknIndicatorStateOn);
+            iIndicatorState
+                    = (iIndicatorState == EAknIndicatorStateOn
+                                                               ? EAknIndicatorStateOff
+                                                                  : EAknIndicatorStateOn);
 
             // Will be canceled if active in After()
             iIconBlinkingTimer->After(KUsbIndicatorBlinkingInterval);
@@ -176,8 +181,7 @@ void CUsbIndicatorNotifier::TimerElapsedL(TUsbTimerId aTimerId)
             }
         default:
             {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::TimerElapsedL - Unknown timer" ) );
-            
+            LOG1("Unknown timer id = %d", aTimerId)
             Panic(EWrongTimerId);
             }
         }
@@ -189,11 +193,13 @@ void CUsbIndicatorNotifier::TimerElapsedL(TUsbTimerId aTimerId)
 //
 void CUsbIndicatorNotifier::SetIndicatorStateL(const TInt aState)
     {
-    FTRACE( FPrint (_L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::SetIndicatorStateL - aState=%d" ), aState));
 
-    CAknSmallIndicator* indicator = CAknSmallIndicator::NewLC(TUid::Uid(EAknIndicatorUSBConnection));
-    indicator->SetIndicatorStateL( aState );
-    CleanupStack::PopAndDestroy( indicator ); //indicator    
+    LOG1( "USB indicator State = %d" , aState);
+
+    CAknSmallIndicator* indicator = CAknSmallIndicator::NewLC(TUid::Uid(
+            EAknIndicatorUSBConnection));
+    indicator->SetIndicatorStateL(aState);
+    CleanupStack::PopAndDestroy(indicator); //indicator    
     }
 
 // ---------------------------------------------------------------------------
@@ -202,7 +208,6 @@ void CUsbIndicatorNotifier::SetIndicatorStateL(const TInt aState)
 //
 void CUsbIndicatorNotifier::OtgWatcherStateChangedL(TUsbStateIds aState)
     {
-    FTRACE( FPrint (_L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::OtgWatcherStateChangedL - aState=%d" ), aState));
     SetIndicatorL();
     }
 
@@ -212,7 +217,6 @@ void CUsbIndicatorNotifier::OtgWatcherStateChangedL(TUsbStateIds aState)
 //
 void CUsbIndicatorNotifier::VBusDownL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::VBusDownL" ) );
     SetIndicatorL();
     }
 
@@ -222,7 +226,6 @@ void CUsbIndicatorNotifier::VBusDownL()
 //
 void CUsbIndicatorNotifier::VBusUpL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::VBusUpL" ) );
     SetIndicatorL();
     }
 
@@ -232,8 +235,7 @@ void CUsbIndicatorNotifier::VBusUpL()
 //  
 void CUsbIndicatorNotifier::VBusObserverErrorL(TInt aError)
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::VBusObserverErrorL" ) );
-    // do not care
+    // do nothing
     }
 
 // ---------------------------------------------------------------------------
@@ -242,24 +244,22 @@ void CUsbIndicatorNotifier::VBusObserverErrorL(TInt aError)
 //  
 void CUsbIndicatorNotifier::SetIndicatorL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::SetIndicatorL" ) );
-    
-    if (!(iOtgWatcher->IsDeviceA()))
+    if (!(iOtgWatcher.IsDeviceA()))
         {
         // if B, than other party (usbwatcher) takes care of usb indicator
         // in combined usbwatcher (if role swap allowed) one class has to manage usb indicator 
         return;
         }
-    
+
     // if VBus Up and we are host -> show indicator
-    if ((iOtgWatcher->VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp) &&
-            (iOtgWatcher->CurrentHostState()->Id() == EUsbStateHostAHost))
+    if ((iOtgWatcher.VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp)
+            && (iOtgWatcher.CurrentHostState()->Id() == EUsbStateHostAHost))
         {
         ShowStaticL(ETrue);
         }
     // if VBus up and we are not host -> Blink indicator
-    else if((iOtgWatcher->VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp) &&
-            (iOtgWatcher->CurrentHostState()->Id() != EUsbStateHostAHost))
+    else if ((iOtgWatcher.VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp)
+            && (iOtgWatcher.CurrentHostState()->Id() != EUsbStateHostAHost))
         {
         BlinkL();
         }

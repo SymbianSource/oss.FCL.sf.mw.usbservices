@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -47,7 +47,9 @@ const TUint32 KWaitMscToComplete = 50000; // 50 ms
 // ----------------------------------------------------------------------------
 //
 CUsbActiveMscHandler::CUsbActiveMscHandler(TUsbPersonalityParams& aPersonalityParams)
-    : CUsbPersonalityPlugin(aPersonalityParams), iMountChanged(EFalse)
+    : CUsbPersonalityPlugin(aPersonalityParams), 
+      iMountChanged(EFalse),
+      iIsQueryNoteShown(EFalse)
     {
     CActiveScheduler::Add( this );
     }
@@ -256,9 +258,13 @@ void CUsbActiveMscHandler::FinishPersonalityStop(TRequestStatus& aStatus)
         
     RemoveMassStorageFileSystem();
 
-    // Remove all queries shown by this personality
-    iPersonalityParams.PersonalityNotifier().CancelQuery(KQueriesNotifier);
-
+    if (iIsQueryNoteShown)
+        {
+        // Remove all queries shown by this personality
+        iPersonalityParams.PersonalityNotifier().CancelQuery(KQueriesNotifier);
+        iIsQueryNoteShown = EFalse;
+        }
+        
     iMscState = EUsbMscStateIdle;
 
     iRequestStatus = &aStatus;
@@ -295,6 +301,7 @@ void CUsbActiveMscHandler::StateChangeNotify( TUsbDeviceState aState )
                     {
                     if ( GlobalSystemState() == EUsbGSStateCategoryNormal )
                         {
+                        iIsQueryNoteShown = ETrue;
                         // if the error is something abnormal, note still needs to be shown
                         iQueryParams().iQuery = EUSBStorageMediaFailure;
                         iPersonalityParams.PersonalityNotifier().ShowQuery(
@@ -491,6 +498,7 @@ TInt CUsbActiveMscHandler::GetDrives()
         {
         FLOG( _L( "[USBWATCHER]\tCUsbActiveMscHandler::GetDrives: No removable drives found." ) );
 
+        iIsQueryNoteShown = ETrue;
         iQueryParams().iQuery = EUSBStorageMediaFailure;
         iPersonalityParams.PersonalityNotifier().ShowQuery(KQueriesNotifier, iQueryParams, iDummy);
 

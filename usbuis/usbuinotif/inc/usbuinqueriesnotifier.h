@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -22,7 +22,6 @@
 
 #include "usbnotifier.h"      // Base class
 #include <AknQueryDialog.h>   // AVKON component
-#include <aknmemorycarddialog.h>
 
 // CLASS DECLARATION
 
@@ -31,8 +30,7 @@
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUSBUIQueriesNotifier) : public CUSBUINotifierBase,
-        public MAknMemoryCardDialogObserver
+NONSHARABLE_CLASS(CUSBUIQueriesNotifier) : public CUSBUINotifierBase
     {
 public:
     // Constructors and destructor
@@ -47,15 +45,6 @@ public:
      */
     virtual ~CUSBUIQueriesNotifier();
 
-public:
-    // from MAknMemoryCardDialogObserver
-
-    /**
-     * To be notified when unlock completed
-     * @param TInt aResult
-     * @return void
-     */
-    void UnlockComplete(TInt aResult);
 
 private:
     // Functions from base class
@@ -104,15 +93,6 @@ private:
 private:
     // New functions
 
-    /**
-     * Unlock the locked memory card
-     * First inform user that the memory card is locked and then show the
-     * memory card dialog for unlocking. 
-     * @param aStringHolder   The string for the query. 
-     * @param aCoverDialogId  The dialog ID for the cover UI.
-     * @return KErrNone - user accepted, KErrCancel - End call key pressed
-     */
-    TInt UnlockMemoryCardL(const TDesC& aStringHolder, TInt aCoverDialogId);
 
     /**
      * Show query dialog 
@@ -144,8 +124,6 @@ private:
     CAknQueryDialog* iUSBQueryDlg;  
     TUSBUIQueries iQueryType; // To store the type of the query
     TInt iDriveLetter; // For MMC locked case
-    // Used for possible Cancel while the dialog is showing
-    CAknMemoryCardDialog* iMemoryCardDialog;
 
     };
 #endif // USBUINQUERIESNOTIFIER_H

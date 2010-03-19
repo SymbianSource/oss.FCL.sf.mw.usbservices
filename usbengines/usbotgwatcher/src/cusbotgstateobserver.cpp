@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include "cusbotgstateobserver.h"
 
@@ -38,8 +37,7 @@ CUsbOtgStateObserver::CUsbOtgStateObserver() :
 //
 void CUsbOtgStateObserver::ConstructL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::ConstructL" ) );
+    LOG_FUNC
 
     User::LeaveIfError(iOtgState.Attach(KUidUsbManCategory,
             KUsbOtgStateProperty));
@@ -52,8 +50,7 @@ void CUsbOtgStateObserver::ConstructL()
 //
 CUsbOtgStateObserver* CUsbOtgStateObserver::NewL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::NewL" ) );
+    LOG_FUNC
 
     CUsbOtgStateObserver* self = new (ELeave) CUsbOtgStateObserver();
     CleanupStack::PushL(self);
@@ -68,8 +65,7 @@ CUsbOtgStateObserver* CUsbOtgStateObserver::NewL()
 //
 CUsbOtgStateObserver::~CUsbOtgStateObserver()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::~CUsbOtgStateObserver" ) );
+    LOG_FUNC
 
     Cancel();
 
@@ -85,20 +81,15 @@ CUsbOtgStateObserver::~CUsbOtgStateObserver()
 //
 TUsbOtgState CUsbOtgStateObserver::OtgState()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::OtgState" ) );
-
     TInt val(0);
 
     TInt err = iOtgState.Get(val);
 
     if (KErrNone != err)
         {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::StOtgState CanNotGetOtgStateProperty" ) );
-        Panic(ECanNotGetOtgStateProperty);
+        LOG("CanNotGetOtgStateProperty" );
+        Panic( ECanNotGetOtgStateProperty);
         }
-
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::OtgState = %d" ), val ));
 
     return (TUsbOtgState) val;
 
@@ -108,11 +99,18 @@ TUsbOtgState CUsbOtgStateObserver::OtgState()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver* aObserver)
+void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::SubscribeL" ) );
+    LOG_FUNC
 
-    User::LeaveIfError(iObservers.Append(aObserver));
+    // check if the same observer already exist in a list
+    if (KErrNotFound != iObservers.Find(&aObserver))
+        {
+        LOG( "Observer already exists"  );
+        Panic( EObserverAlreadyExists);
+        return;
+        }
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -126,31 +124,21 @@ void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgStateObserver::UnsubscribeL(MUsbOtgStateObserver* aObserver)
+void CUsbOtgStateObserver::UnsubscribeL(MUsbOtgStateObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::UnsubscribeL" ) );
+    LOG_FUNC
 
-        if (0 == iObservers.Count()) // no items
-                {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::UnsubscribeL No observers" ) );
-                return;
-                }
-        
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
-
-    if (aObserver == iObservers[i]) // found
+    TInt i(iObservers.Find(&aObserver));
+    if (KErrNotFound == i)
         {
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::UnsubscribeL CanNotFindOtgStateObserver" ) );
-        Panic(ECanNotFindOtgStateObserver);
+        LOG("Observer not found");
+        Panic( ECanNotFindOtgStateObserver);
+        return;
         }
 
-    if (0 == iObservers.Count()) // no items
+    iObservers.Remove(i);
+
+    if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request
         Cancel();
@@ -163,18 +151,20 @@ void CUsbOtgStateObserver::UnsubscribeL(MUsbOtgStateObserver* aObserver)
 //
 void CUsbOtgStateObserver::RunL()
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::RunL iStatus = %d" ), iStatus.Int()));
+    LOG_FUNC
+
+    LOG1( "iStatus = %d" , iStatus.Int());
 
     // if error occured, tell to Observers
-    if(KErrNone != iStatus.Int()) 
+    if (KErrNone != iStatus.Int())
         {
         for (TInt i(0); i < iObservers.Count(); ++i)
-             {
-             iObservers[i]->OtgStateErrorL(iStatus.Int());
-             }
+            {
+            iObservers[i]->OtgStateErrorL(iStatus.Int());
+            }
         return;
         }
-    
+
     // re-issue request first
     iOtgState.Subscribe(iStatus);
     SetActive();
@@ -186,12 +176,12 @@ void CUsbOtgStateObserver::RunL()
         {
         case EUsbOtgStateReset:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == RESET" ) );
+            LOG("OTGState == RESET" );
             break;
             }
         case EUsbOtgStateAIdle:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == AIdle" ) );
+            LOG("OTGState == AIdle" );
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->AIdleL();
@@ -200,7 +190,7 @@ void CUsbOtgStateObserver::RunL()
             }
         case EUsbOtgStateAHost:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == AHost" ) );
+            LOG( "OTGState == AHost");
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->AHostL();
@@ -209,7 +199,7 @@ void CUsbOtgStateObserver::RunL()
             }
         case EUsbOtgStateAPeripheral:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == APeripheral" ) );
+            LOG("OTGState == APeripheral" );
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->APeripheralL();
@@ -218,7 +208,7 @@ void CUsbOtgStateObserver::RunL()
             }
         case EUsbOtgStateAVbusError:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == AVBusError" ) );
+            LOG("OTGState == AVBusError" );
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->AVBusErrorL();
@@ -227,7 +217,7 @@ void CUsbOtgStateObserver::RunL()
             }
         case EUsbOtgStateBIdle:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == BIdle" ) );
+            LOG( "OTGState == BIdle" );
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->BIdleL();
@@ -236,7 +226,7 @@ void CUsbOtgStateObserver::RunL()
             }
         case EUsbOtgStateBPeripheral:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == BPeripheral" ) );
+            LOG("OTGState == BPeripheral" );
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->BPeripheralL();
@@ -245,7 +235,7 @@ void CUsbOtgStateObserver::RunL()
             }
         case EUsbOtgStateBHost:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL OTGState == BHost" ) );
+            LOG("OTGState == BHost" );
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
                 iObservers[i]->BHostL();
@@ -254,8 +244,8 @@ void CUsbOtgStateObserver::RunL()
             }
         default:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbOTGStateObserver::RunL WrongOtgState" ) );
-            Panic(EWrongOtgState);
+            LOG("WrongOtgState" );
+            Panic( EWrongOtgState);
             }
         }
 
@@ -276,8 +266,9 @@ void CUsbOtgStateObserver::DoCancel()
 //
 TInt CUsbOtgStateObserver::RunError(TInt aError)
     {
+    LOG_FUNC
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgStateObserver::RunError aError = %d" ), aError));
+    LOG1( "aError = %d" , aError);
 
     // try to continue	
     return KErrNone;

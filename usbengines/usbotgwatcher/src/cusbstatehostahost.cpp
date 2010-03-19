@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <e32base.h>
 #include <UsbWatcherInternalPSKeys.h>
@@ -22,15 +21,8 @@
 #include "cusbstatehostahost.h"
 #include "cusbnotifmanager.h"
 
-#ifndef STIF
-#include "cusbtimer.h"
-#else
-#include "mockcusbtimer.h"
-#endif
 #include "definitions.h"
-
 #include "errors.h"
-
 #include "debug.h"
 #include "panic.h"
 
@@ -38,7 +30,7 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAHost::CUsbStateHostAHost(CUsbOtgWatcher* aWatcher) :
+CUsbStateHostAHost::CUsbStateHostAHost(CUsbOtgWatcher& aWatcher) :
     CUsbStateHostABase(aWatcher)
     {
     }
@@ -49,7 +41,7 @@ CUsbStateHostAHost::CUsbStateHostAHost(CUsbOtgWatcher* aWatcher) :
 //
 void CUsbStateHostAHost::ConstructL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::ConstructL" ) );
+    LOG_FUNC
 
     CUsbStateHostABase::ConstructL();
 
@@ -59,9 +51,9 @@ void CUsbStateHostAHost::ConstructL()
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAHost* CUsbStateHostAHost::NewL(CUsbOtgWatcher* aWatcher)
+CUsbStateHostAHost* CUsbStateHostAHost::NewL(CUsbOtgWatcher& aWatcher)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::NewL" ) );
+    LOG_FUNC
 
     CUsbStateHostAHost* self = new (ELeave) CUsbStateHostAHost(aWatcher);
     CleanupStack::PushL(self);
@@ -76,7 +68,7 @@ CUsbStateHostAHost* CUsbStateHostAHost::NewL(CUsbOtgWatcher* aWatcher)
 //
 CUsbStateHostAHost::~CUsbStateHostAHost()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::~CUsbStateHostAHost" ) );
+    LOG_FUNC
 
     }
 
@@ -86,8 +78,6 @@ CUsbStateHostAHost::~CUsbStateHostAHost()
 //
 TUsbStateIds CUsbStateHostAHost::Id()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::Id" ) );
-
     return EUsbStateHostAHost;
     }
 
@@ -97,13 +87,15 @@ TUsbStateIds CUsbStateHostAHost::Id()
 //
 void CUsbStateHostAHost::JustAdvancedToThisStateL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::JustAdvancedToThisStateL" ) );
-    
-    User::LeaveIfError( RProperty::Set( KPSUidUsbWatcher,
-                KUsbWatcherIsPeripheralConnected,
-                KUsbWatcherPeripheralIsConnected ) );
-    
-    iWatcher->PrintStateToLog();
+    LOG_FUNC
+
+    // do general things 
+    CUsbStateHostABase::JustAdvancedToThisStateL();
+
+    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
+            KUsbWatcherIsPeripheralConnected,
+            KUsbWatcherPeripheralIsConnected));
+
     }
 
 // ---------------------------------------------------------------------------
@@ -112,31 +104,14 @@ void CUsbStateHostAHost::JustAdvancedToThisStateL()
 //
 void CUsbStateHostAHost::JustBeforeLeavingThisStateL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::JustBeforeLeavingThisStateL" ) );
-        
-        User::LeaveIfError( RProperty::Set( KPSUidUsbWatcher,
-                    KUsbWatcherIsPeripheralConnected,
-                    KUsbWatcherPeripheralIsNotConnected ) );
-    }
+    LOG_FUNC
 
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostAHost::AHostL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::AHostL" ) );
-    // do nothing
-    }
+    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
+            KUsbWatcherIsPeripheralConnected,
+            KUsbWatcherPeripheralIsNotConnected));
 
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostAHost::APeripheralL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostABase::AHostL" ) );
-    ChangeHostStateL(EUsbStateHostAPeripheral);
+    // do general things 
+    CUsbStateHostABase::JustBeforeLeavingThisStateL();
     }
 
 // ---------------------------------------------------------------------------
@@ -145,8 +120,8 @@ void CUsbStateHostAHost::APeripheralL()
 //
 void CUsbStateHostAHost::DeviceDetachedL(TDeviceEventInformation)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::DeviceDetachedL" ) );
-    ChangeHostStateL(EUsbStateHostAInitiate);
+    LOG_FUNC
+    ChangeHostStateL( EUsbStateHostAInitiate);
     }
 
 // ---------------------------------------------------------------------------
@@ -155,6 +130,6 @@ void CUsbStateHostAHost::DeviceDetachedL(TDeviceEventInformation)
 //
 void CUsbStateHostAHost::BadHubPositionL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::BadHubPositionL" ) );
-    Panic(EBadHubPositionEventNotExpected);
+    LOG_FUNC
+    Panic( EBadHubPositionEventNotExpected);
     }

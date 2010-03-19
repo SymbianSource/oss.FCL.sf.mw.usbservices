@@ -20,8 +20,8 @@
 
 // INCLUDES
 
-#include <aknlistquerydialog.h> 
-#include <AknQueryDialog.h>
+#include <hbsymbiandevicedialog.h>
+#include <hbsymbianvariant.h>
 
 #include "usbnotifier.h" // Base class
 // CLASS DECLARATION
@@ -31,8 +31,8 @@
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUSBUICableConnectedNotifier) : public CUSBUINotifierBase,
-       public MEikCommandObserver
+NONSHARABLE_CLASS(CUSBUICableConnectedNotifier) : public CUSBUINotifierBase, 
+    public MHbDeviceDialogObserver
     {
 public:
     // Constructors and destructor
@@ -84,10 +84,22 @@ private:
     void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
  
+       
+private:
+    // functions from MHbDeviceDialogObserver
+   
     /**
-     * Handles the command on USB connected note
-     */
-    void ProcessCommandL(TInt aCommandId);
+    * lunches the QT usb ui setting
+    * @param aData is a CHbSymbianVariantMap daya which contains the keys
+    */ 
+    void DataReceived(CHbSymbianVariantMap& aData);
+    /*
+     * Virtual function from MHbDeviceDialogObserver
+     * Not implemented
+     */     
+    void DeviceDialogClosed(TInt aCompletionCode);
+         
+    
 
 private:
     //New functions
@@ -98,10 +110,12 @@ private:
     void GetCurrentIdL(TInt& aCurrentPersonality);
     /**
      * Get the mode name and header for current personality
+     * The parameters are pushed to the cleanup stack in order
+     * aDescription, aHeader.
      * @param aDescription The returned current personality string.
      * @param aHeader The header string for message query.
      */
-    void GetPersonalityStringL(HBufC*& aHeader,HBufC*& aDescription );
+    void GetPersonalityStringLC(HBufC*& aHeader,HBufC*& aDescription );
 
     /**
      * Runs the connected discreet note
@@ -110,26 +124,28 @@ private:
 
   
     /**
-     * creates the USB UI setting view
-     * @param aProcessName The process name (USBClassChangeUI.exe)
+     * launches the (USB) application
+     * @param aProcessName The process name (*.exe)
      * @param TUidType 
      */
-    void CreateChosenViewL(const TDesC & aProcessName,const TUidType & aUidType) const;
+    void LaunchApplication(const TDesC & aProcessName,const TUidType & aUidType) const;
+
+    /**
+     * Adds a parameter to the dialog parameters.
+     */
+    void AddParameterL(
+            CHbSymbianVariantMap* aParameters,
+            const TDesC& aKey,
+            const TAny* aData,
+            CHbSymbianVariant::TType aDataType);
+
 private:
     /**
      *  C++ default constructor.
      */
     CUSBUICableConnectedNotifier();
     
-    /**
-     * Waiter for canceling notifier. Canceling is not posible when note is visible
-     */
-    CActiveSchedulerWait    iNoteWaiter;    
-    
-    /**
-    * Note visible
-    */
-    TBool   iNoteVisible;
+    CHbDeviceDialog* iDialog; 
 
     };
 #endif // USBUINCABLECONNECTEDNOTIFIER_H
