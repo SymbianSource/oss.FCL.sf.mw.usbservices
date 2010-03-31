@@ -54,7 +54,6 @@ CUsbIndicatorNotifier::~CUsbIndicatorNotifier()
     LOG_FUNC
 
     Close();
-    delete iIconBlinkingTimer;
 
     if (iOtgWatcher.VBusObserver())
         {
@@ -95,11 +94,8 @@ void CUsbIndicatorNotifier::ConstructL()
     // Subscribe for otg watcher states change notifications
     iOtgWatcher.SubscribeL(*this);
 
-    iIconBlinkingTimer = CUsbTimer::NewL(*this, EIconBlinkingTimer);
-
     // check here for condition to set usb indicator
     SetIndicatorL();
-
     }
 
 // ---------------------------------------------------------------------------
@@ -114,8 +110,6 @@ void CUsbIndicatorNotifier::ShowStaticL(TBool aVisible)
 
     LOG1("aVisible = %d" , aVisible);
 
-    iIconBlinkingTimer->Cancel();
-
     SetIndicatorStateL(aVisible
                                 ? EAknIndicatorStateOn
                                    : EAknIndicatorStateOff);
@@ -129,8 +123,7 @@ void CUsbIndicatorNotifier::BlinkL()
     {
     LOG_FUNC
 
-    // Will be canceled if active in After()
-    iIconBlinkingTimer->After(0);
+    SetIndicatorStateL( EAknIndicatorStateAnimate );
     }
 
 // ---------------------------------------------------------------------------
@@ -152,39 +145,7 @@ void CUsbIndicatorNotifier::Close()
     {
     LOG_FUNC
 
-    iIconBlinkingTimer->Cancel();
     TRAP_IGNORE( ShowStaticL(EFalse) );
-    }
-
-// ---------------------------------------------------------------------------
-// From MUsbTimerObserver
-// ---------------------------------------------------------------------------
-// 
-void CUsbIndicatorNotifier::TimerElapsedL(TUsbTimerId aTimerId)
-    {
-    switch (aTimerId)
-        {
-        case EIconBlinkingTimer:
-            {
-            SetIndicatorStateL(iIndicatorState
-                                               ? EAknIndicatorStateOn
-                                                  : EAknIndicatorStateOff);
-
-            iIndicatorState
-                    = (iIndicatorState == EAknIndicatorStateOn
-                                                               ? EAknIndicatorStateOff
-                                                                  : EAknIndicatorStateOn);
-
-            // Will be canceled if active in After()
-            iIconBlinkingTimer->After(KUsbIndicatorBlinkingInterval);
-            break;
-            }
-        default:
-            {
-            LOG1("Unknown timer id = %d", aTimerId)
-            PANIC(EWrongTimerId);
-            }
-        }
     }
 
 // ---------------------------------------------------------------------------

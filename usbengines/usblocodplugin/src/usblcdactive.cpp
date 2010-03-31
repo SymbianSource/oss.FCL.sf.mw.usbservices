@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -79,26 +79,14 @@ void CUsbLcdActive::RunL()
     else
        {
 
-        TInt ret = RProperty::Get(KPSUidUsbWatcher, KUsbWatcherSelectedPersonality, value);
-        LOGTEXT2(_L8("CUsbLcdActive::RunL() Personality = %d"), value);  
+        TInt ret = iProperty.Get( value );
+        LOGTEXT3(_L8("Personality: %d, ret: %d"), value, ret);  
         iProperty.Subscribe(iStatus);
         SetActive();
         if (ret == KErrNone)
-        { 
-        switch (value)
-            {
-            case KUsbPersonalityIdPCSuite:
-            case KUsbPersonalityIdPCSuiteMTP:
-                NotifyLcd(ETrue);
-                LOGTEXT(_L8("CUsbLcdActive::RunL() in PC Suite mode"));
-                break;
-               
-            default:
-                NotifyLcd(EFalse);
-                LOGTEXT(_L8("CUsbLcdActive::RunL() mode is not PC Suite"));
-                break;
-            }
-        }    
+            { 
+            HandleUsbPersonalityChange( value );
+            }    
        }
     }
 
@@ -145,17 +133,33 @@ void CUsbLcdActive::Start()
     LOG_FUNC
     iProperty.Subscribe(iStatus);
     SetActive();
+    // Check the starting state
+    TInt usbPersonalityId( KUsbWatcherSelectedPersonalityNone );
+    TInt ret = iProperty.Get( usbPersonalityId );
+    if ( ( ret == KErrNone ) && 
+        ( usbPersonalityId != KUsbWatcherSelectedPersonalityNone ) )
+        {
+        HandleUsbPersonalityChange( usbPersonalityId ); 
+        }
     }
      
+
 // ---------------------------------------------------------------------------
-// This function notifying LoCoD framewark about active USB personality
-// If Personality == 113 (PC Suite), then ETrue; in all other cases is EFalse 
+// This function handles the USB active personality change, and notify LoCoD
+// framework whether PC Suite is active 
 // ---------------------------------------------------------------------------
 //
-void CUsbLcdActive::NotifyLcd(TBool aUsbStatus)
+void CUsbLcdActive::HandleUsbPersonalityChange( TInt aNewPersonalityId )
     {
     LOG_FUNC
-    iObserver.NotifyBearerStatus(ELocodBearerUSB, aUsbStatus);
+    LOGTEXT2( _L8( "aNewPersonalityId: %d"), aNewPersonalityId );
+    TBool isPcSuiteActive( EFalse );
+    if ( ( aNewPersonalityId == KUsbPersonalityIdPCSuite ) ||
+         ( aNewPersonalityId == KUsbPersonalityIdPCSuiteMTP ) )
+        {
+        isPcSuiteActive = ETrue;
+        }
+    iObserver.NotifyBearerStatus( ELocodBearerUSB, isPcSuiteActive );
     }
     
 //End of file

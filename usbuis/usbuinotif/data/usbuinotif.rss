@@ -264,5 +264,8 @@ RESOURCE TBUF r_usb_msmm_error_out_of_memory {
 
 RESOURCE TBUF r_usb_error_memory_not_enough { 
     buf = qtn_usb_error_memory_not_enough; }
+
+RESOURCE TBUF r_usb_error_disk_full { 
+    buf = qtn_usb_error_disk_full; }
 	
 // End of File

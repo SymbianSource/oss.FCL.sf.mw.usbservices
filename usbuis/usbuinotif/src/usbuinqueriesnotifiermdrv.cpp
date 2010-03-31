@@ -287,23 +287,22 @@ HBufC* CUSBUIQueriesNotifier::GetQueryAttributesLC(TInt& aCoverDialogId,
         {
         case EUSBStorageMediaFailure:
             {
-                FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBStorageMediaFailure"));
+            FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBStorageMediaFailure"));
             stringHolder = StringLoader::LoadLC( R_USB_STORAGE_MEDIA_FAILURE );
             aCoverDialogId = EUSBCoverStorageMediaFailure;
             break;
             }
         case EUSBChangeFromMassStorage:
             {
-                FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBChangeFromMassStorage"));
-            stringHolder = StringLoader::LoadLC(
-                    R_USB_CHANGE_FROM_MASS_STORAGE );
+            FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBChangeFromMassStorage"));
+            stringHolder = StringLoader::LoadLC( R_USB_CHANGE_FROM_MASS_STORAGE );
             aIsCancelKey = ETrue;
             aCoverDialogId = EUSBCoverChangeFromMassStorage;
             break;
             }
         case EUSBNoMemoryCard:
             {
-                FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBNoMemoryCard"));
+            FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBNoMemoryCard"));
             stringHolder = StringLoader::LoadLC( R_USB_NO_MEMORY_CARD );
             aCoverDialogId = EUSBCoverNoMemoryCard;
             break;
@@ -317,11 +316,19 @@ HBufC* CUSBUIQueriesNotifier::GetQueryAttributesLC(TInt& aCoverDialogId,
             aIsErrorQuery = ETrue;
             break;
             }
+        case EUSBDiskFull:
+          	{
+            FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBDiskFull"));
+            stringHolder = StringLoader::LoadLC( R_USB_ERROR_DISK_FULL );
+            aCoverDialogId = EUSBCoverNoMemoryCard;
+            //set flag to change the icon of querydialog (see QueryUserResponseL())
+            aIsErrorQuery = ETrue;
+            break;
+            }
         default:
             {
-                FTRACE( FPrint(
-                                _L( "[USBUINOTIF]\t CUSBUIQueriesNotifier::ERROR! Unknown query type: %d" ),
-                                iQueryType ) );
+            FTRACE( FPrint( _L( "[USBUINOTIF]\t CUSBUIQueriesNotifier::ERROR! Unknown query type: %d" ),
+                            iQueryType ) );
             }
         }
     FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::GetQueryAttributesLC completed"));

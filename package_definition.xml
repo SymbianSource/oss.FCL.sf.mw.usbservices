@@ -14,7 +14,7 @@
       <component id="pictbridgeengine" filter="s60" name="PictBridge Engine">
         <unit bldFile="usbclasses/pictbridgeengine/group"/>
       </component>
-      <component id="usbphoneasmodem" filter="s60" name="USB Phone As Modem">
+      <component id="usbphoneasmodem" filter="s60" name="USB Phone as Modem" introduced="^3">
         <unit bldFile="usbclasses/usbphoneasmodem/group"/>
       </component>
     </collection>
@@ -31,7 +31,7 @@
       <component id="usbremotepersonality" filter="s60" name="USB Remote Personality">
         <unit bldFile="usbengines/usbremotepersonality/group"/>
       </component>
-      <component id="usbotgwatcher" filter="s60" name="USB OTG Watcher">
+      <component id="usbotgwatcher" filter="s60" name="USB OTG Watcher" introduced="^3">
         <unit bldFile="usbengines/usbotgwatcher/group"/>
       </component>
     </collection>
@@ -50,9 +50,12 @@
       </component>
     </collection>
     <collection id="usbservices_info" name="USB Services Info" level="plugin">
-      <component id="usbservices_plat" filter="s60" name="USB Services Platform Interfaces">
+      <component id="usbservices_plat" filter="s60" name="USB Services Platform Interfaces" class="api">
         <unit bldFile="usbservices_plat/group"/>
       </component>
-    </collection>
+      <component id="usbservices_test" filter="s60,test,api_test" name="USB Services Tests">
+        <unit bldFile="tsrc/group"/>
+      </component>
+    </collection>        
   </package>
 </SystemDefinition>
