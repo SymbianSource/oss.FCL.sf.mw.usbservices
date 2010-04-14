@@ -310,16 +310,17 @@ void CUSBClassChangeUIPluginContainer::HandleListBoxEventL(
                    iViewRef->HandleCommandL( EUSBUICmdSelect );
                    break;
                    }
+               case EEventPenDownOnItem:
+            	   {
+            	   ShowPopUpsL (CurrentItemIndex());
+            	   break;
+            	   }
                case EEventPanningStarted:
                case EEventPanningStopped:
                case EEventFlickStarted:
                case EEventFlickStopped:
-               case EEventPenDownOnItem:
-               case EEventItemDraggingActioned:   
-                   {
-                   ShowPopUpsL (CurrentItemIndex()) ;
-                   break;
-                   }
+               case EEventItemDraggingActioned:
+            	   break;
               default:
                      break;
                      }

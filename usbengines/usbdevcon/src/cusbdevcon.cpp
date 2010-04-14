@@ -116,39 +116,39 @@ CUsbDevCon::CUsbDevCon() : CActive(EPriorityStandard),
 //
 CUsbDevCon::~CUsbDevCon()
     {
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon" ) );
-        
-        Cancel();
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon Cancel" ) );
-        
-        delete iStateMachine;
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon StateMachine" ) );
-        
-        delete iRequestsHandler;
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon RequestsHandler" ) );
-        
-        delete iUsbStateWatcher;
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon UsbStateWatcher" ) );
-        
-        iUsbWatcher.Close();
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon UsbWatcher" ) );
-        
-        iUsbManager.Close();
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon UsbManager" ) );
-        
-        iLdd.Close();
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon LDD" ) );
-        
-        iShutdownTimer.Close();
-        
-        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon Timer" ) );
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon" ) );
+    
+    Cancel();
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon Cancel" ) );
+    
+    delete iStateMachine;
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon StateMachine" ) );
+    
+    delete iRequestsHandler;
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon RequestsHandler" ) );
+    
+    delete iUsbStateWatcher;
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon UsbStateWatcher" ) );
+    
+    iUsbWatcher.Close();
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon UsbWatcher" ) );
+    
+    iUsbManager.Close();
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon UsbManager" ) );
+    
+    iLdd.Close();
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon LDD" ) );
+    
+    iShutdownTimer.Close();
+    
+    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::~CUsbDevCon Timer" ) );
     
     }   
 
@@ -165,32 +165,46 @@ void CUsbDevCon::ActAccordinglyToUsbStateL(TUsbcDeviceState aUsbcState)
             {
             
             FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Undefined" ) );
-                    
+
             StopL();
             break;
             }
                 
         case EUsbcDeviceStateAttached:
             {
-            
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Attached" ) );     
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Attached, ignored" ) );
 
             break;
             }
                 
+        case EUsbcDeviceStateSuspended:
+            {
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Suspended" ) );
+            // NO break here
+            }
         case EUsbcDeviceStatePowered:
             {
-            
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Powered" ) );      
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Powered" ) );
 
-            StartL();
+            // In powered or suspended state, we are not allowed to do any data 
+            // communication. Hence if there are pending read/write requests,
+            // we need cancel them. 
+            // Not call StopL() here because we do not want to shut down this
+            // process so earlier but in Undefined state.
+            if ( iStateMachine->IsStarted() )
+                {
+                iStateMachine->Stop();
+                // release device control
+                User::LeaveIfError(iLdd.ReleaseDeviceControl());
+                }
             break;
             }
                 
         case EUsbcDeviceStateDefault:
             {
-                
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Default" ) );      
+            // The request will only be started from default state.
+            // If it has been started already, nothing will be done.
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Default" ) );
 
             StartL();
             break;
@@ -198,8 +212,7 @@ void CUsbDevCon::ActAccordinglyToUsbStateL(TUsbcDeviceState aUsbcState)
                 
         case EUsbcDeviceStateAddress:
             {
-                
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Addressed" ) );        
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Addressed" ) );
 
             StartL();
             break;
@@ -207,32 +220,16 @@ void CUsbDevCon::ActAccordinglyToUsbStateL(TUsbcDeviceState aUsbcState)
                 
         case EUsbcDeviceStateConfigured:
             {
-                
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Configured" ) );       
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Configured" ) );
 
-            if(iPrevUsbState == EUsbcDeviceStateSuspended)
-                {
-                ResumeL();
-                }
-                else
-                {
-                StartL();
-                }
+            StartL();
                 
             break;
             }
-        case EUsbcDeviceStateSuspended:
-            {
-                
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Suspended" ) );        
-
-            break;
-            }
-                
         default:
             {
                 
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: ***Undefined***" ) );      
+            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: ***Unknown***" ) );
 
             StopL();
             break;
@@ -302,9 +299,9 @@ void CUsbDevCon::StartL()
         
         }
         
-        // Cancel shutdown timer, if it is started
-        iShutdownTimer.Cancel();
-     }
+    // Cancel shutdown timer, if it is started
+    iShutdownTimer.Cancel();
+    }
     
 // ---------------------------------------------------------------------------
 // Stops UsbDevCon services
@@ -324,34 +321,21 @@ void CUsbDevCon::StopL()
         // release device control
         User::LeaveIfError(iLdd.ReleaseDeviceControl());
         
-         }
+        }
          
-         if(!IsActive()) // not waiting for timer
-            {
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::StopL Starting timer" ) );
-            // run timer
-            iShutdownTimer.Cancel();
+    if(!IsActive()) // not waiting for timer
+        {
+        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::StopL Starting timer" ) );
+        // run timer
+        iShutdownTimer.Cancel();
 
-            // RunL will be called after KInactiveTimeForShutDown milliseconds
-            iShutdownTimer.After(iStatus, TTimeIntervalMicroSeconds32(KInactiveTimeForShutDown)); 
-            SetActive();
-            FLOG( _L( "[USBDEVCON]\tCUsbDevCon::StopL Timer is started" ) );
-            }
+        // RunL will be called after KInactiveTimeForShutDown milliseconds
+        iShutdownTimer.After(iStatus, TTimeIntervalMicroSeconds32(KInactiveTimeForShutDown)); 
+        SetActive();
+        FLOG( _L( "[USBDEVCON]\tCUsbDevCon::StopL Timer is started" ) );
+        }
     }
     
-// ---------------------------------------------------------------------------
-// Resumes UsbDevCon services 
-// ---------------------------------------------------------------------------
-//
-void CUsbDevCon::ResumeL()
-    {
-    
-    FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ResumeL" ) );
-    
-    // Resume state machine
-    StartL();
-    
-    }
 
 // ----------------------------------------------------------------------------
 // Constructs and installs the active scheduler, constructs UsbDevCon object.
@@ -412,6 +396,3 @@ GLDEF_C TInt E32Main()
 
     return err;
     }
-
-
-
