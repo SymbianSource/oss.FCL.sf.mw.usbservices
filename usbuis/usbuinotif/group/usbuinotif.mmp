@@ -48,8 +48,8 @@ END
 
 USERINCLUDE     ../inc
 
-SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(secondarydisplay/)    //for internal and private API headers
-SYSTEMINCLUDE   /EPOC32/INCLUDE/ECOM
+SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(SecondaryDisplay/)    //for internal and private API headers
+SYSTEMINCLUDE   /epoc32/include/ecom
 SYSTEMINCLUDE   /epoc32/include/mw/hb/hbcore 
 MW_LAYER_SYSTEMINCLUDE
 

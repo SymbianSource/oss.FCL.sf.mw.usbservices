@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -88,7 +88,7 @@ void CUsbHostEventNotificationObserver::SubscribeL(
     if (KErrNotFound != iObservers.Find(&aObserver))
         {
         LOG("Observer already exists" );
-        Panic( EObserverAlreadyExists);
+        PANIC( EObserverAlreadyExists);
         return;
         }
 
@@ -115,7 +115,7 @@ void CUsbHostEventNotificationObserver::UnsubscribeL(
     if (KErrNotFound == i)
         {
         LOG("Observer not found");
-        Panic( ECanNotFindHostEventNotificationObserver);
+        PANIC( ECanNotFindHostEventNotificationObserver);
         return;
         }
 
@@ -210,8 +210,8 @@ void CUsbHostEventNotificationObserver::RunL()
                         {
                         iObservers[i]->DriverLoadPartialSuccessL(dei);
                         }
-                    break;
 
+                    break;
                     }
                 case EDriverLoadFailure:
                     {
@@ -226,7 +226,7 @@ void CUsbHostEventNotificationObserver::RunL()
                 default:
                     {
                     LOG("WrongDriverLoadStatus" );
-                    Panic( EWrongDriverLoadStatus);
+                    PANIC( EWrongDriverLoadStatus);
                     }
                 }
             break;
@@ -235,11 +235,9 @@ void CUsbHostEventNotificationObserver::RunL()
         default:
             {
             LOG( "WrongHostEventNotification" );
-            Panic( EWrongHostEventNotification);
+            PANIC( EWrongHostEventNotification);
             }
-
         }
-
     }
 
 // ---------------------------------------------------------------------------

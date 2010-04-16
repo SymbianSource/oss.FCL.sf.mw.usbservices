@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002 - 2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,6 +21,8 @@
 #include <obex.h>
 #include <SrcsInterface.h>
 #include <mmf/common/mmfcontrollerpluginresolver.h> //for CleanupResetAndDestroyPushL
+#include <musbclasscontrollernotify.h>
+
 // Panic category only used in debug builds
 #ifdef _DEBUG
 _LIT( KObexCcPanicCategory, "OBEXCC" );
@@ -79,6 +81,7 @@ void CUsbObexClassController::ConstructL()
   {
   LOG_FUNC
   iObexSM = CObexUSB::NewL();
+  iObexSMWatcher = CObexSMWatcher::NewL(*this);
   }
 
 // ---------------------------------------------------------------------------
@@ -90,7 +93,8 @@ CUsbObexClassController::~CUsbObexClassController()
   {
   LOG_FUNC
   Cancel();
-  delete iObexSM; 
+  delete iObexSM;
+  delete iObexSMWatcher;
   }
 
 // ---------------------------------------------------------------------------
@@ -258,5 +262,12 @@ TInt CUsbObexClassController::RunError(TInt aError)
   LOGTEXT2(_L8("CUsbObexClassController::RunError aError=%d"), aError);
   return KErrNone;
   }
-  
+
+void CUsbObexClassController::MosmError(TInt aError)
+    {
+    LOG_FUNC
+    LOGTEXT2(_L8("CUsbObexClassController::MosmError aError=%d"), aError);
+    Owner().UccnError(aError);
+    }
+
 // End of File

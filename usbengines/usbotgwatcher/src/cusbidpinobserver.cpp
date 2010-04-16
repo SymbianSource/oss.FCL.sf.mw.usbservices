@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -41,7 +41,7 @@ void CUsbIdPinObserver::ConstructL()
     {
     LOG_FUNC
 
-    User::LeaveIfError(iIdPin.Attach(KUidUsbManCategory,
+    LEAVEIFERROR(iIdPin.Attach(KUidUsbManCategory,
             KUsbOtgIdPinPresentProperty));
 
     }
@@ -92,7 +92,7 @@ CUsbIdPinObserver::TState CUsbIdPinObserver::IdPin()
     if (KErrNone != err)
         {
         LOG("CanNotGetIdPinProperty" );
-        Panic( ECanNotGetIdPinProperty);
+        PANIC( ECanNotGetIdPinProperty);
         }
 
     return (EFalse == val ? EIdPinOff : EIdPinOn);
@@ -110,7 +110,7 @@ void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver& aObserver)
     if (KErrNotFound != iObservers.Find(&aObserver))
         {
         LOG("Observer already exists" );
-        Panic( EObserverAlreadyExists);
+        PANIC( EObserverAlreadyExists);
         return;
         }
     iObservers.AppendL(&aObserver);
@@ -135,7 +135,7 @@ void CUsbIdPinObserver::UnsubscribeL(MUsbIdPinObserver& aObserver)
     if (KErrNotFound == i)
         {
         LOG("Observer not found");
-        Panic( ECanNotFindIdPinObserver);
+        PANIC( ECanNotFindIdPinObserver);
         return;
         }
 
@@ -188,7 +188,6 @@ void CUsbIdPinObserver::RunL()
                 }
             break;
             }
-            ;
 
         case EIdPinOff:
             {
@@ -200,12 +199,11 @@ void CUsbIdPinObserver::RunL()
                 }
             break;
             }
-            ;
 
         default:
             {
             LOG("WrongIdPinState");
-            Panic( EWrongIdPinState);
+            PANIC( EWrongIdPinState);
             }
         }
 

@@ -19,5 +19,10 @@
         <unit unitID="lcdo.usbservices.usbclasses.usbuiqt" mrp="" bldFile="&layer_real_source_path;/usbuis/usbuiqt" name="usbservices_usbuis_usbapplication" proFile="usbapplication.pro" qmakeArgs="" />
       </module>
     </layer>
+    <layer name="api_test_layer">
+      <module name="usbservices_test">
+        <unit unitID="lcdo.usbservices_test" mrp="" bldFile="&layer_real_source_path;/tsrc/group" name="usbservices_test" />
+      </module>
+    </layer>    
   </systemModel>
 </SystemDefinition>

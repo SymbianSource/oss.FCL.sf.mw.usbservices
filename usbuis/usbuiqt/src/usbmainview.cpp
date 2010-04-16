@@ -77,7 +77,7 @@ void UsbMainView::createIconNameRow( QGraphicsLinearLayout *aLocalPropertiesGrou
     QModelIndex index = mModel->index( UsbUiSettingModel::DefaultMode, KDefaultColumn );
   //  QVariant iconName = mModel->data( index, Qt::DecorationRole );
     mIcon = new HbIcon( mModel->data( index, Qt::DecorationRole ).toString() );
-    mListItem->setDecorationIcon( *mIcon );
+    mListItem->setIcon( *mIcon );
     mListItem->setText( mModel->data( index,Qt::DisplayRole ).toString() );
     mListItem->setText( mModel->data( index,Qt::DisplayRole ).toString() );        
     mlist->insertItem( 1, mListItem ); 
@@ -135,7 +135,7 @@ void UsbMainView::updateSettingItems(const QModelIndex &topLeft, const QModelInd
         case UsbUiSettingModel::DefaultMode :
             // set the selected personality icon and name
             mIcon->setIconName( mModel->data( index, Qt::DecorationRole ).toString() );
-            mListItem->setDecorationIcon( *mIcon );
+            mListItem->setIcon( *mIcon );
             mListItem->setText( mModel->data( index,Qt::DisplayRole ).toString() );            
             break;
         case UsbUiSettingModel::Description :

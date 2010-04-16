@@ -317,12 +317,21 @@ TInt CUsbActivePersonalityHandler::RunError( TInt aError )
     
     LOG2("Returned error: %d, iState: %d", aError, iState);
 
-    if (KErrNoMemory == aError)
+    switch ( aError )
         {
-        iQueryParams().iQuery = EUSBNotEnoughRam;
-        iPersonalityParams->PersonalityNotifier().ShowQuery(KQueriesNotifier, 
-    	            iQueryParams, iDummyBuf);
-    }
+        case KErrNoMemory:
+            iQueryParams().iQuery = EUSBNotEnoughRam;
+            iPersonalityParams->PersonalityNotifier().ShowQuery(KQueriesNotifier, 
+    	                iQueryParams, iDummyBuf);
+            break;
+        case KErrDiskFull:
+            iQueryParams().iQuery = EUSBDiskFull;
+            iPersonalityParams->PersonalityNotifier().ShowQuery(KQueriesNotifier, 
+    	                iQueryParams, iDummyBuf);
+            break;
+        default:
+        	LOG( "Ignored" );
+        }
 
     //only handle error when TryStart fails now
 	//clean up work to be done in the personality

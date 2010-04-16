@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -125,7 +125,7 @@ void CUsbStateHostDelayAttachedHandle::DoHandleL()
         default:
             {
             LOG1("Unexpected request id = %d" , iWhat );
-            Panic( EUnexpectedSituationToHandle);
+            PANIC( EUnexpectedSituationToHandle);
             break;
             }
         }
@@ -165,7 +165,7 @@ void CUsbStateHostDelayAttachedHandle::TimerElapsedL(TUsbTimerId aTimerId)
         default:
             {
             LOG1( "Unknown timer id = %d", aTimerId );
-            Panic( EWrongTimerId);
+            PANIC( EWrongTimerId);
             }
         }
     }

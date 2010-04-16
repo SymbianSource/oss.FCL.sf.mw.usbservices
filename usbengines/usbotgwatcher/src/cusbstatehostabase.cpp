@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -20,6 +20,7 @@
 #include <d32otgdi_errors.h>
 #include <d32usbdi_errors.h>
 
+#include "cusbotgwatcher.h"
 #include "cusbstatehostabase.h"
 #include "cusbstatehosthandledropping.h"
 
@@ -44,6 +45,7 @@ CUsbStateHostABase::CUsbStateHostABase(CUsbOtgWatcher& aWatcher) :
 void CUsbStateHostABase::ConstructL()
     {
     LOG_FUNC
+    CUsbState::ConstructL();
     }
 
 // ---------------------------------------------------------------------------
@@ -151,7 +153,7 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
         case KErrUsbOtgHnpEnableProblem://           = -6687;
         case KErrUsbOtgVbusError://                  = -6690;
 
-        // hosterrors.h
+            // hosterrors.h
         case KErrUsbConfigurationHasNoInterfaces:
         case KErrUsbInterfaceCountMismatch:
         case KErrUsbDuplicateInterfaceNumbers:
@@ -164,10 +166,10 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
             break;
             }
 
-        // OTGDI
+            // OTGDI
         case KErrUsbOtgPeriphNotSupported: //        = -6688, for OPT only
 
-        // USBDI
+            // USBDI
         case KErrUsbRequestsPending:
         case KErrUsbBadAddress:
         case KErrUsbNoAddress:
@@ -189,7 +191,7 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
         case KErrUsbEventOverflow:
         case KErrUsbBadDeviceAttached:
 
-        // hosterrors.h
+            // hosterrors.h
         case KErrUsbUnsupportedDevice:
             {
             LOG( "UnsupportedDevice" );
@@ -238,10 +240,17 @@ void CUsbStateHostABase::SrpReceivedL()
     {
     LOG_FUNC
 
-    TInt err = iWatcher.Usb().BusRespondSrp();
-    if (KErrNone != err)
+    if (iWatcher.VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp)
         {
-        LOG1( "BusRespondSrp error = %d" , err );
+        LOG( "Session is ongoing (VBus high); ignore SRP request." );
+        return;
+        }
+
+    TInt err = iWatcher.Usb().BusRespondSrp();
+    LOG1( "BusRespondSrp() error = %d" , err );
+
+    if (KErrNone != err && KErrUsbOtgVbusAlreadyRaised != err)
+        {
         iWatcher.HandleHostProblemL(EUsbWatcherErrorInConnection,
                 EUsbStateHostHandleDropping);
         }
@@ -258,16 +267,16 @@ void CUsbStateHostABase::SessionRequestedL()
     if (iWatcher.VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp)
         {
         // session already ongoing; BusRequest() in this case returns KErrUsbOtgBadState...
-        LOG( "VBus is already UP; ignore Session request." );
+        LOG( "Session is ongoing (VBus high); ignore Session Request." );
         return;
         }
 
     TInt err = iWatcher.Usb().BusRequest();
-    if (KErrNone != err && KErrUsbOtgVbusAlreadyRaised != err) // sometimes this also comes...
+    LOG1( "BusRequest() err = %d" , err);
+
+    if (KErrNone != err && KErrUsbOtgVbusAlreadyRaised != err)
         {
-        LOG1( "BusRequestError err = %d" , err);
         iWatcher.HandleHostProblemL(EUsbWatcherErrorInConnection,
                 EUsbStateHostHandleDropping);
-        return;
         }
     }

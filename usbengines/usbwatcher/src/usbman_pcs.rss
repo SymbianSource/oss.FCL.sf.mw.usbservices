@@ -51,7 +51,7 @@ RESOURCE PERSONALITY_ARRAY device_personalities
             manufacturer = per_manufacturer;
             product = per_product;
             id = KUsbPersonalityIdPCSuite;
-            class_uids = "101fbf22, 101fbf24, 10281F2A";
+            class_uids = "101fbf22, 101fbf24, 10281F2A, 101FB43A";
             description = qtn_usb_mode_ovisuite;
             detailedDescription = qtn_usb_mode_msg_ovi_suite;
             property = 0x00000000;

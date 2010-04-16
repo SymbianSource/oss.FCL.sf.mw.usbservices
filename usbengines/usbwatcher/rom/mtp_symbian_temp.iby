@@ -103,13 +103,6 @@ ECOM_PLUGIN(mtpimagedp.dll,mtpimagedp.rsc)
 data=EPOCROOT##epoc32\data\Z\resource\mtp\2001FCAE.rsc  resource\mtp\2001FCAE.rsc 
 #endif MTPIMAGEDP_IBY
 
-// mediasyncserver.iby
-#ifndef MEDIASYNCSERVER_IBY
-#define MEDIASYNCSERVER_IBY
-file=ABI_DIR\BUILD_DIR\rmediasyncserver.dll		SHARED_LIB_DIR\rmediasyncserver.dll
-file=ABI_DIR\BUILD_DIR\mediasyncserver.exe		PROGRAMS_DIR\mediasyncserver.exe
-#endif // MEDIASYNCSERVER_IBY
-
 // mtp_statusservice.iby
 #ifndef MTP_STATUSSERVICE_IBY
 #define MTP_STATUSSERVICE_IBY
@@ -129,6 +122,7 @@ data=EPOCROOT##epoc32\data\Z\resource\mtp\2001a97f.rsc  resource\mtp\2001a97f.rs
 ECOM_PLUGIN(mtpmetadataservice.dll, mtpmetadataservice.rsc)
 // MTP plugin registration resource file
 data=EPOCROOT##epoc32\data\Z\resource\mtp\2001A9A3.rsc  resource\mtp\2001A9A3.rsc
+data=EPOCROOT##epoc32\data\Z\deviceexperiences\default\en-us\A42998DC-D9BD-4287-A2EA-46116889443C.devicemetadata-ms deviceexperiences\default\en-us\A42998DC-D9BD-4287-A2EA-46116889443C.devicemetadata-ms
 #endif // SYMBIAN_EXCLUDE_MTP
 #endif // MTP_METADATASERVICE_IBY
 

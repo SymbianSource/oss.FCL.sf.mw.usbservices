@@ -1,22 +1,20 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
-* This material, including documentation and any related computer
-* programs, is protected by copyright controlled by Nokia. All
-* rights are reserved. Copying, including reproducing, storing
-* adapting or translating, any or all of this material requires the
-* prior written consent of Nokia. This material also contains
-* confidential information which may not be disclosed to others
-* without the prior written consent of Nokia.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
 *
 * Initial Contributors:
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
 *
-* Description: Debug macros and declarations. 
+* Description:  Debug macros and declarations. 
 *
 */
+
 
 #ifndef DEBUG_H
 #define DEBUG_H
@@ -97,7 +95,7 @@ private:
     TPtrC8 iFuncName;
     };
 // ===========================================================================
-#else //Real-time logging
+#else //LOG_TO_FILE not defined
 // ===========================================================================
 #include <e32debug.h>
 
@@ -127,20 +125,22 @@ private:
     };
 #endif // LOG_TO_FILE
 
-#define LEAVE( exp )  {volatile TInt err = exp; \
-            LOG3( "LEAVE(%d) @file: %s, line: %d", err, __FILE__, __LINE__ );\
-            User::Leave( err );}
+#define LEAVE( exp )  {volatile TInt err_ = exp; \
+        LOG3( "LEAVE(%d) @file: %s, line: %d", err_, __FILE__, __LINE__ );\
+        User::Leave( err_ );}
 
-#define LEAVEIFERROR( exp ) {volatile TInt err = exp; if(err < 0) LEAVE(err);}
+#define LEAVEIFERROR( exp ) {volatile TInt err__ = exp; \
+        if(err__ < 0) LEAVE(err__);}
 
-#define PANIC( exp ) {volatile TInt err = exp; \
-            LOG3( "PANIC(%d) @file: %s, line: %d", err, __FILE__, __LINE__ );\
-            User::Panic( KUsbPanicModule, err );}
-
+#define PANIC( exp ) {volatile TInt err_ = exp; \
+        LOG3( "PANIC(%d) @file: %s, line: %d", err_, __FILE__, __LINE__ );\
+        User::Panic( KUsbPanicModule, err_ );} 
 
 #define LOG_FUNC TFuncLogger __instrument(TPtrC8((TUint8*)__PRETTY_FUNCTION__));
 
-#else // _DEBUG   
+#define ASSERT_PANIC( exp, code ) {if(!(exp)) PANIC(code)}
+
+#else // _DEBUG not defined 
 // ===========================================================================
 
 #define LOG( s )
@@ -151,8 +151,9 @@ private:
 #define LOG_FUNC_EXIT 
 #define LEAVE( exp ) User::Leave( exp );
 #define LEAVEIFERROR( exp ) User::LeaveIfError( exp );
-#define PANIC( err ) User::Panic( KUsbPanicModule, err );
+#define PANIC( err ) // in non-debug builds PANICs are silent
 #define LOG_FUNC
+#define ASSERT_PANIC( exp, code )
 // ===========================================================================
 #endif // _DEBUG
 // ===========================================================================

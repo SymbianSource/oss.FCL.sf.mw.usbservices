@@ -22,7 +22,7 @@
 #include <AknNotifyStd.h>       // SAknSmallIndicatorParams
 #include <AknNotifySignature.h> // SAknNotifierPackage
 #include <avkon.hrh>            // EAknIndicatorUSBConnection
-#include "cusbtimer.h"
+
 #include "cusbnotifier.h"
 #include "cusbvbusobserver.h"
 #include "cusbotgwatcher.h"
@@ -31,7 +31,7 @@
  * Class implements functionality of showing/blinking usb indicator
  * Class does not provide method to get response from the user
  */
-NONSHARABLE_CLASS( CUsbIndicatorNotifier ): public CUsbNotifier, MUsbTimerObserver, MUsbOtgWatcherStateObserver, MUsbVBusObserver
+NONSHARABLE_CLASS( CUsbIndicatorNotifier ): public CUsbNotifier, MUsbOtgWatcherStateObserver, MUsbVBusObserver
     {
 public:
     /**
@@ -80,13 +80,6 @@ public:
      */
     virtual void Close();
 
-    // From MUsbTimerObserver
-    /**
-     * Timer elapsed
-     * @param Timer id
-     */
-    void TimerElapsedL(TUsbTimerId aTimerId);
-
 private:
 
     /**
@@ -133,13 +126,6 @@ private:
      * not own
      */
     CUsbOtgWatcher& iOtgWatcher;
-
-    /**
-     * Switch timer for showing/hiding the usb indicator interleavingly for 
-     * animating the indicator. 
-     * Own
-     */
-    CUsbTimer* iIconBlinkingTimer;
 
     /**
      * Current indicator state

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -175,7 +175,6 @@ void CUsbDevCon::ActAccordinglyToUsbStateL(TUsbcDeviceState aUsbcState)
             
             FLOG( _L( "[USBDEVCON]\tCUsbDevCon::ActAccordinglyToUsbStateL State: Attached" ) );     
 
-            StartL();
             break;
             }
                 
@@ -261,8 +260,7 @@ void CUsbDevCon::RunL()
         FLOG( _L( "[USBDEVCON]\tCUsbDevCon::RunL Exiting usbdevcon" ) );      
         
         // Shutdown timer is finished, exit program
-        CUsbDevCon:: ~CUsbDevCon(); // destruct resources
-        User::Exit(KErrNone);
+        CActiveScheduler::Stop(); // destruct resources
         }
     }
 

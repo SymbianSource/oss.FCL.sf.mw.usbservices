@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -15,6 +15,7 @@
  *
  */
 
+#include "cusbotgwatcher.h"
 #include "cusbstatehostundefined.h"
 
 #include "definitions.h"
@@ -111,7 +112,6 @@ void CUsbStateHostUndefined::VBusErrorL()
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
-//
 void CUsbStateHostUndefined::AVBusErrorL()
     {
     LOG_FUNC
@@ -137,7 +137,47 @@ void CUsbStateHostUndefined::BPeripheralL()
     }
 
 // From host state observer
-void CUsbStateHostUndefined::DeviceDetachedL(TDeviceEventInformation /*aInfo*/)
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostUndefined::DeviceAttachedL(TDeviceEventInformation)
+    {
+    LOG_FUNC
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostUndefined::DeviceDetachedL(TDeviceEventInformation)
+    {
+    LOG_FUNC
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostUndefined::DriverLoadSuccessL(TDeviceEventInformation)
+    {
+    LOG_FUNC
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostUndefined::DriverLoadPartialSuccessL(TDeviceEventInformation)
+    {
+    LOG_FUNC
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostUndefined::DriverLoadFailureL(TDeviceEventInformation)
     {
     LOG_FUNC
     }
@@ -178,5 +218,5 @@ void CUsbStateHostUndefined::MessageNotificationReceivedL(TInt aMessage)
 void CUsbStateHostUndefined::BadHubPositionL()
     {
     LOG_FUNC
-    Panic( EBadHubPositionNotExpected);
+    PANIC( EBadHubPositionNotExpected);
     }

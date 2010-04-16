@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -23,6 +23,7 @@
 #include <cusbclasscontrollerplugin.h>
 #include <usbobex.h>
 #include <usb/usblogger.h>
+#include "obexsmwatcher.h"
 
 const TInt KObexClassPriority = 2;
 const TInt KObexNumInterfaces = 2;
@@ -35,7 +36,7 @@ _LIT(KUsbObexIfc, "OBEX");
  *
  *  @since S60 V3.1
  */
-NONSHARABLE_CLASS(CUsbObexClassController) : public CUsbClassControllerPlugIn
+NONSHARABLE_CLASS(CUsbObexClassController) : public CUsbClassControllerPlugIn, public MObexSMObserver
     {
 public:
     /**
@@ -52,6 +53,9 @@ public:
     virtual void RunL();
     virtual void DoCancel();
     virtual TInt RunError(TInt aError);
+
+// from MObexSMObserver    
+    void MosmError(TInt aError);
 
 // from base class CUsbClassControllerBase
     
@@ -95,6 +99,7 @@ protected:
 private: // data
     TRequestStatus* iRequestStatus;
     CObexUSB* iObexSM; 
+    CObexSMWatcher *iObexSMWatcher;
     };
 
 #endif // CUSBOBEXCLASSCONTROLLER_H

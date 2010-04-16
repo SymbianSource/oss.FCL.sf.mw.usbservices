@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -17,6 +17,7 @@
 
 #include <e32base.h>
 #include <UsbWatcherInternalPSKeys.h>
+#include <e32property.h>
 
 #include "cusbstatehostahost.h"
 #include "cusbnotifmanager.h"
@@ -92,7 +93,7 @@ void CUsbStateHostAHost::JustAdvancedToThisStateL()
     // do general things 
     CUsbStateHostABase::JustAdvancedToThisStateL();
 
-    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
+    LEAVEIFERROR(RProperty::Set(KPSUidUsbWatcher,
             KUsbWatcherIsPeripheralConnected,
             KUsbWatcherPeripheralIsConnected));
 
@@ -106,7 +107,7 @@ void CUsbStateHostAHost::JustBeforeLeavingThisStateL()
     {
     LOG_FUNC
 
-    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
+    LEAVEIFERROR(RProperty::Set(KPSUidUsbWatcher,
             KUsbWatcherIsPeripheralConnected,
             KUsbWatcherPeripheralIsNotConnected));
 
@@ -131,5 +132,5 @@ void CUsbStateHostAHost::DeviceDetachedL(TDeviceEventInformation)
 void CUsbStateHostAHost::BadHubPositionL()
     {
     LOG_FUNC
-    Panic( EBadHubPositionEventNotExpected);
+    PANIC( EBadHubPositionEventNotExpected);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -102,27 +102,33 @@ private:
     // From Host Event notification observer
     /**
      * Device is attached
-     * @param Device event data
+     * @param aInfo Device event data
      */
-    void DeviceAttachedL(TDeviceEventInformation);
+    void DeviceAttachedL(TDeviceEventInformation aInfo);
+    
+    /**
+     * Device is detached
+     * @param aInfo Device event data
+     */
+    void DeviceDetachedL(TDeviceEventInformation aInfo);
 
     /**
      * Device is detached
-     * @param Device event data
+     * @param aInfo Device event data
      */
-    void DriverLoadSuccessL(TDeviceEventInformation);
+    void DriverLoadSuccessL(TDeviceEventInformation aInfo);
 
     /**
      * Drivers loaded partially
-     * @param Device event data
+     * @param aInfo Device event data
      */
-    void DriverLoadPartialSuccessL(TDeviceEventInformation);
+    void DriverLoadPartialSuccessL(TDeviceEventInformation aInfo);
 
     /**
      * Drivers loading failed
-     * @param Device event data
+     * @param aInfo Device event data
      */
-    void DriverLoadFailureL(TDeviceEventInformation);
+    void DriverLoadFailureL(TDeviceEventInformation aInfo);
 
 private:
     // data
@@ -133,6 +139,10 @@ private:
      */
     CUsbTimer* iAttachmentTimer;
 
+    /*
+     * attachment attribute
+     */
+    TBool iDeviceAttached;
     };
 
 #endif //  C_USBSTATEHOSTINITIATE_H
