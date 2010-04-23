@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -39,7 +39,7 @@ void CUsbOtgStateObserver::ConstructL()
     {
     LOG_FUNC
 
-    User::LeaveIfError(iOtgState.Attach(KUidUsbManCategory,
+    LEAVEIFERROR(iOtgState.Attach(KUidUsbManCategory,
             KUsbOtgStateProperty));
 
     }
@@ -88,7 +88,7 @@ TUsbOtgState CUsbOtgStateObserver::OtgState()
     if (KErrNone != err)
         {
         LOG("CanNotGetOtgStateProperty" );
-        Panic( ECanNotGetOtgStateProperty);
+        PANIC( ECanNotGetOtgStateProperty);
         }
 
     return (TUsbOtgState) val;
@@ -107,7 +107,7 @@ void CUsbOtgStateObserver::SubscribeL(MUsbOtgStateObserver& aObserver)
     if (KErrNotFound != iObservers.Find(&aObserver))
         {
         LOG( "Observer already exists"  );
-        Panic( EObserverAlreadyExists);
+        PANIC( EObserverAlreadyExists);
         return;
         }
     iObservers.AppendL(&aObserver);
@@ -132,7 +132,7 @@ void CUsbOtgStateObserver::UnsubscribeL(MUsbOtgStateObserver& aObserver)
     if (KErrNotFound == i)
         {
         LOG("Observer not found");
-        Panic( ECanNotFindOtgStateObserver);
+        PANIC( ECanNotFindOtgStateObserver);
         return;
         }
 
@@ -245,7 +245,7 @@ void CUsbOtgStateObserver::RunL()
         default:
             {
             LOG("WrongOtgState" );
-            Panic( EWrongOtgState);
+            PANIC( EWrongOtgState);
             }
         }
 

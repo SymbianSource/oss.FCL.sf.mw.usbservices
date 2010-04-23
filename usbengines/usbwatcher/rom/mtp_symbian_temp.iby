@@ -103,13 +103,6 @@ ECOM_PLUGIN(mtpimagedp.dll,mtpimagedp.rsc)
 data=EPOCROOT##epoc32\data\Z\resource\mtp\2001FCAE.rsc  resource\mtp\2001FCAE.rsc 
 #endif MTPIMAGEDP_IBY
 
-// mediasyncserver.iby
-#ifndef MEDIASYNCSERVER_IBY
-#define MEDIASYNCSERVER_IBY
-file=ABI_DIR\BUILD_DIR\rmediasyncserver.dll		SHARED_LIB_DIR\rmediasyncserver.dll
-file=ABI_DIR\BUILD_DIR\mediasyncserver.exe		PROGRAMS_DIR\mediasyncserver.exe
-#endif // MEDIASYNCSERVER_IBY
-
 // mtp_statusservice.iby
 #ifndef MTP_STATUSSERVICE_IBY
 #define MTP_STATUSSERVICE_IBY

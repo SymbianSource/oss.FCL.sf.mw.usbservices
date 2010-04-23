@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -41,7 +41,7 @@ void CUsbBusActivityObserver::ConstructL()
     {
     LOG_FUNC
 
-    User::LeaveIfError(iBusActivity.Attach(KUidUsbManCategory,
+    LEAVEIFERROR(iBusActivity.Attach(KUidUsbManCategory,
             KUsbOtgConnectionIdleProperty));
 
     }
@@ -92,7 +92,7 @@ CUsbBusActivityObserver::TBusActivity CUsbBusActivityObserver::BusActivity()
     if (KErrNone != err)
         {
         LOG("ECanNotGetBusActivityProperty" );
-        Panic( ECanNotGetBusActivityProperty);
+        PANIC( ECanNotGetBusActivityProperty);
         }
 
     return (0 == val ? EBusActive : EBusIdle);
@@ -111,7 +111,7 @@ void CUsbBusActivityObserver::SubscribeL(MUsbBusActivityObserver& aObserver)
     if (KErrNotFound != iObservers.Find(&aObserver))
         {
         LOG( "Observer already exists" );
-        Panic( EObserverAlreadyExists);
+        PANIC( EObserverAlreadyExists);
         return;
         }
     iObservers.AppendL(&aObserver);
@@ -136,7 +136,7 @@ void CUsbBusActivityObserver::UnsubscribeL(MUsbBusActivityObserver& aObserver)
     if (KErrNotFound == i)
         {
         LOG( "Observer not found" );
-        Panic( ECanNotFindBusActivityObserver);
+        PANIC( ECanNotFindBusActivityObserver);
         return;
         }
 
@@ -202,7 +202,7 @@ void CUsbBusActivityObserver::RunL()
         default:
             {
             LOG("WrongBusState" );
-            Panic( EWrongBusState);
+            PANIC( EWrongBusState);
             }
         }
 

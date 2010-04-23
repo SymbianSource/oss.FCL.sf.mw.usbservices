@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -41,7 +41,7 @@ void CUsbVBusObserver::ConstructL()
     {
     LOG_FUNC
 
-    User::LeaveIfError(iVBus.Attach(KUidUsbManCategory,
+    LEAVEIFERROR(iVBus.Attach(KUidUsbManCategory,
             KUsbOtgVBusPoweredProperty));
 
     }
@@ -91,7 +91,7 @@ CUsbVBusObserver::TState CUsbVBusObserver::VBus() /* not const, because for some
     if (KErrNone != err)
         {
         LOG("CanNotGetVBusProperty" )
-        Panic( ECanNotGetVBusProperty);
+        PANIC( ECanNotGetVBusProperty);
         }
 
     return (0 == val ? EVBusDown : EVBusUp);
@@ -109,7 +109,7 @@ void CUsbVBusObserver::SubscribeL(MUsbVBusObserver& aObserver)
     if (KErrNotFound != iObservers.Find(&aObserver))
         {
         LOG( "Observer already exists" );
-        Panic( EObserverAlreadyExists);
+        PANIC( EObserverAlreadyExists);
         return;
         }
 
@@ -134,7 +134,7 @@ void CUsbVBusObserver::UnsubscribeL(MUsbVBusObserver& aObserver)
     if (KErrNotFound == i)
         {
         LOG("Observer not found" );
-        Panic( ECanNotFindVBusObserver);
+        PANIC( ECanNotFindVBusObserver);
         return;
         }
 
@@ -204,10 +204,9 @@ void CUsbVBusObserver::RunL()
         default:
             {
             LOG("WrongVBusState");
-            Panic( EWrongVBusState);
+            PANIC( EWrongVBusState);
             }
         }
-
     }
 
 // ---------------------------------------------------------------------------

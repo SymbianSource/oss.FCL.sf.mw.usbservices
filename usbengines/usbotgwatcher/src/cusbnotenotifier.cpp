@@ -110,12 +110,13 @@ void CUsbNoteNotifier::CNotifierActive::StartL()
 
     if (IsActive())
         {
-        Panic( ENotifierIsActiveAlready);
+        PANIC( ENotifierIsActiveAlready);
         return;
-        }    
-		
+        }
+
     iNotifIdPckg() = iUsbNoteNotifier.iNotifId;
-    iNotifier.StartNotifierAndGetResponse(iStatus, iUsbNoteNotifier.iCat, iNotifIdPckg, iRes);
+    iNotifier.StartNotifierAndGetResponse(iStatus, iUsbNoteNotifier.iCat,
+            iNotifIdPckg, iRes);
     SetActive();
     }
 
@@ -130,7 +131,7 @@ void CUsbNoteNotifier::CNotifierActive::RunL()
     LOG1( "iStatus = %d" , iStatus.Int());
 
     // if error occured, deal with it in RunError
-    User::LeaveIfError(iStatus.Int());
+    LEAVEIFERROR(iStatus.Int());
 
     iNotifier.CancelNotifier(iUsbNoteNotifier.iCat);
 

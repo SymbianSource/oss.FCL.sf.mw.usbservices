@@ -15,9 +15,9 @@
 *
 */
 
-#include <HbMainWindow.h>
-#include "UsbViewManager.h"
-#include "UsbMainView.h"
+#include <hbmainwindow.h>
+#include "usbviewmanager.h"
+#include "usbmainview.h"
 
 
 UsbViewManager::UsbViewManager( HbMainWindow* mainWindow, QObject *parent )

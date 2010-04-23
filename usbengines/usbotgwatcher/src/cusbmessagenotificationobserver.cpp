@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -89,7 +89,7 @@ void CUsbMessageNotificationObserver::SubscribeL(
     if (KErrNotFound != iObservers.Find(&aObserver))
         {
         LOG("Observer already exists");
-        Panic( EObserverAlreadyExists);
+        PANIC( EObserverAlreadyExists);
         return;
         }
     iObservers.AppendL(&aObserver);
@@ -114,7 +114,7 @@ void CUsbMessageNotificationObserver::UnsubscribeL(
     if (KErrNotFound == i)
         {
         LOG("Observer not found" )
-        Panic( ECanNotFindMessageNotificationObserver);
+        PANIC( ECanNotFindMessageNotificationObserver);
         return;
         }
 

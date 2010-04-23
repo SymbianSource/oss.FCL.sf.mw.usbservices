@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -48,7 +48,7 @@ CUsbTimer::~CUsbTimer()
 void CUsbTimer::ConstructL()
     {
     LOG_FUNC
-    User::LeaveIfError(iTimer.CreateLocal());
+    LEAVEIFERROR(iTimer.CreateLocal());
     }
 
 // ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void CUsbTimer::RunL()
 
     if (KErrNone != iStatus.Int())
         {
-        User::Leave(iStatus.Int());
+        LEAVE(iStatus.Int());
         }
 
     iObserver.TimerElapsedL(iTimerId);

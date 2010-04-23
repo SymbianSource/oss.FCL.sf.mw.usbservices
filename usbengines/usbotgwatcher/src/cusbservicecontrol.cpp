@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -166,7 +166,7 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
             }
         default:
             {
-            Panic( EUnknownUsbServiceState);
+            PANIC( EUnknownUsbServiceState);
             }
         }
 
@@ -248,7 +248,7 @@ TInt CUsbServiceControl::StopL()
             }
         default:
             {
-            Panic( EUnknownUsbServiceState);
+            PANIC( EUnknownUsbServiceState);
             }
         }
     return KErrNone;
@@ -372,7 +372,7 @@ void CUsbServiceControl::RunL()
             }
         default:
             {
-            Panic( EUnknownUsbServiceState);
+            PANIC( EUnknownUsbServiceState);
             }
         }
 

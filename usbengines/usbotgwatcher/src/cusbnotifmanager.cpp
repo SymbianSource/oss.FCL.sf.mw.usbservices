@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -114,7 +114,7 @@ void CUsbNotifManager::ConstructL(CUsbOtgWatcher& aOtgWatcher)
     {
     LOG_FUNC
 
-    User::LeaveIfError(iNotifier.Connect());
+    LEAVEIFERROR(iNotifier.Connect());
 
     iIndicatorNotifier = CUsbIndicatorNotifier::NewL(*this, aOtgWatcher);
 
@@ -179,7 +179,7 @@ void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
     CUsbNotifier* notifier(NULL);
     if (aCat == KUsbUiNotifOtgError)
         {
-        __ASSERT_ALWAYS(aObserver != NULL, Panic(EWrongNotifierCategory));
+        ASSERT_PANIC(aObserver != NULL, EWrongNotifierCategory);
         notifier = CUsbWaitNotifier::NewL(iNotifier, *this, aNotifId);
         }
     else if (aCat == KUsbUiNotifOtgWarning)
@@ -189,7 +189,7 @@ void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
     else
         {
         LOG1("Unexpected aCat = 0x%X", aCat );
-        Panic(EWrongNotifierCategory);
+        PANIC(EWrongNotifierCategory);
         }
 
     CleanupStack::PushL(notifier);

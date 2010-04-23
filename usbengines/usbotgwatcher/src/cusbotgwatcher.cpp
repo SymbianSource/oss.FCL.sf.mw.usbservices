@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -64,28 +64,28 @@ void CUsbOtgWatcher::ConstructL()
 #endif
 
 #ifndef STIF
-    User::LeaveIfError(RProperty::Define(KPSUidUsbWatcher,
-            KUsbWatcherIsPeripheralConnected, RProperty::EInt,
-            KAlwaysPassPolicy, KLocalServicesPolicy));
+    LEAVEIFERROR(RProperty::Define(KPSUidUsbWatcher,
+                    KUsbWatcherIsPeripheralConnected, RProperty::EInt,
+                    KAlwaysPassPolicy, KLocalServicesPolicy));
 
-    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
-            KUsbWatcherIsPeripheralConnected,
-            KUsbWatcherPeripheralIsNotConnected));
+    LEAVEIFERROR(RProperty::Set(KPSUidUsbWatcher,
+                    KUsbWatcherIsPeripheralConnected,
+                    KUsbWatcherPeripheralIsNotConnected));
 #endif
 
     iUsbServiceControl = CUsbServiceControl::NewL(*this, iUsb);
 
-    User::LeaveIfError(iStates.Append(CUsbStateHostUndefined::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostAInitiate::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostAHost::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostAPeripheral::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostUndefined::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostAInitiate::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostAHost::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostAPeripheral::NewL(*this)));
 
-    User::LeaveIfError(iStates.Append(CUsbStateHostDelayAttachedHandle::NewL(
-            *this)));
-    User::LeaveIfError(iStates.Append(
-            CUsbStateHostDelayNotAttachedHandle::NewL(*this)));
-    User::LeaveIfError(iStates.Append(
-            CUsbStateHostHandleDropping::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostDelayAttachedHandle::NewL(
+                            *this)));
+    LEAVEIFERROR(iStates.Append(
+                    CUsbStateHostDelayNotAttachedHandle::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(
+                    CUsbStateHostHandleDropping::NewL(*this)));
 
     iIdPinObserver = CUsbIdPinObserver::NewL();
     iVBusObserver = CUsbVBusObserver::NewL();
@@ -122,7 +122,7 @@ void CUsbOtgWatcher::ConstructL()
 //
 EXPORT_C TBool CUsbOtgWatcher::IsDeviceA()
     {
-    __ASSERT_DEBUG(iIdPinObserver != NULL, Panic(EIdPinObserverNULLPointer));
+    ASSERT_PANIC(iIdPinObserver != NULL, EIdPinObserverNULLPointer);
     return (iIdPinObserver->IdPin() == CUsbIdPinObserver::EIdPinOn
                                                                    ? ETrue
                                                                       : EFalse);
@@ -356,7 +356,7 @@ void CUsbOtgWatcher::IdPinOffL()
     if (KErrNone != err)
         {
         LOG( "ErrorStoppingUsbServices" );
-        Panic(ECanNotStopUsbServices);
+        PANIC(ECanNotStopUsbServices);
         }
     }
 
@@ -366,7 +366,7 @@ void CUsbOtgWatcher::IdPinOffL()
 //
 void CUsbOtgWatcher::IdPinErrorL(TInt aError)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherIdPinError, EUsbStateHostHandleDropping);
 
     }
@@ -378,7 +378,7 @@ void CUsbOtgWatcher::IdPinErrorL(TInt aError)
 //
 void CUsbOtgWatcher::VBusDownL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->VBusDownL();
     }
 
@@ -388,7 +388,7 @@ void CUsbOtgWatcher::VBusDownL()
 //
 void CUsbOtgWatcher::VBusUpL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->VBusUpL();
     }
 
@@ -398,7 +398,7 @@ void CUsbOtgWatcher::VBusUpL()
 //
 void CUsbOtgWatcher::VBusObserverErrorL(TInt aError)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherVBusObserverError,
             EUsbStateHostHandleDropping);
     }
@@ -410,7 +410,7 @@ void CUsbOtgWatcher::VBusObserverErrorL(TInt aError)
 //
 void CUsbOtgWatcher::AIdleL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->AIdleL();
     }
 
@@ -420,7 +420,7 @@ void CUsbOtgWatcher::AIdleL()
 //
 void CUsbOtgWatcher::AHostL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->AHostL();
     }
 
@@ -430,7 +430,7 @@ void CUsbOtgWatcher::AHostL()
 //
 void CUsbOtgWatcher::APeripheralL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->APeripheralL();
     }
 
@@ -440,7 +440,7 @@ void CUsbOtgWatcher::APeripheralL()
 //
 void CUsbOtgWatcher::AVBusErrorL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->AVBusErrorL();
     }
 
@@ -450,7 +450,7 @@ void CUsbOtgWatcher::AVBusErrorL()
 //
 void CUsbOtgWatcher::BIdleL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->BIdleL();
     }
 
@@ -460,7 +460,7 @@ void CUsbOtgWatcher::BIdleL()
 //
 void CUsbOtgWatcher::BPeripheralL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->BPeripheralL();
     }
 
@@ -470,7 +470,7 @@ void CUsbOtgWatcher::BPeripheralL()
 //
 void CUsbOtgWatcher::BHostL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->BHostL();
     }
 
@@ -480,7 +480,7 @@ void CUsbOtgWatcher::BHostL()
 //
 void CUsbOtgWatcher::OtgStateErrorL(TInt aError)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherOtgStateError, EUsbStateHostHandleDropping);
     }
 
@@ -491,7 +491,7 @@ void CUsbOtgWatcher::OtgStateErrorL(TInt aError)
 //
 void CUsbOtgWatcher::BusIdleL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->BusIdleL();
     }
 
@@ -501,7 +501,7 @@ void CUsbOtgWatcher::BusIdleL()
 //
 void CUsbOtgWatcher::BusActiveL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->BusActiveL();
     }
 
@@ -511,7 +511,7 @@ void CUsbOtgWatcher::BusActiveL()
 //
 void CUsbOtgWatcher::BusActivityErrorL(TInt aError)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     // no action, continue
     }
 
@@ -522,7 +522,7 @@ void CUsbOtgWatcher::BusActivityErrorL(TInt aError)
 //
 void CUsbOtgWatcher::DeviceAttachedL(TDeviceEventInformation aTdi)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->DeviceAttachedL(aTdi);
     }
 
@@ -532,7 +532,7 @@ void CUsbOtgWatcher::DeviceAttachedL(TDeviceEventInformation aTdi)
 //
 void CUsbOtgWatcher::DeviceDetachedL(TDeviceEventInformation aTdi)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->DeviceDetachedL(aTdi);
     }
 
@@ -542,7 +542,7 @@ void CUsbOtgWatcher::DeviceDetachedL(TDeviceEventInformation aTdi)
 //
 void CUsbOtgWatcher::DriverLoadSuccessL(TDeviceEventInformation aTdi)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->DriverLoadSuccessL(aTdi);
     }
 
@@ -552,7 +552,7 @@ void CUsbOtgWatcher::DriverLoadSuccessL(TDeviceEventInformation aTdi)
 //
 void CUsbOtgWatcher::DriverLoadPartialSuccessL(TDeviceEventInformation aTdi)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->DriverLoadPartialSuccessL(aTdi);
     }
 
@@ -562,7 +562,7 @@ void CUsbOtgWatcher::DriverLoadPartialSuccessL(TDeviceEventInformation aTdi)
 //
 void CUsbOtgWatcher::DriverLoadFailureL(TDeviceEventInformation aTdi)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->DriverLoadFailureL(aTdi);
     }
 
@@ -572,7 +572,7 @@ void CUsbOtgWatcher::DriverLoadFailureL(TDeviceEventInformation aTdi)
 //
 void CUsbOtgWatcher::HostEventNotificationErrorL(TInt aError)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherHostEventNotificationError,
             EUsbStateHostHandleDropping);
     }
@@ -584,7 +584,7 @@ void CUsbOtgWatcher::HostEventNotificationErrorL(TInt aError)
 //
 void CUsbOtgWatcher::MessageNotificationReceivedL(TInt aMessage)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->MessageNotificationReceivedL(aMessage);
     }
 
@@ -594,7 +594,7 @@ void CUsbOtgWatcher::MessageNotificationReceivedL(TInt aMessage)
 //
 void CUsbOtgWatcher::BadHubPositionL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->BadHubPositionL();
     }
 
@@ -604,7 +604,7 @@ void CUsbOtgWatcher::BadHubPositionL()
 //
 void CUsbOtgWatcher::VBusErrorL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->VBusErrorL();
     }
 
@@ -614,7 +614,7 @@ void CUsbOtgWatcher::VBusErrorL()
 //
 void CUsbOtgWatcher::SrpReceivedL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->SrpReceivedL();
     }
 
@@ -624,7 +624,7 @@ void CUsbOtgWatcher::SrpReceivedL()
 //
 void CUsbOtgWatcher::SessionRequestedL()
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     iHostState->SessionRequestedL();
     }
 
@@ -634,7 +634,7 @@ void CUsbOtgWatcher::SessionRequestedL()
 //
 void CUsbOtgWatcher::MessageNotificationErrorL(TInt aError)
     {
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
+    ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherMessageNotificationError,
             EUsbStateHostHandleDropping);
     }
@@ -737,7 +737,7 @@ CUsbState* CUsbOtgWatcher::State(TUsbStateIds aStateId) const
 //
 CUsbStateHostHandle* CUsbOtgWatcher::HostHandle(TUsbStateIds aInState) const
     {
-    __ASSERT_DEBUG(iStates[aInState] != NULL, Panic(EBadState));
+    ASSERT_PANIC(iStates[aInState] != NULL, EBadState);
 
     return (CUsbStateHostHandle*) iStates[aInState];
     }
@@ -760,13 +760,15 @@ void CUsbOtgWatcher::ChangeStateL(TUsbStateIds aNewStateId)
     // sets new state	
 
     // be careful to add states into States in exactly the same order as they enumerated
-    // this method will work right as long as states, which in the enumeration, is added to the list iStates in the same order as they enumerated
-    // and no one state is added, if all previous states are not added. no need to add all states, but if added - previous all must be added.
+    // this method will work right as long as states, which in the enumeration, is added 
+    // to the list iStates in the same order as they enumerated and no one state is added,
+    // if all previous states are not added. no need to add all states, but if added - 
+    // previous all must be added.
     // For the general case, when some states added, some not, this method has to implement search by state ID. for this CUsbOtgWatcher::Id() is maintained.
 
     iState = iStates[aNewStateId];
 
-    __ASSERT_DEBUG(iState != NULL, Panic(EBadState));
+    ASSERT_PANIC(iState != NULL, EBadState);
 
     iState->JustAdvancedToThisStateL(); // do any initial activity, once advanced to the state
 
@@ -790,13 +792,15 @@ void CUsbOtgWatcher::ChangeHostStateL(TUsbStateIds aNewStateId)
     // set new state	
 
     // be careful to add states into States in exactly the same order as they enumerated
-    // this method will work right as long as states, which in the enumeration, is added to the list iStates in the same order as they enumerated
-    // and no one state is added, if all previous states are not added. no need to add all states, but if added - previous all must be added.
-    // For the general case, when some states added, some not, this method has to implement search by state Id. for this CUsbOtgWatcher::Id() is maintained.
+    // this method will work right as long as states, which in the enumeration, is added 
+    // to the list iStates in the same order as they enumerated and no one state is added,
+    // if all previous states are not added. no need to add all states, but if added - 
+    // previous all must be added.
+    // For the general case, when some states added, some not, this method has to implement search by state ID. for this CUsbOtgWatcher::Id() is maintained.
 
     iHostState = iStates[aNewStateId];
 
-    __ASSERT_DEBUG(iHostState != NULL, Panic(EBadState));
+    ASSERT_PANIC(iHostState != NULL, EBadState)
 
     iHostState->JustAdvancedToThisStateL(); // checks if there are conditions for advancing to another state(s)
 
@@ -857,6 +861,8 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
 
     LOG1( "aError = %d" , aError);
 
+    iUsbServiceRequest = CUsbServiceControl::ERequestUndefined;
+
     switch (aError)
         {
         case KErrInUse:
@@ -869,12 +875,19 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
             {
             break; // do normal routine
             }
+        case KErrNoMemory:
+            {
+            HandleHostProblemL(EUsbWatcherNoMemory,
+                    EUsbStateHostHandleDropping);
+            return;
+            }
 
-        default: // handle the issue
+        default:
+            // handle the issue
             {
             if (iUsbServiceRequest == CUsbServiceControl::EStartUsbService) // Handle only start issues
                 {
-                HandleHostProblemL(EUsbWatcherCanNotStartUsbServices,
+                HandleHostProblemL(EUsbWatcherNoMemory,
                         EUsbStateHostHandleDropping);
                 }
 
@@ -899,6 +912,7 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
     switch (serviceState)
         {
         case EUsbServiceIdle: // just stopped usb service
+
             {
             LOG("UsbServiceState == EUsbServiceIdle" );
             // do nothing
@@ -906,6 +920,7 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
             }
 
         case EUsbServiceStarted: // just started usb service
+
             {
             LOG( "UsbServiceState == EUsbServiceStarted" );
 
@@ -918,25 +933,27 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
             LOG("UsbServiceState == EUsbServiceStarting" );
             // should not receive that, due to call back is called when service stopped or started
             // therefore scream
-            // no break statement here
+            PANIC(EUnexpectedUsbServiceState);
+            break;
             }
         case EUsbServiceStopping:
             {
             LOG("UsbServiceState == EUsbServiceStopping" );
             // should not receive that, due to call back is called when service stopped or started
             // therefore scream
-            // no break statement here
+            PANIC(EUnexpectedUsbServiceState);
+            break;
             }
         case EUsbServiceFatalError:
             {
             LOG( "UsbServiceState == EUsbServiceFatalError" );
-            Panic(EUnexpectedUsbServiceState);
+            PANIC(EUnexpectedUsbServiceState);
             break;
             }
 
         default:
             {
-            Panic(EUnknownUsbServiceState);
+            PANIC(EUnknownUsbServiceState);
             }
         }
     }
@@ -964,27 +981,27 @@ TInt CUsbOtgWatcher::SelfTestL()
 
     if (iIdPinObserver != IdPinObserver())
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     if (iOtgStateObserver != OtgStateObserver())
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     if (iBusActivityObserver != BusActivityObserver())
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     if (iHostEventNotificationObserver != HostEventNotificationObserver())
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     if (iMessageNotificationObserver != MessageNotificationObserver())
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     LOG( "Observers destructors" );
@@ -1003,22 +1020,22 @@ TInt CUsbOtgWatcher::SelfTestL()
 
     LOG("Creating states");
 
-    User::LeaveIfError(iStates.Append(CUsbStateHostUndefined::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostAInitiate::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostAHost::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostAPeripheral::NewL(*this)));
-    User::LeaveIfError(iStates.Append(CUsbStateHostDelayAttachedHandle::NewL(
+    LEAVEIFERROR(iStates.Append(CUsbStateHostUndefined::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostAInitiate::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostAHost::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostAPeripheral::NewL(*this)));
+    LEAVEIFERROR(iStates.Append(CUsbStateHostDelayAttachedHandle::NewL(
             *this)));
-    User::LeaveIfError(iStates.Append(
+    LEAVEIFERROR(iStates.Append(
             CUsbStateHostDelayNotAttachedHandle::NewL(*this)));
-    User::LeaveIfError(iStates.Append(
+    LEAVEIFERROR(iStates.Append(
             CUsbStateHostHandleDropping::NewL(*this)));
 
     LOG("Check State()" );
 
     if (iStates[EUsbStateHostAInitiate] != State(EUsbStateHostAInitiate))
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     LOG("Check CurrentHostState()" );
@@ -1027,14 +1044,14 @@ TInt CUsbOtgWatcher::SelfTestL()
 
     if (iStates[EUsbStateHostAInitiate] != CurrentHostState())
         {
-        User::Leave(KErrGeneral);
+        LEAVE(KErrGeneral);
         }
 
     LOG("NotifManager and WarningNotifier." );
 
     CUsbNotifManager* usbnotifmanager = CUsbNotifManager::NewL(*this);
     RNotifier rnotifier;
-    User::LeaveIfError(rnotifier.Connect());
+    LEAVEIFERROR(rnotifier.Connect());
     CUsbWarningNotifier* usbnotifier = CUsbWarningNotifier::NewL(rnotifier,
             *usbnotifmanager, EUsbOtgPartiallySupportedDevice);
     usbnotifier->IsFeedbackNeeded();
@@ -1082,7 +1099,7 @@ void CUsbOtgWatcher::SubscribeL(MUsbOtgWatcherStateObserver& aObserver)
     if (KErrNotFound != iOtgStateObservers.Find(&aObserver))
         {
         LOG( "Observer already exists" );
-        Panic(EObserverAlreadyExists);
+        PANIC(EObserverAlreadyExists);
         return;
         }
     iOtgStateObservers.AppendL(&aObserver);
@@ -1101,7 +1118,7 @@ void CUsbOtgWatcher::UnsubscribeL(MUsbOtgWatcherStateObserver& aObserver)
     if (KErrNotFound == i)
         {
         LOG( "Observer not found" );
-        Panic(ECanNotFindUsbOtgWatcherStateObserver);
+        PANIC(ECanNotFindUsbOtgWatcherStateObserver);
         return;
         }
 

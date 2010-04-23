@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -18,7 +18,9 @@
 #include <usbuinotif.h>
 #include <d32usbdi_errors.h>
 
+#include "cusbotgwatcher.h"
 #include "cusbstatehosthandledropping.h"
+
 #ifndef STIF
 #include "cusbnotifmanager.h"
 #else
@@ -160,7 +162,8 @@ void CUsbStateHostHandleDropping::WaitNotifierCompletedL(TInt /*aFeedback*/)
             // no break here                     
             }
 
-            // no break statement for following cases    
+            // no break statement for following cases 
+        case EUsbWatcherNoMemory:
         case EUsbWatcherIdPinError:
         case EUsbWatcherVBusObserverError:
         case EUsbWatcherHostEventNotificationError:
@@ -178,7 +181,7 @@ void CUsbStateHostHandleDropping::WaitNotifierCompletedL(TInt /*aFeedback*/)
         default:
             {
             LOG1("Unexpected situation to be handled iWhat = %d" , iWhat );
-            Panic( EUnexpectedSituationToHandle);
+            PANIC( EUnexpectedSituationToHandle);
             break;
             }
 
@@ -253,6 +256,13 @@ void CUsbStateHostHandleDropping::DoHandleL()
                     EUsbOtgErrorInConnection, this);
             break;
             }
+        case EUsbWatcherNoMemory:
+            {
+            LOG("EUsbWatcherNoMemory" );
+            iWatcher.NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
+                    EUsbOtgErrorNoMemory, this);
+            break;
+            }
         case EUsbWatcherCanNotStartUsbServices:
             {
             LOG("EUsbWatcherCanNotStartUsbServices" );
@@ -277,7 +287,7 @@ void CUsbStateHostHandleDropping::DoHandleL()
         default:
             {
             LOG1("Unexpected situation to be handled iWhat = %d", iWhat );
-            Panic( EUnexpectedSituationToHandle);
+            PANIC( EUnexpectedSituationToHandle);
             break;
             }
         }
@@ -305,6 +315,16 @@ void CUsbStateHostHandleDropping::VBusDownL()
     }
 
 // From Host Event notification observer
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostHandleDropping::AVBusErrorL()
+    {
+    LOG_FUNC
+    iWatcher.Usb().BusClearError();
+    }
+
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
@@ -379,4 +399,14 @@ void CUsbStateHostHandleDropping::MessageNotificationReceivedL(TInt aMessage)
             }
 
         }
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostHandleDropping::VBusErrorL()
+    {
+    LOG_FUNC
+    iWatcher.Usb().BusClearError();
     }

@@ -148,7 +148,8 @@ enum TUsbUiNotifOtgError
     EUsbOtgUnsupportedDevice,
     EUsbOtgHubUnsupported,
     EUsbOtgErrorInConnection,
-    EUsbOtgErrorAttachTimedOut
+    EUsbOtgErrorAttachTimedOut,
+    EUsbOtgErrorNoMemory
     };
 
 #endif // USBUINOTIF_H
