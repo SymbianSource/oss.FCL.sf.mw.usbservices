@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,6 +26,7 @@
 #include <startupdomainpskeys.h> //for global system state
 #include "cusbactivepersonalityhandler.h"
 #include "cusbglobalsystemstateobserver.h"
+#include <usbuinotif.h>
 
 // CONSTANTS
 // const TInt KSerialNumberLength = 12;
@@ -44,6 +45,7 @@ CUsbActivePersonalityHandler::CUsbActivePersonalityHandler(
     : CActive( EPriorityStandard )
     , iUsbMan( aUsbMan )
     , iOwner( aOwner )
+    , isFailureCleanup( EFalse )
     {
     CActiveScheduler::Add( this );
     }
@@ -221,6 +223,7 @@ void CUsbActivePersonalityHandler::StartPersonality( TInt& aPersonalityId,
         LOG( "PersonalityHandler created" );
         iCurrentPersonalityHandler->PreparePersonalityStart( iStatus );
         iState = EUsbPersonalityPrepareStart;
+        isFailureCleanup = EFalse;
         SetActive();
         }
     else
@@ -242,7 +245,8 @@ void CUsbActivePersonalityHandler::StopPersonality( TRequestStatus& aStatus )
     iRequestStatus = &aStatus;
 
     iState = EUsbPersonalityPrepareStop;
-
+    isFailureCleanup = EFalse;
+    
     // prepare current personality for stop and return
     if( iCurrentPersonalityHandler )
         {
@@ -284,6 +288,11 @@ void CUsbActivePersonalityHandler::StateChangeNotify(
                 }
             break;
             }
+		case EUsbDeviceStateUndefined:
+            {
+            iPersonalityNotifier->CancelQuery(KQueriesNotifier);
+            break;
+			}
        default:
             // We do not handle other state here
 			LOG( "DeviceStatechange ignored by ActivePersonalityhandler or EUsbDeviceStateConfigured" );
@@ -302,9 +311,45 @@ void CUsbActivePersonalityHandler::StateChangeNotify(
 // outstanding request. We must not come here.
 // ----------------------------------------------------------------------------
 //
-TInt CUsbActivePersonalityHandler::RunError( TInt /*aError*/ )
+TInt CUsbActivePersonalityHandler::RunError( TInt aError )
     {
     LOG_FUNC
+    
+    LOG2("Returned error: %d, iState: %d", aError, iState);
+
+    if (KErrNoMemory == aError)
+        {
+        iQueryParams().iQuery = EUSBNotEnoughRam;
+        iPersonalityParams->PersonalityNotifier().ShowQuery(KQueriesNotifier, 
+    	            iQueryParams, iDummyBuf);
+    }
+
+    //only handle error when TryStart fails now
+	//clean up work to be done in the personality
+    if (iState == EUsbPersonalityStartUsb)
+        {
+        iState = EUsbPersonalityPrepareStop;
+		isFailureCleanup = ETrue;
+		
+	    // prepare current personality for stop and return
+	    if( iCurrentPersonalityHandler )
+	        {
+	        LOG( "Call PersonalityPlugin to prepare stop" );
+	        iCurrentPersonalityHandler->PreparePersonalityStop( iStatus );
+	        SetActive();
+	        }
+	    else
+	    	{    
+            LOG( "No current PersonalityPlugin" );
+            }
+
+        //complete StartPersonality with aError
+        User::RequestComplete( iRequestStatus, aError );
+        }
+    else
+        {
+	    LOG( "Ignore error in other states" );
+        }
 
     return KErrNone;
     }
@@ -318,10 +363,8 @@ void CUsbActivePersonalityHandler::RunL()
     LOG_FUNC
 
     TInt ret = iStatus.Int();
-    if( KErrNone != ret )
-        {
-        LOG1( "ERROR: CUsbActivePersonalityHandler::RunL iStatus = %d", ret );
-        }
+    
+    LOG2( "CUsbActivePersonalityHandler::RunL iStatus = %d, iState = %d", ret, iState );
 
     switch( iState )
         {
@@ -340,6 +383,7 @@ void CUsbActivePersonalityHandler::RunL()
             break;
 
         case EUsbPersonalityStartUsb:
+            LEAVEIFERROR( ret );
             LOG( "EUsbPersonalityStartUsb" );
             iState = EUsbPersonalityFinishStart;
             if( iCurrentPersonalityHandler )
@@ -396,8 +440,12 @@ void CUsbActivePersonalityHandler::RunL()
 	            iPersonalityParams->PersonalityNotifier().CancelQuery(
 	                    KCableConnectedNotifierUid );
                 }
-            User::RequestComplete( iRequestStatus, ret );
-
+            //the request should be completed with error code in RunError if failed
+            if ( !isFailureCleanup )
+                {
+                User::RequestComplete( iRequestStatus, ret );
+                }
+            
             iState = EUsbPersonalityIdle;
             break;
 

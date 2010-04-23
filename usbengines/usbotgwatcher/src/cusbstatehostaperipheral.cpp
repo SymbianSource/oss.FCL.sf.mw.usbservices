@@ -1,32 +1,23 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbuinotif.h>
 
 #include "cusbstatehostaperipheral.h"
-
-#ifndef STIF
-#include "cusbnotifmanager.h"
-#include "cusbtimer.h"
-#else
-#include "mockcusbnotifmanager.h"
-#include "mockcusbtimer.h"
-#endif
 
 #include "errors.h"
 #include "debug.h"
@@ -36,7 +27,7 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAPeripheral::CUsbStateHostAPeripheral(CUsbOtgWatcher* aWatcher) :
+CUsbStateHostAPeripheral::CUsbStateHostAPeripheral(CUsbOtgWatcher& aWatcher) :
     CUsbStateHostABase(aWatcher)
     {
     }
@@ -47,7 +38,7 @@ CUsbStateHostAPeripheral::CUsbStateHostAPeripheral(CUsbOtgWatcher* aWatcher) :
 //
 void CUsbStateHostAPeripheral::ConstructL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAPeripheral::ConstructL" ) );
+    LOG_FUNC
 
     CUsbStateHostABase::ConstructL();
     }
@@ -57,9 +48,9 @@ void CUsbStateHostAPeripheral::ConstructL()
 // ---------------------------------------------------------------------------
 //
 CUsbStateHostAPeripheral* CUsbStateHostAPeripheral::NewL(
-        CUsbOtgWatcher* aWatcher)
+        CUsbOtgWatcher& aWatcher)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAPeripheral::NewL" ) );
+    LOG_FUNC
 
     CUsbStateHostAPeripheral* self = new (ELeave) CUsbStateHostAPeripheral(
             aWatcher);
@@ -75,17 +66,7 @@ CUsbStateHostAPeripheral* CUsbStateHostAPeripheral::NewL(
 //
 CUsbStateHostAPeripheral::~CUsbStateHostAPeripheral()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAPeripheral::~CUsbStateHostAPeripheral" ) );
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostAPeripheral::JustAdvancedToThisStateL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAPeripheral::JustAdvancedToThisStateL" ) );
-    iWatcher->PrintStateToLog();
+    LOG_FUNC
     }
 
 // ---------------------------------------------------------------------------
@@ -94,7 +75,6 @@ void CUsbStateHostAPeripheral::JustAdvancedToThisStateL()
 //
 TUsbStateIds CUsbStateHostAPeripheral::Id()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAPeripheral::Id" ) );
     return EUsbStateHostAPeripheral;
     }
 
@@ -106,7 +86,7 @@ TUsbStateIds CUsbStateHostAPeripheral::Id()
 //
 void CUsbStateHostAPeripheral::AHostL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAPeripheral::AHostL" ) );
-        ChangeHostStateL(EUsbStateHostAInitiate);
+    LOG_FUNC
+    ChangeHostStateL( EUsbStateHostAInitiate);
     }
 

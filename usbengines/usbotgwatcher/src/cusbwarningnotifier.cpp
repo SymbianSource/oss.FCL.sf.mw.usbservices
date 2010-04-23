@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Usb warning notifier implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Usb warning notifier implementation
+ *
+ */
 
 #include <e32std.h>
 #include <usbuinotif.h>
@@ -34,9 +33,11 @@
 // -----------------------------------------------------------------------------
 //
 CUsbWarningNotifier* CUsbWarningNotifier::NewL(RNotifier& aNotifier,
-        CUsbNotifManager* aNotifManager, TUint aNotifId)
+        CUsbNotifManager& aNotifManager, TUint aNotifId)
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbWarningNotifier::NewL aNotifId = %d" ), aNotifId));
+    LOG_FUNC
+
+    LOG1( "aNotifId = %d" , aNotifId);
 
     CUsbWarningNotifier* self = new (ELeave) CUsbWarningNotifier(aNotifier,
             aNotifManager, aNotifId);
@@ -52,7 +53,7 @@ CUsbWarningNotifier* CUsbWarningNotifier::NewL(RNotifier& aNotifier,
 //
 CUsbWarningNotifier::~CUsbWarningNotifier()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbWarningNotifier::~CUsbWarningNotifier" ) );
+    LOG_FUNC
     }
 
 // ---------------------------------------------------------------------------
@@ -60,11 +61,10 @@ CUsbWarningNotifier::~CUsbWarningNotifier()
 // ---------------------------------------------------------------------------
 //
 CUsbWarningNotifier::CUsbWarningNotifier(RNotifier& aNotifier,
-        CUsbNotifManager* aNotifManager, TUint aNotifId) :
+        CUsbNotifManager& aNotifManager, TUint aNotifId) :
     CUsbNoteNotifier(aNotifier, aNotifManager, KUsbUiNotifOtgWarning,
             aNotifId)
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbWarningNotifier::CUsbWarningNotifier" ) );
     }
 
 // -----------------------------------------------------------------------------
@@ -73,7 +73,7 @@ CUsbWarningNotifier::CUsbWarningNotifier(RNotifier& aNotifier,
 //
 void CUsbWarningNotifier::ConstructL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbWarningNotifier::ConstructL" ) );
+    LOG_FUNC
 
     CUsbNoteNotifier::ConstructL();
     }

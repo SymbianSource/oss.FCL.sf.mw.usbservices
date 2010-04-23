@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbotgdefs.h>
 
@@ -40,8 +39,7 @@ CUsbBusActivityObserver::CUsbBusActivityObserver() :
 //
 void CUsbBusActivityObserver::ConstructL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::ConstructL" ) );
+    LOG_FUNC
 
     User::LeaveIfError(iBusActivity.Attach(KUidUsbManCategory,
             KUsbOtgConnectionIdleProperty));
@@ -54,8 +52,7 @@ void CUsbBusActivityObserver::ConstructL()
 //
 CUsbBusActivityObserver* CUsbBusActivityObserver::NewL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::NewL" ) );
+    LOG_FUNC
 
     CUsbBusActivityObserver* self = new (ELeave) CUsbBusActivityObserver();
     CleanupStack::PushL(self);
@@ -71,8 +68,7 @@ CUsbBusActivityObserver* CUsbBusActivityObserver::NewL()
 CUsbBusActivityObserver::~CUsbBusActivityObserver()
 
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::~CUsbBusActivityObserver" ) );
+    LOG_FUNC
 
     Cancel();
 
@@ -95,11 +91,9 @@ CUsbBusActivityObserver::TBusActivity CUsbBusActivityObserver::BusActivity()
 
     if (KErrNone != err)
         {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::BusActivity CanNotGetBusActivityProperty" ) );
-        Panic(ECanNotGetBusActivityProperty);
+        LOG("ECanNotGetBusActivityProperty" );
+        Panic( ECanNotGetBusActivityProperty);
         }
-
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::State = %d" ), val ));
 
     return (0 == val ? EBusActive : EBusIdle);
 
@@ -111,12 +105,13 @@ CUsbBusActivityObserver::TBusActivity CUsbBusActivityObserver::BusActivity()
 //
 void CUsbBusActivityObserver::SubscribeL(MUsbBusActivityObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::SubscribeL" ) );
+    LOG_FUNC
+
     // check if the same observer already exist in a list
-    if(KErrNotFound != iObservers.Find(&aObserver))
+    if (KErrNotFound != iObservers.Find(&aObserver))
         {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::SubscribeL Observer already exists." ) );
-        Panic(EObserverAlreadyExists);
+        LOG( "Observer already exists" );
+        Panic( EObserverAlreadyExists);
         return;
         }
     iObservers.AppendL(&aObserver);
@@ -135,18 +130,18 @@ void CUsbBusActivityObserver::SubscribeL(MUsbBusActivityObserver& aObserver)
 //
 void CUsbBusActivityObserver::UnsubscribeL(MUsbBusActivityObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::UnsubscribeL" ) );
+    LOG_FUNC
 
     TInt i(iObservers.Find(&aObserver));
-    if(KErrNotFound == i)
+    if (KErrNotFound == i)
         {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::UnsubscribeL Observer not found." ) );
-        Panic(ECanNotFindIdPinObserver);
+        LOG( "Observer not found" );
+        Panic( ECanNotFindBusActivityObserver);
         return;
         }
-    
+
     iObservers.Remove(i);
-    
+
     if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request
@@ -160,15 +155,17 @@ void CUsbBusActivityObserver::UnsubscribeL(MUsbBusActivityObserver& aObserver)
 //
 void CUsbBusActivityObserver::RunL()
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::RunL iStatus = %d" ), iStatus.Int()));
+    LOG_FUNC
+
+    LOG1( "iStatus = %d" , iStatus.Int());
 
     // if error occured, inform observers
-    if(KErrNone != iStatus.Int())
+    if (KErrNone != iStatus.Int())
         {
         for (TInt i(0); i < iObservers.Count(); ++i)
-                    {
-                    iObservers[i]->BusActivityErrorL(iStatus.Int());
-                    }
+            {
+            iObservers[i]->BusActivityErrorL(iStatus.Int());
+            }
         }
 
     // re-issue request first
@@ -182,7 +179,7 @@ void CUsbBusActivityObserver::RunL()
         {
         case EBusIdle:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::RunL BusIdle" ) );
+            LOG("BusIdle");
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -193,7 +190,7 @@ void CUsbBusActivityObserver::RunL()
 
         case EBusActive:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::RunL BusActive" ) );
+            LOG("BusActive");
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -204,8 +201,8 @@ void CUsbBusActivityObserver::RunL()
 
         default:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::RunL BusActive WrongBusState" ) );
-            Panic(EWrongBusState);
+            LOG("WrongBusState" );
+            Panic( EWrongBusState);
             }
         }
 
@@ -226,9 +223,10 @@ void CUsbBusActivityObserver::DoCancel()
 //
 TInt CUsbBusActivityObserver::RunError(TInt aError)
     {
+    LOG_FUNC
 
-    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbBusActivityObserver::RunError aError = %d" ), aError));
-                  
+    LOG1( "aError = %d", aError );
+
     // try to continue	
     return KErrNone;
 

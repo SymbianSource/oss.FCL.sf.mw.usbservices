@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Base classes for Usb notifier wrapper
+ * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Base classes for Usb notifier wrapper
+ *
+ */
 
 #include "cusbnotifmanager.h"
 #include "cusbnotenotifier.h"
@@ -29,12 +28,9 @@
 // ---------------------------------------------------------------------------
 //
 CUsbNoteNotifier::CUsbNoteNotifier(RNotifier& aNotifier,
-        CUsbNotifManager* aNotifManager, TUid aCat, TUint aNotifId) :
-    CUsbNotifier(aNotifManager, aCat, aNotifId),
-    iNotifier(aNotifier)
+        CUsbNotifManager& aNotifManager, TUid aCat, TUint aNotifId) :
+    CUsbNotifier(aNotifManager, aCat, aNotifId), iNotifier(aNotifier)
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbNoteNotifier::CUsbNoteNotifier" ) );
-    
     }
 
 // ---------------------------------------------------------------------------
@@ -43,9 +39,10 @@ CUsbNoteNotifier::CUsbNoteNotifier(RNotifier& aNotifier,
 //
 void CUsbNoteNotifier::ConstructL()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbNoteNotifier::ConstructL" ) );
+    LOG_FUNC
 
-    iNotifierActive = new(ELeave)CUsbNoteNotifier::CNotifierActive(iNotifier, this);
+    iNotifierActive = new (ELeave) CUsbNoteNotifier::CNotifierActive(
+            iNotifier, *this);
     }
 
 // ---------------------------------------------------------------------------
@@ -54,8 +51,8 @@ void CUsbNoteNotifier::ConstructL()
 //
 CUsbNoteNotifier::~CUsbNoteNotifier()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbNoteNotifier::~CUsbNoteNotifier" ) );
-    
+    LOG_FUNC
+
     delete iNotifierActive;
     }
 
@@ -65,7 +62,9 @@ CUsbNoteNotifier::~CUsbNoteNotifier()
 //
 void CUsbNoteNotifier::ShowL()
     {
-    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbNoteNotifier::ShowL aCat = 0x%X aNotifId = 0x%X" ), iCat, iNotifId));
+    LOG_FUNC
+
+    LOG2( "aCat = 0x%X aNotifId = 0x%X" , iCat, iNotifId);
 
     iNotifierActive->StartL();
     }
@@ -76,9 +75,7 @@ void CUsbNoteNotifier::ShowL()
 //
 void CUsbNoteNotifier::Close()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbNoteNotifier::Close" ) );
     }
-
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -86,12 +83,10 @@ void CUsbNoteNotifier::Close()
 // C++ default constructor
 // ---------------------------------------------------------------------------
 //
-CUsbNoteNotifier::CNotifierActive::CNotifierActive(RNotifier& aNotifier, 
-        CUsbNoteNotifier* aUsbNoteNotifier) :
-        CUsbNoteNotifier::CNotifierActive::CActive(EPriorityStandard), 
-        iUsbNoteNotifier(aUsbNoteNotifier), 
-        iNotifier(aNotifier), 
-        iRes(0)
+CUsbNoteNotifier::CNotifierActive::CNotifierActive(RNotifier& aNotifier,
+        CUsbNoteNotifier& aUsbNoteNotifier) :
+    CUsbNoteNotifier::CNotifierActive::CActive(EPriorityStandard),
+            iUsbNoteNotifier(aUsbNoteNotifier), iNotifier(aNotifier), iRes(0)
     {
     CActiveScheduler::Add(this);
     }
@@ -111,19 +106,16 @@ CUsbNoteNotifier::CNotifierActive::~CNotifierActive()
 //
 void CUsbNoteNotifier::CNotifierActive::StartL()
     {
-    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbNoteNotifier::CNotifierActive::ShowL aCat = 0x%X aNotifId = 0x%X" ), 
-            iUsbNoteNotifier->iCat, iUsbNoteNotifier->iNotifId));
+    LOG_FUNC
 
     if (IsActive())
         {
-        Panic(ENotifierIsActiveAlready);
+        Panic( ENotifierIsActiveAlready);
         return;
-        }
-
-    TPckgBuf<TInt> pckg;
-    pckg() = iUsbNoteNotifier->iNotifId;
-
-    iNotifier.StartNotifierAndGetResponse(iStatus, iUsbNoteNotifier->iCat, pckg, iRes);
+        }    
+		
+    iNotifIdPckg() = iUsbNoteNotifier.iNotifId;
+    iNotifier.StartNotifierAndGetResponse(iStatus, iUsbNoteNotifier.iCat, iNotifIdPckg, iRes);
     SetActive();
     }
 
@@ -133,15 +125,18 @@ void CUsbNoteNotifier::CNotifierActive::StartL()
 //
 void CUsbNoteNotifier::CNotifierActive::RunL()
     {
-    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCCUsbNoteNotifier::CNotifierActive::RunL iStatus = %d" ), iStatus.Int()));
+    LOG_FUNC
+
+    LOG1( "iStatus = %d" , iStatus.Int());
 
     // if error occured, deal with it in RunError
     User::LeaveIfError(iStatus.Int());
 
-    iNotifier.CancelNotifier(iUsbNoteNotifier->iCat);
+    iNotifier.CancelNotifier(iUsbNoteNotifier.iCat);
 
     // report to owner that show is over
-    iUsbNoteNotifier->iNotifManager->NotifierShowCompletedL(iUsbNoteNotifier, KErrNone, iRes());
+    iUsbNoteNotifier.iNotifManager.NotifierShowCompletedL(iUsbNoteNotifier,
+            KErrNone, iRes());
     }
 
 // ---------------------------------------------------------------------------
@@ -150,9 +145,7 @@ void CUsbNoteNotifier::CNotifierActive::RunL()
 //
 void CUsbNoteNotifier::CNotifierActive::DoCancel()
     {
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbNoteNotifier::CNotifierActive::DoCancel" ) );
-
-    iNotifier.CancelNotifier(iUsbNoteNotifier->iCat);
+    iNotifier.CancelNotifier(iUsbNoteNotifier.iCat);
     }
 
 // ---------------------------------------------------------------------------
@@ -161,9 +154,11 @@ void CUsbNoteNotifier::CNotifierActive::DoCancel()
 //
 TInt CUsbNoteNotifier::CNotifierActive::RunError(TInt aError)
     {
-    FTRACE( FPrint(_L("[USBOTGWATCHER]\tCUsbNoteNotifier::CNotifierActive::RunError aError = %d" ), aError));
+    LOG_FUNC
 
-    iNotifier.CancelNotifier(iUsbNoteNotifier->iCat);
+    LOG1("aError = %d" , aError);
+
+    iNotifier.CancelNotifier(iUsbNoteNotifier.iCat);
 
     // try to continue  
     return KErrNone;

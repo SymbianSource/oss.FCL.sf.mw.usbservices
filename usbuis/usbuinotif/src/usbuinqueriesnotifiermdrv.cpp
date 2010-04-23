@@ -163,13 +163,14 @@ void CUSBUIQueriesNotifier::RunL()
     FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::RunL"));
 
     TBool isCancelKey = EFalse;
+    TBool isErrorQuery = EFalse;
     TInt returnValue = KErrNone;
     // for cover display support
     TInt coverDialogId = EUSBCoverInvalidDialogId;
 
     // Choose text and other query attributes
     //
-    HBufC* stringHolder = GetQueryAttributesLC( coverDialogId, isCancelKey );
+    HBufC* stringHolder = GetQueryAttributesLC( coverDialogId, isCancelKey, isErrorQuery );
 
     //check if query text string loading was successful
     if (NULL != stringHolder)
@@ -177,7 +178,7 @@ void CUSBUIQueriesNotifier::RunL()
         DisableKeylock();
         SuppressAppSwitching( ETrue );
         returnValue = QueryUserResponseL( *stringHolder, coverDialogId,
-                isCancelKey );
+                isCancelKey, isErrorQuery );
         SuppressAppSwitching( EFalse );
         RestoreKeylock();
         CleanupStack::PopAndDestroy( stringHolder );
@@ -219,7 +220,7 @@ void CUSBUIQueriesNotifier::Cancel()
 // ----------------------------------------------------------------------------
 //
 TInt CUSBUIQueriesNotifier::QueryUserResponseL(const TDesC& aStringHolder,
-        TInt aCoverDialogId, TBool aIsCancelKey)
+        TInt aCoverDialogId, TBool aIsCancelKey, TBool aIsErrorQuery)
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::QueryUserResponseL"));
     TInt returnValue = KErrNone;
@@ -228,7 +229,13 @@ TInt CUSBUIQueriesNotifier::QueryUserResponseL(const TDesC& aStringHolder,
 
     // Show dialog with or without the Cancel
     //
-    if (aIsCancelKey)
+    if (aIsErrorQuery) 
+        {
+        // aIsErrorQuery flag is set in GetQueryAttributesLC()
+        // there is no defined QueryDialogError in resources so QueryOTGerror is used (contains Stop icon)
+        iUSBQueryDlg->PrepareLC( R_USB_QUERY_OTG_ERROR );
+        }
+    else if (aIsCancelKey)
         {
         iUSBQueryDlg->PrepareLC( R_USB_QUERY_WITH_CANCEL );
         }
@@ -270,11 +277,12 @@ TInt CUSBUIQueriesNotifier::QueryUserResponseL(const TDesC& aStringHolder,
 // ----------------------------------------------------------------------------
 //
 HBufC* CUSBUIQueriesNotifier::GetQueryAttributesLC(TInt& aCoverDialogId,
-        TBool& aIsCancelKey)
+        TBool& aIsCancelKey, TBool& aIsErrorQuery)
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::GetQueryAttributesLC"));
     HBufC* stringHolder = NULL; // The text for the query
     aIsCancelKey = EFalse;
+    aIsErrorQuery = EFalse;
     switch (iQueryType)
         {
         case EUSBStorageMediaFailure:
@@ -298,6 +306,15 @@ HBufC* CUSBUIQueriesNotifier::GetQueryAttributesLC(TInt& aCoverDialogId,
                 FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBNoMemoryCard"));
             stringHolder = StringLoader::LoadLC( R_USB_NO_MEMORY_CARD );
             aCoverDialogId = EUSBCoverNoMemoryCard;
+            break;
+            } 
+        case EUSBNotEnoughRam:
+          	{
+            FLOG(_L("[USBUINOTIF]\t CUSBUIQueriesNotifier::EUSBNotEnoughRam"));
+            stringHolder = StringLoader::LoadLC( R_USB_ERROR_MEMORY_NOT_ENOUGH );
+            aCoverDialogId = EUSBCoverNoMemoryCard;
+            //set flag to change the icon of querydialog (see QueryUserResponseL())
+            aIsErrorQuery = ETrue;
             break;
             }
         default:

@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbman.h>
 
@@ -41,8 +40,7 @@ CUsbHostEventNotificationObserver::CUsbHostEventNotificationObserver(
 //
 void CUsbHostEventNotificationObserver::ConstructL()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::ConstructL" ) );
+    LOG_FUNC
 
     }
 
@@ -53,8 +51,7 @@ void CUsbHostEventNotificationObserver::ConstructL()
 CUsbHostEventNotificationObserver* CUsbHostEventNotificationObserver::NewL(
         RUsb* aUsb)
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::NewL" ) );
+    LOG_FUNC
 
     CUsbHostEventNotificationObserver* self =
             new (ELeave) CUsbHostEventNotificationObserver(aUsb);
@@ -70,8 +67,7 @@ CUsbHostEventNotificationObserver* CUsbHostEventNotificationObserver::NewL(
 //
 CUsbHostEventNotificationObserver::~CUsbHostEventNotificationObserver()
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::~CUsbHostEventNotificationObserver" ) );
+    LOG_FUNC
 
     Cancel();
 
@@ -86,16 +82,16 @@ CUsbHostEventNotificationObserver::~CUsbHostEventNotificationObserver()
 void CUsbHostEventNotificationObserver::SubscribeL(
         MUsbHostEventNotificationObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::SubscribeL" ) );
+    LOG_FUNC
 
-        // check if the same observer already exist in a list
-        if(KErrNotFound != iObservers.Find(&aObserver))
-            {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::SubscribeL Observer already exists." ) );
-            Panic(EObserverAlreadyExists);
-            return;
-            }
-        
+    // check if the same observer already exist in a list
+    if (KErrNotFound != iObservers.Find(&aObserver))
+        {
+        LOG("Observer already exists" );
+        Panic( EObserverAlreadyExists);
+        return;
+        }
+
     iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
@@ -113,22 +109,23 @@ void CUsbHostEventNotificationObserver::SubscribeL(
 void CUsbHostEventNotificationObserver::UnsubscribeL(
         MUsbHostEventNotificationObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::UnsubscribeL" ) );
-        TInt i(iObservers.Find(&aObserver));
-        if(KErrNotFound == i)
-                {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::UnsubscribeL Observer not found." ) );
-                Panic(ECanNotFindHostEventNotificationObserver);
-                return;
-                }
-            
-            iObservers.Remove(i);
-            
-            if (0 == iObservers.Count()) // no observers anymore
-                {
-                // cancel pending request
-                Cancel();
-                }
+    LOG_FUNC
+
+    TInt i(iObservers.Find(&aObserver));
+    if (KErrNotFound == i)
+        {
+        LOG("Observer not found");
+        Panic( ECanNotFindHostEventNotificationObserver);
+        return;
+        }
+
+    iObservers.Remove(i);
+
+    if (0 == iObservers.Count()) // no observers anymore
+        {
+        // cancel pending request
+        Cancel();
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -137,17 +134,19 @@ void CUsbHostEventNotificationObserver::UnsubscribeL(
 //
 void CUsbHostEventNotificationObserver::RunL()
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iStatus = %d" ), iStatus.Int()));
+    LOG_FUNC
 
-        // if error occured, tell to Observers
-        if(KErrNone != iStatus.Int()) 
+    LOG1( "iStatus = %d", iStatus.Int());
+
+    // if error occured, tell to Observers
+    if (KErrNone != iStatus.Int())
+        {
+        for (TInt i(0); i < iObservers.Count(); ++i)
             {
-            for (TInt i(0); i < iObservers.Count(); ++i)
-                 {
-                 iObservers[i]->HostEventNotificationErrorL(iStatus.Int());
-                 }
-            return;
+            iObservers[i]->HostEventNotificationErrorL(iStatus.Int());
             }
+        return;
+        }
 
     TDeviceEventInformation dei(iEventInfo);
 
@@ -155,20 +154,20 @@ void CUsbHostEventNotificationObserver::RunL()
     iUsb->HostEventNotification(iStatus, iEventInfo);
     SetActive();
 
-        // Log the event
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iEventInfo.iDeviceId         = %d" ), dei.iDeviceId));
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iEventInfo.iEventType        = %d" ), dei.iEventType));
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iEventInfo.iError            = %d" ), dei.iError));
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iEventInfo.iDriverLoadStatus = %d" ), dei.iDriverLoadStatus));
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iEventInfo.iVid              = %d" ), dei.iVid));
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL iEventInfo.iPid              = %d" ), dei.iPid));
+    // Log the event
+    LOG1( "iEventInfo.iDeviceId         = %d" , dei.iDeviceId);
+    LOG1( "iEventInfo.iEventType        = %d" , dei.iEventType);
+    LOG1( "iEventInfo.iError            = %d" , dei.iError);
+    LOG1( "iEventInfo.iDriverLoadStatus = %d" , dei.iDriverLoadStatus);
+    LOG1( "iEventInfo.iVid              = %d" , dei.iVid);
+    LOG1( "iEventInfo.iPid              = %d" , dei.iPid);
 
     // then process property change
     switch (dei.iEventType)
         {
         case EDeviceAttachment:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL DeviceAttachment" ) );
+            LOG("DeviceAttachment" );
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -179,7 +178,7 @@ void CUsbHostEventNotificationObserver::RunL()
 
         case EDeviceDetachment:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL DeviceDetachment" ) );
+            LOG( "DeviceDetachment" );
 
             for (TInt i(0); i < iObservers.Count(); ++i)
                 {
@@ -194,7 +193,7 @@ void CUsbHostEventNotificationObserver::RunL()
                 {
                 case EDriverLoadSuccess:
                     {
-                        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL DriverLoadSuccess" ) );
+                    LOG( "DriverLoadSuccess" );
 
                     for (TInt i(0); i < iObservers.Count(); ++i)
                         {
@@ -205,7 +204,7 @@ void CUsbHostEventNotificationObserver::RunL()
                     }
                 case EDriverLoadPartialSuccess:
                     {
-                        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL DriverLoadPartialSuccess" ) );
+                    LOG( "DriverLoadPartialSuccess" );
 
                     for (TInt i(0); i < iObservers.Count(); ++i)
                         {
@@ -216,7 +215,7 @@ void CUsbHostEventNotificationObserver::RunL()
                     }
                 case EDriverLoadFailure:
                     {
-                        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL DriverLoadFailure" ) );
+                    LOG( "DriverLoadFailure");
 
                     for (TInt i(0); i < iObservers.Count(); ++i)
                         {
@@ -226,8 +225,8 @@ void CUsbHostEventNotificationObserver::RunL()
                     }
                 default:
                     {
-                        FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL DriverLoadFailure WrongDriverLoadStatus" ) );
-                    Panic(EWrongDriverLoadStatus);
+                    LOG("WrongDriverLoadStatus" );
+                    Panic( EWrongDriverLoadStatus);
                     }
                 }
             break;
@@ -235,8 +234,8 @@ void CUsbHostEventNotificationObserver::RunL()
             }
         default:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunL WrongHostEventNotification" ) );
-            Panic(EWrongHostEventNotification);
+            LOG( "WrongHostEventNotification" );
+            Panic( EWrongHostEventNotification);
             }
 
         }
@@ -258,8 +257,9 @@ void CUsbHostEventNotificationObserver::DoCancel()
 //
 TInt CUsbHostEventNotificationObserver::RunError(TInt aError)
     {
+    LOG_FUNC
 
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbHostEventNotificationObserver::RunError aError = %d" ), aError));
+    LOG1( "aError = %d" , aError);
 
     // try to recover and continue	
     return KErrNone;

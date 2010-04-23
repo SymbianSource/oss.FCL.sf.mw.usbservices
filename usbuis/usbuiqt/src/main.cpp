@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
     // TRAP is must here, otherwise it crashes
 TRAP_IGNORE(
     bool loaded(false);
-    loaded = translator.load( filename, QString("z:/resource") );
+    loaded = translator.load( filename, QString("z:/resource/qt/translations") );
     if (!loaded)
-        translator.load(filename, QString("c:/resource") );
+        translator.load(filename, QString("c:/resource/qt/translations") );
 );
 #else
     translator.load(filename, QString("resource") );

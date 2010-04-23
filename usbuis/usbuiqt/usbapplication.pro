@@ -55,7 +55,7 @@ symbian: {
 	usbuitranslation.path = /resource
 	DEPLOYMENT += usbuitranslation
 
-    BLD_INF_RULES.prj_exports += "./src/usbapplication.qm z:/resource/usbapplication.qm"
+    BLD_INF_RULES.prj_exports += "./src/usbapplication.qm z:/resource/qt/translations/usbapplication.qm
 }
 
 # placeholder for creating sis file
@@ -66,5 +66,6 @@ createsis.commands += ( makesis -v usbapplication.pkg ); \
     ( del usbapplication.sis );
 QMAKE_EXTRA_TARGETS += createsis
 
-BLD_INF_RULES.prj_exports += \
+BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <platform_paths.hrh>" \
         "rom/usbsettings.iby   CORE_MW_LAYER_IBY_EXPORT_PATH(usbsettings.iby)" \
+        "rom/usbsettingsresources.iby   LANGUAGE_MW_LAYER_IBY_EXPORT_PATH(usbsettingsresources.iby)"

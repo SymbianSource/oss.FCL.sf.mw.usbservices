@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Monitors USB activity
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
-
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Monitors USB activity
+ *
+ */
 
 #ifndef C_USBBUSACTIVITYOBSERVER_H
 #define C_USBBUSACTIVITYOBSERVER_H
@@ -39,13 +38,13 @@ public:
      * Called when when bus is in Idle, and some activity appears on the bus
      */
     virtual void BusActiveL() = 0;
-    
+
     /**
-      * Called when when error happened
-      * @param aError errorcode
-      */
-     virtual void BusActivityErrorL(TInt aError) = 0;   
-    
+     * Called when when error happened
+     * @param aError errorcode
+     */
+    virtual void BusActivityErrorL(TInt aError) = 0;
+
     };
 
 /**
@@ -126,7 +125,7 @@ private:
 
     /**
      * The observer reports state changes to own observers
-     * Owns
+     * Not owns
      */
     RPointerArray<MUsbBusActivityObserver> iObservers;
 

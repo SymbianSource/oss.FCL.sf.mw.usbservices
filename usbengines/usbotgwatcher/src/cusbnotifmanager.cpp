@@ -1,19 +1,19 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:  Implementation
+ * Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
  *
-*/
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:  Implementation
+ *
+ */
 
 #include <usbuinotif.h> 
 
@@ -30,7 +30,7 @@
 // ---------------------------------------------------------------------------
 //
 CWaitNotifierInfo::CWaitNotifierInfo(CUsbNotifier* aWaitNotifier,
-        MWaitNotifierObserver* aObserver) :
+        MWaitNotifierObserver& aObserver) :
     iWaitNotifier(aWaitNotifier), iObserver(aObserver)
     {
     }
@@ -41,7 +41,7 @@ CWaitNotifierInfo::CWaitNotifierInfo(CUsbNotifier* aWaitNotifier,
 //
 void CWaitNotifierInfo::ConstructL()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCWaitNotifierInfo::ConstructL" ) );
+    LOG_FUNC
     // owenrship for iWaitNotifier transferred in default constructor.
     // this object is responsible for deletion of the iWaitNotifier then	
     }
@@ -51,9 +51,10 @@ void CWaitNotifierInfo::ConstructL()
 // ---------------------------------------------------------------------------
 //
 CWaitNotifierInfo* CWaitNotifierInfo::NewL(CUsbNotifier* aWaitNotifier,
-        MWaitNotifierObserver* aObserver)
+        MWaitNotifierObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCWaitNotifierInfo::NewL" ) );
+    LOG_FUNC
+
     CWaitNotifierInfo* self = new (ELeave) CWaitNotifierInfo(aWaitNotifier,
             aObserver);
     CleanupStack::PushL(self);
@@ -68,7 +69,7 @@ CWaitNotifierInfo* CWaitNotifierInfo::NewL(CUsbNotifier* aWaitNotifier,
 //
 CWaitNotifierInfo::~CWaitNotifierInfo()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCWaitNotifierInfo::~CWaitNotifierInfo" ) );
+    LOG_FUNC
     delete iWaitNotifier;
     }
 
@@ -87,18 +88,16 @@ CUsbNotifier* CWaitNotifierInfo::WaitNotifier() const
 //
 MWaitNotifierObserver* CWaitNotifierInfo::Observer() const
     {
-    return iObserver;
+    return &iObserver;
     }
-
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbNotifManager* CUsbNotifManager::NewL(CUsbOtgWatcher* aOtgWatcher)
+CUsbNotifManager* CUsbNotifManager::NewL(CUsbOtgWatcher& aOtgWatcher)
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::NewL" ) );
+    LOG_FUNC
 
     CUsbNotifManager* self = new (ELeave) CUsbNotifManager();
     CleanupStack::PushL(self);
@@ -111,14 +110,13 @@ CUsbNotifManager* CUsbNotifManager::NewL(CUsbOtgWatcher* aOtgWatcher)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbNotifManager::ConstructL(CUsbOtgWatcher* aOtgWatcher)
+void CUsbNotifManager::ConstructL(CUsbOtgWatcher& aOtgWatcher)
     {
-
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::ConstructL" ) );
+    LOG_FUNC
 
     User::LeaveIfError(iNotifier.Connect());
-    
-    iIndicatorNotifier = CUsbIndicatorNotifier::NewL(this, aOtgWatcher);
+
+    iIndicatorNotifier = CUsbIndicatorNotifier::NewL(*this, aOtgWatcher);
 
     }
 
@@ -128,7 +126,6 @@ void CUsbNotifManager::ConstructL(CUsbOtgWatcher* aOtgWatcher)
 //
 CUsbNotifManager::CUsbNotifManager()
     {
-
     }
 
 // ---------------------------------------------------------------------------
@@ -137,13 +134,12 @@ CUsbNotifManager::CUsbNotifManager()
 //
 CUsbNotifManager::~CUsbNotifManager()
     {
-
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::~CUsbNotifManager" ) );
+    LOG_FUNC
 
     CloseAllNotifiers();
-    
+
     delete iIndicatorNotifier;
-    
+
     iNotifier.Close();
 
     }
@@ -155,16 +151,17 @@ CUsbNotifManager::~CUsbNotifManager()
 void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
         MWaitNotifierObserver* aObserver)
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbNotifManager::ShowNotifier aCat = 0x%X aNotifId = %d, aObserver=0x%X" ),
-                        aCat, aNotifId, aObserver));
+    LOG_FUNC
+
+    LOG3( "aCat = 0x%X aNotifId = %d, aObserver=0x%X" , aCat, aNotifId, aObserver);
 
     // remove non-feedback notifiers from the list
     for (TUint i(0); i < iWaitNotifiers.Count(); ++i)
         {
-        CWaitNotifierInfo* waitNotifier = iWaitNotifiers[i];
-        if (!(waitNotifier->WaitNotifier()->IsFeedbackNeeded()))
+        CWaitNotifierInfo* waitNotifierInfo = iWaitNotifiers[i];
+        if (!(waitNotifierInfo->WaitNotifier()->IsFeedbackNeeded()))
             {
-            delete waitNotifier;
+            delete waitNotifierInfo;
             iWaitNotifiers.Remove(i);
             }
         }
@@ -183,41 +180,42 @@ void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
     if (aCat == KUsbUiNotifOtgError)
         {
         __ASSERT_ALWAYS(aObserver != NULL, Panic(EWrongNotifierCategory));
-        notifier = CUsbWaitNotifier::NewL(iNotifier, this, aNotifId);
+        notifier = CUsbWaitNotifier::NewL(iNotifier, *this, aNotifId);
         }
     else if (aCat == KUsbUiNotifOtgWarning)
         {
-        notifier = CUsbWarningNotifier::NewL(iNotifier, this, aNotifId);
+        notifier = CUsbWarningNotifier::NewL(iNotifier, *this, aNotifId);
         }
     else
         {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::ShowNotifierL - Unexpected aCat" ) );
+        LOG1("Unexpected aCat = 0x%X", aCat );
         Panic(EWrongNotifierCategory);
         }
 
     CleanupStack::PushL(notifier);
-    
-    iWaitNotifiers.AppendL(CWaitNotifierInfo::NewL(notifier, aObserver));
 
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::ShowNotifierL - Start to show note" ) );
+    iWaitNotifiers.AppendL(CWaitNotifierInfo::NewL(notifier, *aObserver));
+
     notifier->ShowL();
 
-    CleanupStack::Pop(notifier);    
+    CleanupStack::Pop(notifier);
     }
 
 // ---------------------------------------------------------------------------
 //
 // ---------------------------------------------------------------------------
 //
-void CUsbNotifManager::NotifierShowCompletedL(CUsbNotifier* aWaitNotifier,
+void CUsbNotifManager::NotifierShowCompletedL(CUsbNotifier& aWaitNotifier,
         TInt aResult, TInt aFeedback)
     {
-        FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbNotifManager::NotifierShowCompleted aResult = %d" ), aResult));
+    LOG_FUNC
+
+    LOG1( "aResult = %d", aResult);
 
     // remove Notifier from the list
     for (TUint i(0); i < iWaitNotifiers.Count(); ++i)
         {
-        if (aWaitNotifier == iWaitNotifiers[i]->WaitNotifier())
+        if (&aWaitNotifier == iWaitNotifiers[i]->WaitNotifier())
             {
             MWaitNotifierObserver* observer = iWaitNotifiers[i]->Observer();
 
@@ -236,7 +234,7 @@ void CUsbNotifManager::NotifierShowCompletedL(CUsbNotifier* aWaitNotifier,
 //
 void CUsbNotifManager::CloseAllNotifiers()
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbNotifManager::CloseAllNotifiers" ) );
+    LOG_FUNC
 
     iWaitNotifiers.ResetAndDestroy();
     iIndicatorNotifier->Close();

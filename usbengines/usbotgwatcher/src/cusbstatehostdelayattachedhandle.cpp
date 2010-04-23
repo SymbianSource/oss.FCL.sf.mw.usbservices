@@ -15,13 +15,15 @@
  *
  */
 
-#include <e32base.h>
-#include <UsbWatcherInternalPSKeys.h>
+#include <usbuinotif.h>
 
-#include "cusbstatehostahost.h"
-#include "cusbnotifmanager.h"
+#include "cusbstatehostdelayattachedhandle.h"
+#ifndef STIF
+#include "cusbtimer.h"
+#else
+#include "mockcusbtimer.h"
+#endif
 
-#include "definitions.h"
 #include "errors.h"
 #include "debug.h"
 #include "panic.h"
@@ -30,8 +32,9 @@
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAHost::CUsbStateHostAHost(CUsbOtgWatcher& aWatcher) :
-    CUsbStateHostABase(aWatcher)
+CUsbStateHostDelayAttachedHandle::CUsbStateHostDelayAttachedHandle(
+        CUsbOtgWatcher& aWatcher) :
+    CUsbStateHostDelayHandle(aWatcher)
     {
     }
 
@@ -39,23 +42,13 @@ CUsbStateHostAHost::CUsbStateHostAHost(CUsbOtgWatcher& aWatcher) :
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAHost::ConstructL()
+CUsbStateHostDelayAttachedHandle* CUsbStateHostDelayAttachedHandle::NewL(
+        CUsbOtgWatcher& aWatcher)
     {
     LOG_FUNC
 
-    CUsbStateHostABase::ConstructL();
-
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-CUsbStateHostAHost* CUsbStateHostAHost::NewL(CUsbOtgWatcher& aWatcher)
-    {
-    LOG_FUNC
-
-    CUsbStateHostAHost* self = new (ELeave) CUsbStateHostAHost(aWatcher);
+    CUsbStateHostDelayAttachedHandle* self =
+            new (ELeave) CUsbStateHostDelayAttachedHandle(aWatcher);
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self);
@@ -66,9 +59,12 @@ CUsbStateHostAHost* CUsbStateHostAHost::NewL(CUsbOtgWatcher& aWatcher)
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostAHost::~CUsbStateHostAHost()
+void CUsbStateHostDelayAttachedHandle::ConstructL()
     {
     LOG_FUNC
+
+    CUsbStateHostDelayHandle::ConstructL();
+    iDriversNotFoundTimer = CUsbTimer::NewL(*this, EDriversNotFoundTimer);
 
     }
 
@@ -76,60 +72,100 @@ CUsbStateHostAHost::~CUsbStateHostAHost()
 // 
 // ---------------------------------------------------------------------------
 //
-TUsbStateIds CUsbStateHostAHost::Id()
+CUsbStateHostDelayAttachedHandle::~CUsbStateHostDelayAttachedHandle()
     {
-    return EUsbStateHostAHost;
+    LOG_FUNC
+
+    delete iDriversNotFoundTimer;
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAHost::JustAdvancedToThisStateL()
+TUsbStateIds CUsbStateHostDelayAttachedHandle::Id()
+    {
+    return EUsbStateHostDelayAttachedHandle;
+    }
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostDelayAttachedHandle::JustBeforeLeavingThisStateL()
     {
     LOG_FUNC
+
+    iDriversNotFoundTimer->Cancel();
 
     // do general things 
-    CUsbStateHostABase::JustAdvancedToThisStateL();
-
-    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
-            KUsbWatcherIsPeripheralConnected,
-            KUsbWatcherPeripheralIsConnected));
-
+    CUsbStateHostDelayHandle::JustBeforeLeavingThisStateL();
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAHost::JustBeforeLeavingThisStateL()
+void CUsbStateHostDelayAttachedHandle::DoHandleL()
     {
     LOG_FUNC
+    LOG1( "iWhat = %d" , iWhat);
 
-    User::LeaveIfError(RProperty::Set(KPSUidUsbWatcher,
-            KUsbWatcherIsPeripheralConnected,
-            KUsbWatcherPeripheralIsNotConnected));
+    switch (iWhat)
+        {
+        case EUsbWatcherErrDriversNotFound:
+            {
+            LOG("DriversNotFound" );
 
-    // do general things 
-    CUsbStateHostABase::JustBeforeLeavingThisStateL();
+            iDriversNotFoundTimer->After(KTimeDriversNotFound);
+            break;
+
+            }
+
+        default:
+            {
+            LOG1("Unexpected request id = %d" , iWhat );
+            Panic( EUnexpectedSituationToHandle);
+            break;
+            }
+        }
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAHost::DeviceDetachedL(TDeviceEventInformation)
+void CUsbStateHostDelayAttachedHandle::DeviceDetachedL(
+        TDeviceEventInformation)
     {
     LOG_FUNC
+
     ChangeHostStateL( EUsbStateHostAInitiate);
     }
 
+// From TimerObserver
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAHost::BadHubPositionL()
+void CUsbStateHostDelayAttachedHandle::TimerElapsedL(TUsbTimerId aTimerId)
     {
     LOG_FUNC
-    Panic( EBadHubPositionEventNotExpected);
+
+    switch (aTimerId)
+        {
+        case EDriversNotFoundTimer:
+            {
+            LOG( "EDriversNotFoundTimer" );
+            HandleL(EUsbWatcherErrUnsupportedDevice,
+                    EUsbStateHostHandleDropping);
+
+            break;
+            }
+        default:
+            {
+            LOG1( "Unknown timer id = %d", aTimerId );
+            Panic( EWrongTimerId);
+            }
+        }
     }

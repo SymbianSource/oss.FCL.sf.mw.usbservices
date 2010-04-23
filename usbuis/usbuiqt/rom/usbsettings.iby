@@ -21,8 +21,6 @@
 #include <data_caging_paths_for_iby.hrh>
 
 file=/epoc32/release/armv5/urel/usbapplication.exe      PROGRAMS_DIR/usbapplication.exe
-data=/epoc32/data/z/resource/apps/usbapplication.rsc    APP_RESOURCE_DIR/usbapplication.rsc
 data=/epoc32/data/z/private/10003a3f/import/apps/usbapplication_reg.rsc /private/10003a3f/import/apps/usbapplication_reg.rsc
-data=/epoc32/data/z/resource/usbapplication.qm  RESOURCE_FILES_DIR/usbapplication.qm
 
 #endif

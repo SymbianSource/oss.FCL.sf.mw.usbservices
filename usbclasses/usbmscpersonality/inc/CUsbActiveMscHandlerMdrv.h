@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -414,6 +414,11 @@ private: // Data
      */
     TBool iMountChanged;
 
+    /**
+     * If query note shown by us
+     */
+    TBool iIsQueryNoteShown;
+    
     /**
      * Used to load devenccommonutils.dll and check the device encryption status
      */

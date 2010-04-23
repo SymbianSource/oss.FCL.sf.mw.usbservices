@@ -105,18 +105,24 @@ void CUsbUiNotifOtgError::GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
         {
         User::Leave( KErrInUse );
         }
-
-    iMessage = aMessage;
-    iNeedToCompleteMessage = ETrue;
-    iReplySlot = aReplySlot;
-
+        
     // Get parameters 
     //
-    iErrorId = 0;
+    
     TPckgC<TInt> pckg( iErrorId );
     pckg.Set( aBuffer );
     iErrorId = pckg();
-
+    
+    FTRACE(FPrint(_L("[USBUINOTIF]\t CUsbUiNotifOtgError::GetParamsL iErrorId: %d"), iErrorId ));  
+    if ( iErrorId < 0 || iErrorId >= iStringIds.Count() )
+        {        
+        User::Leave( KErrArgument);        
+        }    
+        
+    iMessage = aMessage;
+    iNeedToCompleteMessage = ETrue;
+    iReplySlot = aReplySlot;  
+	  
     SetActive();
     iStatus = KRequestPending;
     TRequestStatus* stat = &iStatus;

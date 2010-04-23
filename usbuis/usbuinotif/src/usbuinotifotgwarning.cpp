@@ -73,7 +73,7 @@ CUsbUiNotifOtgWarning::~CUsbUiNotifOtgWarning()
 void CUsbUiNotifOtgWarning::ConstructL()
     {
     CUSBUINotifierBase::ConstructL();
-    iStringIds.AppendL( R_USB_OTG_WARNING_PARTIAL_SUPPORTED);
+    iStringIds.AppendL( R_USB_OTG_WARNING_PARTIAL_SUPPORT);
     }
 
 // ----------------------------------------------------------------------------
@@ -123,18 +123,24 @@ void CUsbUiNotifOtgWarning::GetParamsL(const TDesC8& aBuffer,
     if (iNote || iReplySlot != 0 || iNeedToCompleteMessage)
         {
         User::Leave( KErrInUse );
-        }
-
-    iMessage = aMessage;
-    iNeedToCompleteMessage = ETrue;
-    iReplySlot = aReplySlot;
+        }    
 
     // Get parameters 
     //    
     TPckgC<TInt> pckg( iNoteId );
     pckg.Set( aBuffer );
     iNoteId = pckg();
+    
+    FTRACE(FPrint(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::GetParamsL iNoteId: %d"), iNoteId ));  
+    if ( iNoteId < 0 || iNoteId >= iStringIds.Count() )
+        {        
+        User::Leave( KErrArgument);        
+        }   
 
+    iMessage = aMessage;
+    iNeedToCompleteMessage = ETrue;
+    iReplySlot = aReplySlot;
+    
     SetActive();
     iStatus = KRequestPending;
     TRequestStatus* stat = &iStatus;

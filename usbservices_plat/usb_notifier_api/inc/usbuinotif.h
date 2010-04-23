@@ -63,7 +63,8 @@ enum TUSBUIQueries
     EUSBPossibleDataLossCable,
     EUSBPossibleDataLossMMC,
     EUSBChangeFromMassStorage,
-    EUSBNoMemoryCard
+    EUSBNoMemoryCard,
+    EUSBNotEnoughRam
    };
 
 /**
