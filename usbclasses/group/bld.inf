@@ -23,9 +23,4 @@
 //#include "../sicdusbplugin/group/bld.inf"
 //#include "../ptpserver/group/bld.inf"
 #include "../pictbridgeengine/group/bld.inf"
-//Wusan@20091210: DEF143281: sf build break because of 
-//  msmmplugin & usbhidclassdriver do not contribute to.
-//PS, this comment and the below 2 line will be deleted after review!
-//#include "../msmmplugin/group/bld.inf"
-//#include "../usbhidclassdriver/group/bld.inf"
 #include "../usbphoneasmodem/group/bld.inf"

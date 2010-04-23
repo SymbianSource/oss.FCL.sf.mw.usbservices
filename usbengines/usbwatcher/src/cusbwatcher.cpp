@@ -222,7 +222,14 @@ void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,
     {
     LOG_FUNC
 
-    if( IsDeviceA() ) // Will be handled by UsbOtgWatcher
+    // Handling USB indicator. This is valid for both A- and B-device cases.
+    // Not show USB indicator in charging mode
+    if ( iNormalStart ) 
+        {
+        iUsbIndicatorHandler.HandleDeviceStateChange( aStateOld, aStateNew );
+        }
+        
+    if ( IsDeviceA() ) // Will be handled by UsbOtgWatcher
         {
         LOG( "Device state change ignored by UsbWatcher in A-device state" );
         return;
@@ -533,13 +540,6 @@ void CUsbWatcher::SetPersonality( TInt aPersonalityId, TBool aNonBlocking )
 
     LOG2( "aPersonalityId=%d, aNonBlocking=%d", aPersonalityId, aNonBlocking );
 
-    if( IsDeviceA() ) 
-        {
-        LOG( "SetPersonality not allowed in A-device state" );
-        Notify( KErrAccessDenied );
-        return;
-        }
-    
     // Check if personality is exist
     TBool found = EFalse;
 
@@ -679,17 +679,21 @@ void CUsbWatcher::SwitchPersonality( TBool aNonBlocking )
     {
     LOG_FUNC
 
-    if( IsDeviceA() ) 
-        {
-        LOG( "Not allowed in A-device state" );
-        Notify( KErrAccessDenied );
-        return;
-        }
 
     TUsbDeviceState state = iActiveState->CurrentState();
-    LOG1( "Device state : %d", state );
+    LOG2( "IsDeviceA: %d, Device state : %d", IsDeviceA(), state );
 
-    if( state != EUsbDeviceStateUndefined )
+    // As A-device, only cenrep will be updated for the reasons of
+    // - In A-host state, device state will be undefined 
+    // - In A-peripheral state, personality change can not happen otherwise 
+    // the connection will be lost
+    if ( IsDeviceA() || ( EUsbDeviceStateUndefined == state ) )
+        {
+        // if no connection -> just save the setting
+        LOG( "CUsbWatcher::SwitchPersonality: Notify" );
+        Notify( KErrNone );
+        }
+    else
         {
         switch ( iState )
             {
@@ -722,12 +726,6 @@ void CUsbWatcher::SwitchPersonality( TBool aNonBlocking )
                 break;
             }
         }
-    else
-        {
-        // if no connection -> just save the setting
-        LOG( "CUsbWatcher::SwitchPersonality: Notify" );
-        Notify( KErrNone );
-        }
     }
 
 // ----------------------------------------------------------------------------
@@ -743,6 +741,7 @@ void CUsbWatcher::Start()
     if( iState == EUsbIdle )
         {
         iStarted = EFalse;
+        iNormalStart = EFalse;
         if( globalState == ESwStateCharging )
             {
             LOG( "Global state: charging" );
@@ -770,6 +769,7 @@ void CUsbWatcher::Start()
                    ( ESwStateNormalBTSap == globalState ) ))
             {
             LOG( "Global state: normal" );
+            iNormalStart = ETrue;
             if( ! iUsbDeviceLock->Locked() )
                 {
                 iGlobalStateObserver->Cancel();

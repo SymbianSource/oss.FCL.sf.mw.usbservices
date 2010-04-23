@@ -185,18 +185,6 @@ data=EPOCROOT##epoc32\data\Z\resource\mtp\10287013.rsc  resource\mtp\10287013.rs
 #endif // SYMBIAN_EXCLUDE_MTP
 #endif // MTP_TASKDP_IBY
 
-// contactdp
-#ifndef MTP_CONTACTDP_IBY
-#define MTP_CONTACTDP_IBY
-#if !defined(SYMBIAN_EXCLUDE_MTP)
-// MTP Data Provider API
-ECOM_PLUGIN(mtpcontactdp.dll, mtpcontactdp.rsc)
-// MTP plugin registration resource file
-data=EPOCROOT##epoc32\data\Z\resource\mtp\102872bd.rsc  resource\mtp\102872bd.rsc 
-data=EPOCROOT##epoc32\data\Z\resource\apps\mtpcontactviewdefinition.rsc  resource\apps\mtpcontactviewdefinition.rsc 
-#endif // SYMBIAN_EXCLUDE_MTP
-#endif // MTP_CONTACTDP_IBY
-
 // bluetooth
 #ifndef MTP_BT_IBY
 #define MTP_BT_IBY

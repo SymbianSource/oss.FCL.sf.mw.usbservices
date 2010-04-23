@@ -95,13 +95,25 @@ void CUsbActiveState::RunL()
     LOG_FUNC
 
     LEAVEIFERROR( iStatus.Int() ); // Close process if error happens here
-    LOG2( "DeviceState change: %d ==> %d", iPreviousState, iCurrentState );
+
     TUsbDeviceState newState = iCurrentState;
     iUsbMan.DeviceStateNotification( KUsbAllStates, iCurrentState,
             iStatus );
     SetActive();
-    iOwner.StateChangeNotify( iPreviousState, newState );
-    iPreviousState = newState;
+    
+    // Notify only if there is a change
+    if ( newState != iPreviousState )
+        {
+        LOG2( "USB device state changed: %d ==> %d", iPreviousState,
+            newState );
+        iOwner.StateChangeNotify( iPreviousState, newState );
+        iPreviousState = newState;
+        }
+     else
+        {
+        LOG2("USB device change ignored: %d -> %d", iPreviousState,
+            newState ); 
+        }
     }
  
 // ----------------------------------------------------------------------------

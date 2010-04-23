@@ -37,6 +37,8 @@ SOURCE      cusbwatcherscheduler.cpp
 SOURCE      cusbdevicelock.cpp
 SOURCE      cusbdevconstarter.cpp
 SOURCE      cusbglobalsystemstateobserver.cpp
+SOURCE      tusbindicatorhandler.cpp
+
 
 USERINCLUDE   ../inc
 

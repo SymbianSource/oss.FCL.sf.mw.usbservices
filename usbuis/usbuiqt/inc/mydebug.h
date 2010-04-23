@@ -11,17 +11,27 @@
 *
 * Contributors:
 *
-* Description: usbnotifier iby file
+* Description: 
 *
 */
-#ifndef __USBUINOTIF_IBY__
-#define __USBUINOTIF_IBY__
 
-REM USB UI notifiers ecom plug-in
 
-#ifdef __USB_MULTIPERSONALITY 
+#ifndef MYDEBUG_H
+#define MYDEBUG_H
 
-ECOM_PLUGIN(usbuinotif.dll, 102068DC.rsc)  
+#include <QtDebug>
 
-#endif //__USB_MULTIPERSONALITY
-#endif //__USBUINOTIF_IBY__
+#if defined(_DEBUG)
+    inline QDebug myDebug()
+    {
+        return qDebug();
+    }
+#else
+    inline QNoDebug myDebug()
+    {
+        return QNoDebug();
+    }
+#endif
+
+
+#endif // MYDEBUG_H

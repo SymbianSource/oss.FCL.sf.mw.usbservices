@@ -11,17 +11,33 @@
 *
 * Contributors:
 *
-* Description: usbnotifier iby file
+* Description: 
 *
 */
-#ifndef __USBUINOTIF_IBY__
-#define __USBUINOTIF_IBY__
 
-REM USB UI notifiers ecom plug-in
+#ifndef USBVIEWMANAGER_H
+#define USBVIEWMANAGER_H
 
-#ifdef __USB_MULTIPERSONALITY 
+#include "usbmainview.h"
 
-ECOM_PLUGIN(usbuinotif.dll, 102068DC.rsc)  
 
-#endif //__USB_MULTIPERSONALITY
-#endif //__USBUINOTIF_IBY__
+class HbMainWindow;
+
+class UsbViewManager : public QObject
+    {
+    Q_OBJECT
+
+public:
+    explicit UsbViewManager(HbMainWindow* mainWindow, QObject *parent = 0 );
+    ~UsbViewManager();
+    
+    void addView();
+
+private: 
+    HbMainWindow* mWindow;
+    UsbMainView* mMainView; // owned
+
+    };
+
+
+#endif /* USBVIEWMANAGER_H */
