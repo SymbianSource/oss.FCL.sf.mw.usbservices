@@ -38,14 +38,15 @@ const TUint KFirst = 1;
  */
 enum TUsbStateIds
     {
-    EUsbStateUndefined,
+    EUsbStateHostUndefined,
     
     EUsbStateHostAInitiate,
     EUsbStateHostAHost,
     EUsbStateHostAPeripheral,
     EUsbStateHostAIdle,
 
-    EUsbStateHostHandle
+    EUsbStateHostHandle,
+    EUsbStateHostDelayHandle
     };
 
 const TInt KUsbWatcherPeripheralIsNotConnected = 0; // means not(KUsbWatcherPeripheralIsConnected)

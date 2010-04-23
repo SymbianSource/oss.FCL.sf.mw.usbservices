@@ -28,6 +28,8 @@
 #include "cusbstatehostaperipheral.h"
 #include "cusbstatehostaidle.h"
 #include "cusbstatehosthandle.h"
+#include "cusbstatehostdelayhandle.h"
+#include "cusbstatehostundefined.h"
 
 #include "cusbwarningnotifier.h"
 
@@ -79,12 +81,13 @@ void CUsbOtgWatcher::ConstructL()
     
     iUsbServiceControl = CUsbServiceControl::NewL(this, iUsb);
 
-    User::LeaveIfError(iStates.Append(CUsbState::NewL(this)));
+    User::LeaveIfError(iStates.Append(CUsbStateHostUndefined::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAInitiate::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAHost::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAPeripheral::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAIdle::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostHandle::NewL(this)));
+    User::LeaveIfError(iStates.Append(CUsbStateHostDelayHandle::NewL(this)));
 
     iIdPinObserver = CUsbIdPinObserver::NewL();
     iVBusObserver = CUsbVBusObserver::NewL();
@@ -95,13 +98,18 @@ void CUsbOtgWatcher::ConstructL()
     iMessageNotificationObserver = CUsbMessageNotificationObserver::NewL(
             &iUsb);
     
-    iHostState = iStates[EUsbStateUndefined];
+    iHostState = iStates[EUsbStateHostUndefined];
     
     // Notif manager must be created at least after VBus observer and iHostState initialization
     // to allow USb indicator subscribe to its notifications at construction and check their's current states
     iNotifManager = CUsbNotifManager::NewL(this);
 
-    iIdPinObserver->SubscribeL(this);
+    iVBusObserver->SubscribeL(*this);
+    iOtgStateObserver->SubscribeL(*this);
+    iBusActivityObserver->SubscribeL(*this);
+    iHostEventNotificationObserver->SubscribeL(*this);
+    iMessageNotificationObserver->SubscribeL(*this);
+    iIdPinObserver->SubscribeL(*this);
 
     if (CUsbIdPinObserver::EIdPinOn == iIdPinObserver->IdPin())
         {
@@ -151,6 +159,32 @@ CUsbOtgWatcher::~CUsbOtgWatcher()
     
     // delete Notif manager before VBus observer, due to USB indicator observes VBus
     delete iNotifManager;
+    
+    if(iIdPinObserver)
+        {
+        TRAP_IGNORE(iIdPinObserver->UnsubscribeL(*this));
+        }
+    
+    if(iVBusObserver)
+        {
+        TRAP_IGNORE(iVBusObserver->UnsubscribeL(*this));
+        }
+    if(iOtgStateObserver)
+        {
+        TRAP_IGNORE(iOtgStateObserver->UnsubscribeL(*this));
+        }
+    if(iBusActivityObserver)
+        {
+        TRAP_IGNORE(iBusActivityObserver->UnsubscribeL(*this));
+        }
+    if(iHostEventNotificationObserver)
+        {
+        TRAP_IGNORE(iHostEventNotificationObserver->UnsubscribeL(*this));
+        }
+    if(iMessageNotificationObserver)
+        {
+        TRAP_IGNORE(iMessageNotificationObserver->UnsubscribeL(*this));
+        }
     
     delete iIdPinObserver;
     delete iVBusObserver;
@@ -259,7 +293,7 @@ void CUsbOtgWatcher::StartSessionL()
 
     if (!CanStartSessionL())
         {
-        HandleHostProblemL(EUsbWatcherErrorInConnection);
+        HandleHostProblemL(EUsbWatcherErrorInConnection, EUsbStateHostHandle);
         return;
         }
 
@@ -267,7 +301,7 @@ void CUsbOtgWatcher::StartSessionL()
     if (KErrNone != err)
         {
             FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgWatcher::StartSessionL Can not start usb services. reason = %d" ), err));
-        HandleHostProblemL(EUsbWatcherCanNotStartUsbServices);
+        HandleHostProblemL(EUsbWatcherCanNotStartUsbServices, EUsbStateHostHandle);
         return;
         }
 
@@ -280,11 +314,11 @@ void CUsbOtgWatcher::StartSessionL()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::HandleHostProblemL(TInt aWhatKindOf)
+void CUsbOtgWatcher::HandleHostProblemL(TInt aWhatKindOf, TUsbStateIds aInState )
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::HandleProblemL" ) );
-    HostHandle()->SetWhat(aWhatKindOf);
-    ChangeHostStateL(EUsbStateHostHandle);
+    HostHandle(aInState)->SetWhat(aWhatKindOf);
+    ChangeHostStateL(aInState);
     }
 
 // ---------------------------------------------------------------------------
@@ -305,18 +339,7 @@ void CUsbOtgWatcher::IdPinOffL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::IdPinOffL" ) );
 
-    // for example, USB failed to start    
-    if(NULL == iHostState) return;
-
-    iVBusObserver->UnsubscribeL(this);
-    iOtgStateObserver->UnsubscribeL(this);
-    iBusActivityObserver->UnsubscribeL(this);
-    iHostEventNotificationObserver->UnsubscribeL(this);
-    iMessageNotificationObserver->UnsubscribeL(this);
-
-    iHostState->JustBeforeLeavingThisStateL();
-
-    iHostState = NULL;
+    ChangeHostStateL(EUsbStateHostUndefined);
 
     iNotifManager->CloseAllNotifiers();
 
@@ -344,7 +367,7 @@ void CUsbOtgWatcher::IdPinErrorL(TInt aError)
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::IdPinErrorL" ) );
     __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));  
-    HandleHostProblemL(EUsbWatcherIdPinError);
+    HandleHostProblemL(EUsbWatcherIdPinError, EUsbStateHostHandle);
 
     }
 
@@ -379,7 +402,7 @@ void CUsbOtgWatcher::VBusObserverErrorL(TInt aError)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::VBusObserverErrorL" ) );
     __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));
-    HandleHostProblemL(EUsbWatcherVBusObserverError);
+    HandleHostProblemL(EUsbWatcherVBusObserverError, EUsbStateHostHandle);
     }
 
 // From OTG state observer
@@ -468,7 +491,7 @@ void CUsbOtgWatcher::OtgStateErrorL(TInt aError)
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::OtgStateErrorL" ) );
 __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));  
-HandleHostProblemL(EUsbWatcherOtgStateError);
+HandleHostProblemL(EUsbWatcherOtgStateError, EUsbStateHostHandle);
     }
 
 // From bus activity observer
@@ -569,7 +592,7 @@ void CUsbOtgWatcher::HostEventNotificationErrorL(TInt aError)
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::HostEventNotificationErrorL" ) );
 __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));  
-HandleHostProblemL(EUsbWatcherHostEventNotificationError);
+HandleHostProblemL(EUsbWatcherHostEventNotificationError, EUsbStateHostHandle);
     }
 
 // From message notification observer
@@ -636,7 +659,7 @@ void CUsbOtgWatcher::MessageNotificationErrorL(TInt aError)
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::MessageNotificationErrorL" ) );
     __ASSERT_DEBUG(iHostState != NULL, Panic(EBadHostState));    
-    HandleHostProblemL(EUsbWatcherMessageNotificationError);
+    HandleHostProblemL(EUsbWatcherMessageNotificationError, EUsbStateHostHandle);
     }
 
 // ---------------------------------------------------------------------------
@@ -735,11 +758,12 @@ CUsbState* CUsbOtgWatcher::State(TUsbStateIds aStateId) const
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbStateHostHandle* CUsbOtgWatcher::HostHandle() const
+CUsbStateHostHandle* CUsbOtgWatcher::HostHandle(TUsbStateIds aInState) const
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::HostHandle" ) );
-    __ASSERT_DEBUG(iStates[EUsbStateHostHandle] != NULL, Panic(EBadState));
-    return (CUsbStateHostHandle*) iStates[EUsbStateHostHandle];
+    __ASSERT_DEBUG(iStates[aInState] != NULL, Panic(EBadState));
+    
+    return (CUsbStateHostHandle*) iStates[aInState];
     }
 
 // ---------------------------------------------------------------------------
@@ -883,7 +907,10 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
         
     default: // handle the issue
         {
-        HandleHostProblemL(EUsbWatcherCanNotStartUsbServices);
+        if(IsDeviceA()) // if there is no cable, give up
+            {
+            HandleHostProblemL(EUsbWatcherCanNotStartUsbServices, EUsbStateHostHandle);
+            }
         return;
         }
     }
@@ -894,7 +921,7 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
     if (KErrNone != err)
         {
             FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UsbServiceControlReqCompleted Error when requesting GetServiceState = %d" ), err));
-        HandleHostProblemL(EUsbWatcherCanNotStartUsbServices);
+        HandleHostProblemL(EUsbWatcherCanNotStartUsbServices, EUsbStateHostHandle);
         return;
         }
 
@@ -915,12 +942,6 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
 
             iHostState->JustAdvancedToThisStateL(); // do any initial activity, once advanced to the state 
 
-            iVBusObserver->SubscribeL(this);
-            iOtgStateObserver->SubscribeL(this);
-            iBusActivityObserver->SubscribeL(this);
-            iHostEventNotificationObserver->SubscribeL(this);
-            iMessageNotificationObserver->SubscribeL(this);
-
             break;
             }
         case EUsbServiceStarting:
@@ -928,12 +949,14 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UsbServiceControlReqCompletedL UsbServiceState == EUsbServiceStarting" ) );
             // should not receive that, due to call back is called when service stopped or started
             // therefore scream
+            // no break statement here
             }
         case EUsbServiceStopping:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UsbServiceControlReqCompletedL UsbServiceState == EUsbServiceStopping" ) );
             // should not receive that, due to call back is called when service stopped or started
             // therefore scream
+            // no break statement here
             }
         case EUsbServiceFatalError:
             {
@@ -1014,12 +1037,13 @@ TInt CUsbOtgWatcher::SelfTestL()
 
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Creating states." ) );
 
-    User::LeaveIfError(iStates.Append(CUsbState::NewL(this)));    
+    User::LeaveIfError(iStates.Append(CUsbStateHostUndefined::NewL(this)));    
     User::LeaveIfError(iStates.Append(CUsbStateHostAInitiate::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAHost::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAPeripheral::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostAIdle::NewL(this)));
     User::LeaveIfError(iStates.Append(CUsbStateHostHandle::NewL(this)));
+    User::LeaveIfError(iStates.Append(CUsbStateHostDelayHandle::NewL(this)));
 
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SelfTestL Check State()" ) );
 
@@ -1081,11 +1105,18 @@ TInt CUsbOtgWatcher::SelfTestL()
 // 
 // ---------------------------------------------------------------------------
 //   
-void CUsbOtgWatcher::SubscribeL(MUsbOtgWatcherStateObserver* aObserver)
+void CUsbOtgWatcher::SubscribeL(MUsbOtgWatcherStateObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SubscribeL" ) );
 
-    User::LeaveIfError(iOtgStateObservers.Append(aObserver));
+        // check if the same observer already exist in a list
+        if(KErrNotFound != iOtgStateObservers.Find(&aObserver))
+            {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::SubscribeL Observer already exists." ) );
+            Panic(EObserverAlreadyExists);
+            return;
+            }
+        iOtgStateObservers.AppendL(&aObserver);
 
     }
 
@@ -1093,26 +1124,16 @@ void CUsbOtgWatcher::SubscribeL(MUsbOtgWatcherStateObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::UnsubscribeL(MUsbOtgWatcherStateObserver* aObserver)
+void CUsbOtgWatcher::UnsubscribeL(MUsbOtgWatcherStateObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UnsubscribeL" ) );
-    if (0 == iOtgStateObservers.Count()) // no items
-        {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UnsubscribeL No observers" ) );
-        return;
-        }
-    
-    TInt i(0);
-    while (i < iOtgStateObservers.Count() && aObserver != iOtgStateObservers[i])
-        ++i;
-
-    if (aObserver == iOtgStateObservers[i]) // found
-        {
+        TInt i(iOtgStateObservers.Find(&aObserver));
+        if(KErrNotFound == i)
+            {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL Observer not found." ) );
+            Panic(ECanNotFindUsbOtgWatcherStateObserver);
+            return;
+            }
+        
         iOtgStateObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbOtgWatcher::UnsubscribeL CanNotGetUsbOtgStateWatcherObserver" ) );
-        Panic(ECanNotFindUsbOtgWatcherStateObserver);
-        }
     }

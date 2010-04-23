@@ -101,6 +101,12 @@ protected:
      * @param aNewStateId new host state
      */
     void ChangeHostStateL(TUsbStateIds aNewStateId);
+    
+    /**
+     * Handles special situation (error, or something else)
+     * @param aWhat to hande (id)
+     */
+    virtual void HandleL(TInt aWhat, TUsbStateIds aWhereTohandle);
 
 private:
     

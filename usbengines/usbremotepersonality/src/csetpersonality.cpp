@@ -117,7 +117,6 @@ void CSetPersonality::RunL()
             case KErrNone:
                 {
                 result =CRemotePersonalityHandler::ESuccess;
-                iUsbWatcher->SetPreviousPersonalityOnDisconnect();
                 break;
                 }
             case KErrNotFound:

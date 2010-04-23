@@ -83,13 +83,13 @@ public:
      * Add observer
      * @param aObserver Observer
      */
-    void SubscribeL(MUsbIdPinObserver* aObserver);
+    void SubscribeL(MUsbIdPinObserver& aObserver);
 
     /**
      * Remove observer
      * @param aObserver Observer
      */
-    void UnsubscribeL(MUsbIdPinObserver* aObserver);
+    void UnsubscribeL(MUsbIdPinObserver& aObserver);
 
 private:
 

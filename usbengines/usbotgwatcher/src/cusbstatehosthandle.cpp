@@ -44,7 +44,7 @@ CUsbStateHostHandle::CUsbStateHostHandle(CUsbOtgWatcher* aWatcher) :
 //
 CUsbStateHostHandle* CUsbStateHostHandle::NewL(CUsbOtgWatcher* aWatcher)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostAHost::NewL" ) );
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::NewL" ) );
 
     CUsbStateHostHandle* self = new (ELeave) CUsbStateHostHandle(aWatcher);
     CleanupStack::PushL(self);
@@ -60,10 +60,6 @@ CUsbStateHostHandle* CUsbStateHostHandle::NewL(CUsbOtgWatcher* aWatcher)
 void CUsbStateHostHandle::ConstructL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::ConstructL" ) );
-
-    iTooMuchPowerTimer = CUsbTimer::NewL(this, ETooMuchPowerRequiredTimer);
-    iDriversNotFoundTimer = CUsbTimer::NewL(this, EDriversNotFoundTimer);
-
     }
 
 // ---------------------------------------------------------------------------
@@ -74,8 +70,6 @@ CUsbStateHostHandle::~CUsbStateHostHandle()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::~CUsbStateHostHandle" ) );
 
-    delete iTooMuchPowerTimer;
-    delete iDriversNotFoundTimer;
     }
 
 // ---------------------------------------------------------------------------
@@ -107,9 +101,6 @@ void CUsbStateHostHandle::JustAdvancedToThisStateL()
 //
 void CUsbStateHostHandle::JustBeforeLeavingThisStateL()
     {
-    iTooMuchPowerTimer->Cancel();
-    iDriversNotFoundTimer->Cancel();
-    
     iWatcher->NotifManager()->CloseAllNotifiers();
     }
 // ---------------------------------------------------------------------------
@@ -220,41 +211,24 @@ void CUsbStateHostHandle::WaitNotifierCompletedL(TInt /*aFeedback*/)
 void CUsbStateHostHandle::DoHandleL()
     {
         FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL iWhat = %d" ), iWhat));
-
-    if (iTooMuchPowerTimer)
-        iTooMuchPowerTimer->Cancel();
-
+        
+    // Drop VBus first    
+    // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
+    iWatcher->Usb().BusDrop();
+    
     switch (iWhat)
         {
-        case EUsbWatcherErrDriversNotFound:
-            {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL DriversNotFound" ) );
                 
-            iDriversNotFoundTimer->After(KTimeDriversNotFound);
-            break;
-                
-            }
         case EUsbWatcherHubsNotSupported:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherHubsNotSupported" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgHubUnsupported, this);
-            break;
-            }
-        case EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration:
-            {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrDeviceRequiresTooMuchPowerOnEnumeration" ) );
-
-            iTooMuchPowerTimer->After(KTimeTooMuchPowerRequired);
             break;
             }
         case EUsbWatcherErrDeviceRequiresTooMuchPower:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrDeviceRequiresTooMuchPower" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgTooMuchPower, this);
             break;
@@ -262,8 +236,6 @@ void CUsbStateHostHandle::DoHandleL()
         case EUsbWatcherErrUnsupportedDevice:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrUnsupportedDevice" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
             break;
@@ -271,18 +243,14 @@ void CUsbStateHostHandle::DoHandleL()
         case EUsbWatcherConnectedToOTG:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherConnectedToOTG" ) );
-                
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
+                   
             break;
             }
         case EUsbWatcherErrDandlingCable:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrDandlingCable" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgErrorAttachTimedOut, this);
             break;
@@ -290,8 +258,6 @@ void CUsbStateHostHandle::DoHandleL()
         case EUsbWatcherNoActivity:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherNoActivity" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgUnsupportedDevice, this);
 
@@ -300,8 +266,6 @@ void CUsbStateHostHandle::DoHandleL()
         case EUsbWatcherErrorInConnection:
             {
                 FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL EUsbWatcherErrorInConnection" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
             iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                     EUsbOtgErrorInConnection, this);
             break;
@@ -321,15 +285,13 @@ void CUsbStateHostHandle::DoHandleL()
         case EUsbWatcherMessageNotificationError:
             {
             FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL Error from observer" ) );
-        // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-        iWatcher->Usb().BusDrop();
         iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
                 EUsbOtgErrorInConnection, this);
             break;
             }
         default:
             {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::WaitNotifierCompletedL Unexpected situation to be handled" ) );
+                FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DoHandleL Unexpected situation to be handled" ) );
             Panic(EUnexpectedSituationToHandle);
             break;
             }
@@ -337,16 +299,44 @@ void CUsbStateHostHandle::DoHandleL()
     }
 
 /////////////////////////////////////////////////////////////////////////////////////
-// just ignore all the events		
 // From VBus observer
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostHandle::VBusUpL()
+    {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::VBusUpL" ) );
+        // as result of BusRespondSrp() VBus might rise up.
+        // role swap is not supported => drop vbus
+        // when role swap is supported, leave this function empty
+        
+        iWatcher->Usb().BusDrop();
+    }
+
+// ---------------------------------------------------------------------------
+// this is expected in the state, for example after calling BusDrop
+// ---------------------------------------------------------------------------
+//
 void CUsbStateHostHandle::VBusDownL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::VBusDownL" ) );
     }
 
-// From OTG state observer
 // ---------------------------------------------------------------------------
 // 
+// ---------------------------------------------------------------------------
+//
+void CUsbStateHostHandle::VBusErrorL()
+    {
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::VBusErrorL" ) );
+
+    iWatcher->Usb().BusClearError();
+    }
+
+// From OTG state observer
+// ---------------------------------------------------------------------------
+// this AIdle means that VBus gets down. From usbwatcher POV no need to change state here
 // ---------------------------------------------------------------------------
 //
 void CUsbStateHostHandle::AIdleL()
@@ -356,7 +346,8 @@ void CUsbStateHostHandle::AIdleL()
     }
 
 // ---------------------------------------------------------------------------
-// 
+// this means VBus gets up (for example as result RespondSrp()). Do not change state to Host, due to for usbwatcher it would mean 
+// that device attached and driverls found.
 // ---------------------------------------------------------------------------
 //
 void CUsbStateHostHandle::AHostL()
@@ -371,47 +362,20 @@ void CUsbStateHostHandle::AHostL()
 void CUsbStateHostHandle::APeripheralL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::APeripheralL" ) );
+        
+        ChangeHostStateL(EUsbStateHostAPeripheral);
 
     }
 
 // ---------------------------------------------------------------------------
+// ignore any problems on VBus, just clear it
 // 
 // ---------------------------------------------------------------------------
 //
 void CUsbStateHostHandle::AVBusErrorL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::AVBusErrorL" ) );
-
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostHandle::BIdleL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::BIdleL" ) );
-
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostHandle::BPeripheralL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::BPeripheralL" ) );
-
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostHandle::BHostL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::BHostL" ) );
-
+        iWatcher->Usb().BusClearError();
     }
 
 // From bus activity observer
@@ -422,7 +386,6 @@ void CUsbStateHostHandle::BHostL()
 void CUsbStateHostHandle::BusIdleL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::BusIdleL" ) );
-
     }
 
 // ---------------------------------------------------------------------------
@@ -432,7 +395,6 @@ void CUsbStateHostHandle::BusIdleL()
 void CUsbStateHostHandle::BusActiveL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::BusActiveL" ) );
-
     }
 
 // From Host Event notification observer
@@ -445,14 +407,7 @@ void CUsbStateHostHandle::DeviceAttachedL(
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceAttachedL" ) );
 
-    if (iTooMuchPowerTimer->IsActive() || iDriversNotFoundTimer->IsActive())
-        {
-        ChangeHostStateL(EUsbStateHostAInitiate);
-        iWatcher->DeviceAttachedL(aDevEventInfo);
-        return;
-        }
-     FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceAttachedL Unexpected situation" ) );
-    }
+    } 
 
 // ---------------------------------------------------------------------------
 // 
@@ -462,7 +417,7 @@ void CUsbStateHostHandle::DeviceDetachedL(TDeviceEventInformation)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceDetachedL" ) );
 
-    }
+    } 
 
 // ---------------------------------------------------------------------------
 // 
@@ -473,7 +428,7 @@ void CUsbStateHostHandle::DriverLoadSuccessL(TDeviceEventInformation)
         FLOG( _L( "[USBOTGWATCHER]\tCUsbState::DriverLoadSuccessL" ) );
     
     }
-
+    
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
@@ -498,37 +453,6 @@ void CUsbStateHostHandle::DriverLoadFailureL(TDeviceEventInformation)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostHandle::BadHubPositionL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::BadHubPositionL" ) );
-
-    if (iTooMuchPowerTimer->IsActive())
-        {
-        ChangeHostStateL(EUsbStateHostAInitiate);
-        iWatcher->BadHubPositionL();
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::DeviceAttachedL Unexpected situation" ) );
-        }
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostHandle::VBusErrorL()
-    {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::VBusErrorL" ) );
-
-    iWatcher->Usb().BusClearError();
-    FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::VBusErrorL Unexpected situation" ) );
-    }
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
 void CUsbStateHostHandle::MessageNotificationReceivedL(TInt)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::MessageNotificationReceivedL" ) );
@@ -543,20 +467,16 @@ void CUsbStateHostHandle::SrpReceivedL()
     {
     FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::SrpReceivedL" ) );
         
-    if (CUsbVBusObserver::EVBusUp != iWatcher->VBusObserver()->VBus())
-        {
-        TInt err = iWatcher->Usb().BusRespondSrp();
-        if (KErrNone != err)
+    TInt err = iWatcher->Usb().BusRespondSrp();
+    FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbStateHostHandle::SrpReceivedL BusRespondSrp()=%d" ), err));
+    
+    if (KErrNone != err)
             {
             FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::SrpReceivedL BusRespondSrp error" ) );
-            iWatcher->HandleHostProblemL(EUsbWatcherErrorInConnection);
+            iWhat = EUsbWatcherErrorInConnection;
+            DoHandleL();
+            return;
             }
-        else
-            {
-            ChangeHostStateL(EUsbStateHostAInitiate);
-            }
-        }
-
     }
 
 // ---------------------------------------------------------------------------
@@ -567,39 +487,4 @@ void CUsbStateHostHandle::SessionRequestedL()
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::SessionRequestedL" ) );
 
-    }
-
-// From TimerObserver
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CUsbStateHostHandle::TimerElapsedL(TUsbTimerId aTimerId)
-    {
-    switch (aTimerId)
-        {
-        case ETooMuchPowerRequiredTimer:
-            {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::TimerElapsedL - ETooMuchPowerRequiredTimer" ) );
-            iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
-                    EUsbOtgTooMuchPowerRequired, this);
-            break;
-            }
-        case EDriversNotFoundTimer:
-            {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::TimerElapsedL - EDriversNotFoundTimer" ) );
-            // Ignore any errors when calling BusDrop(). Those indicate that VBus already dropped 
-            iWatcher->Usb().BusDrop();
-            iWatcher->NotifManager()->ShowNotifierL(KUsbUiNotifOtgError,
-                    EUsbOtgUnsupportedDevice, this);
-
-            break;
-            }
-        default:
-            {
-                FLOG( _L( "[USBOTGWATCHER]\tCUsbStateHostHandle::TimerElapsedL - Unknown timer" ) );
-            Panic(EWrongTimerId);
-            }
-        }
     }

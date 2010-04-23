@@ -103,19 +103,24 @@ CUsbIdPinObserver::TState CUsbIdPinObserver::IdPin()
 
         FTRACE( FPrint(_L( "[USBOTGWATCHER]\tCUsbIdPinObserver::IdPin = %d" ), val ));
 
-    // not found in docs clear definition of this property. Verification is needed   
-    return (0 == val ? EIdPinOff : EIdPinOn);
+    return (EFalse == val ? EIdPinOff : EIdPinOn);
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //   
-void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver* aObserver)
+void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::SubscribeL" ) );
-
-    User::LeaveIfError(iObservers.Append(aObserver));
+    // check if the same observer already exist in a list
+    if(KErrNotFound != iObservers.Find(&aObserver))
+        {
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::SubscribeL Observer already exists." ) );
+        Panic(EObserverAlreadyExists);
+        return;
+        }
+    iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -129,30 +134,21 @@ void CUsbIdPinObserver::SubscribeL(MUsbIdPinObserver* aObserver)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbIdPinObserver::UnsubscribeL(MUsbIdPinObserver* aObserver)
+void CUsbIdPinObserver::UnsubscribeL(MUsbIdPinObserver& aObserver)
     {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL" ) );
-    if (0 == iObservers.Count()) // no items
+    FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL" ) );
+    
+    TInt i(iObservers.Find(&aObserver));
+    if(KErrNotFound == i)
         {
-        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL No observers" ) );
+        FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL Observer not found." ) );
+        Panic(ECanNotFindIdPinObserver);
         return;
         }
     
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
-
-    if (aObserver == iObservers[i]) // found
-        {
-        iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL CanNotGetIdPinObserver" ) );
-        Panic(ECanNotFindIdPinObserver);
-        }
-
-    if (0 == iObservers.Count()) // no items
+    iObservers.Remove(i);
+    
+    if (0 == iObservers.Count()) // no observers anymore
         {
         // cancel pending request
         Cancel();

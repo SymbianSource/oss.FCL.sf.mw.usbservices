@@ -104,7 +104,7 @@ RESOURCE PERSONALITY_ARRAY device_personalities
         ,
         PERSONALITY
             {
-            bDeviceClass = 0xFF;
+            bDeviceClass = 0x00;
             bDeviceSubClass = 0x00;
             protocol = 0x00;
             numConfigurations = 0x01;

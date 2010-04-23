@@ -154,6 +154,7 @@ void CUSBUICableConnectedNotifier::Cancel()
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::Cancel() "));
 
+    iDialog->Cancel(); // cancel the dialog, if it is active
     CompleteMessage(KErrCancel);
     CUSBUINotifierBase::Cancel();
 
@@ -292,12 +293,12 @@ void CUSBUICableConnectedNotifier::DataReceived(CHbSymbianVariantMap& aData)
 
 // ----------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::DeviceDialogClosed
-// Not implemented
 // ----------------------------------------------------------------------------
 //      
- void CUSBUICableConnectedNotifier::DeviceDialogClosed(TInt /*aCompletionCode*/)
+ void CUSBUICableConnectedNotifier::DeviceDialogClosed(TInt aCompletionCode)
      {
-     // no implementation    
+     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::DeviceDialogClosed()"));
+     CompleteMessage(aCompletionCode);  
      }
       
 // ---------------------------------------------------------------------------

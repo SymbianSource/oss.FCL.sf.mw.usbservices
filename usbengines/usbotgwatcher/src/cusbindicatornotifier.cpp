@@ -60,13 +60,11 @@ CUsbIndicatorNotifier::~CUsbIndicatorNotifier()
         {
         if(iOtgWatcher->VBusObserver())
             {
-            TRAPD(err, iOtgWatcher->VBusObserver()->UnsubscribeL(this));
-            err=err; // to avoid warning;
+            TRAP_IGNORE(iOtgWatcher->VBusObserver()->UnsubscribeL(*this));
             }
         
         // Unsubscribe from otg watcher states change notifications
-        TRAPD(err, iOtgWatcher->UnsubscribeL(this));
-        err=err; // to avoid warning; 
+        TRAP_IGNORE(iOtgWatcher->UnsubscribeL(*this));
         }
     }
 
@@ -93,10 +91,10 @@ void CUsbIndicatorNotifier::ConstructL()
     FLOG( _L( "[USBOTGWATCHER]\tCUsbIndicatorNotifier::ConstructL" ) );
     
     // Subscribe for VBus change notifications
-    iOtgWatcher->VBusObserver()->SubscribeL(this);
+    iOtgWatcher->VBusObserver()->SubscribeL(*this);
     
     // Subscribe for otg watcher states change notifications
-    iOtgWatcher->SubscribeL(this);
+    iOtgWatcher->SubscribeL(*this);
 
     iIconBlinkingTimer = CUsbTimer::NewL(this, EIconBlinkingTimer);
     

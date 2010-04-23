@@ -80,13 +80,13 @@ public:
      * Adds observer to a list
      * @param aObserver observer
      */
-    void SubscribeL(MUsbVBusObserver* aObserver);
+    void SubscribeL(MUsbVBusObserver& aObserver);
 
     /**
      * removes observer from list
      * @param aObserver observer
      */
-    void UnsubscribeL(MUsbVBusObserver* aObserver);
+    void UnsubscribeL(MUsbVBusObserver& aObserver);
 
 private:
 

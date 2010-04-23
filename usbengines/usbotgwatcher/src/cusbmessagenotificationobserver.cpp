@@ -22,7 +22,7 @@
 
 #include "cusbmessagenotificationobserver.h"
 
-#include "definitions.h"
+#include "definitions.h" 
 #include "debug.h"
 #include "panic.h"
 
@@ -85,11 +85,18 @@ CUsbMessageNotificationObserver::~CUsbMessageNotificationObserver()
 // ---------------------------------------------------------------------------
 //
 void CUsbMessageNotificationObserver::SubscribeL(
-        MUsbMessageNotificationObserver* aObserver)
+        MUsbMessageNotificationObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::SubscribeL" ) );
 
-    User::LeaveIfError(iObservers.Append(aObserver));
+        // check if the same observer already exist in a list
+        if(KErrNotFound != iObservers.Find(&aObserver))
+            {
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::SubscribeL Observer already exists." ) );
+            Panic(EObserverAlreadyExists);
+            return;
+            }
+        iObservers.AppendL(&aObserver);
 
     if (KFirst == iObservers.Count()) // first item
         {
@@ -103,29 +110,19 @@ void CUsbMessageNotificationObserver::SubscribeL(
 // ---------------------------------------------------------------------------
 //
 void CUsbMessageNotificationObserver::UnsubscribeL(
-        MUsbMessageNotificationObserver* aObserver)
+        MUsbMessageNotificationObserver& aObserver)
     {
         FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::UnsubscribeL" ) );
 
-        if (0 == iObservers.Count()) // no items
+        TInt i(iObservers.Find(&aObserver));
+        if(KErrNotFound == i)
             {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::UnsubscribeL No observers" ) );
+            FLOG( _L( "[USBOTGWATCHER]\tCUsbIdPinObserver::UnsubscribeL Observer not found." ) );
+            Panic(ECanNotFindMessageNotificationObserver);
             return;
             }
         
-    TInt i(0);
-    while (i < iObservers.Count() && aObserver != iObservers[i])
-        ++i;
-
-    if (aObserver == iObservers[i]) // found
-        {
         iObservers.Remove(i);
-        }
-    else
-        {
-            FLOG( _L( "[USBOTGWATCHER]\tCUsbMessageNotificationObserver::UnsubscribeL CanNotFindMessageNotificationObserver" ) );
-        Panic(ECanNotFindMessageNotificationObserver);
-        }
 
     if (0 == iObservers.Count()) // no items
         {
