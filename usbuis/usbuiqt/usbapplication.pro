@@ -3,7 +3,7 @@
 #  Name        : usbapplication.pro
 #  Part of     : USB / USB Settings Application       *** Info from the SWAD
 #  Description : Project definition file for project USB Settings Application
-#  Version     : %version: 5 % << Don't touch! Updated by Synergy at check-out.
+#  Version     : %version: 6 % << Don't touch! Updated by Synergy at check-out.
 #
 #  Copyright © 2009 Nokia.  All rights reserved.
 #  This material, including documentation and any related computer
@@ -45,8 +45,6 @@ RESOURCES += src/usbicons.qrc \
 CONFIG += qt \
     hb
 
-TRANSLATIONS=usbapplication.ts 
-    
 symbian: {
     TARGET.UID3 = 0x2002BCA3
     TARGET.CAPABILITY = LocalServices \
