@@ -20,7 +20,6 @@ PRJ_PLATFORMS
 DEFAULT
 
 //build files for shortlinkconn
-#include "../../../shortlinkconn/localconnectivityservice/lcstylustap/tsrc/LcStylusTapTest/group/bld.inf"
 #include "../../../shortlinkconn/localconnectivityservice/generichid/tsrc/GenericHidTest/group/bld.inf"
 
 //build files for usb

@@ -3,7 +3,7 @@
 #  Name        : usbapplication.pro
 #  Part of     : USB / USB Settings Application       *** Info from the SWAD
 #  Description : Project definition file for project USB Settings Application
-#  Version     : %version: 6 % << Don't touch! Updated by Synergy at check-out.
+#  Version     : %version: 9 % << Don't touch! Updated by Synergy at check-out.
 #
 #  Copyright © 2009 Nokia.  All rights reserved.
 #  This material, including documentation and any related computer
@@ -36,9 +36,7 @@ LIBS += -lcentralrepository
 LIBS += -lusbwatcher
 LIBS += -lxqsettingsmanager
 LIBS += -lusbman
-LIBS += -lhbcore
-LIBS += -lhbwidgets
-LIBS += -lhbtools
+
 FORMS += 
 RESOURCES += src/usbicons.qrc \
     src/usbapplication.qrc

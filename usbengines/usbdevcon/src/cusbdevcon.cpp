@@ -260,8 +260,7 @@ void CUsbDevCon::RunL()
         FLOG( _L( "[USBDEVCON]\tCUsbDevCon::RunL Exiting usbdevcon" ) );      
         
         // Shutdown timer is finished, exit program
-        CUsbDevCon:: ~CUsbDevCon(); // destruct resources
-        User::Exit(KErrNone);
+        CActiveScheduler::Stop(); // destruct resources
         }
     }
 
