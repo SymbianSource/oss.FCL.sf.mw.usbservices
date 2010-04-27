@@ -42,13 +42,9 @@ START RESOURCE  2000fda8.rss
 TARGET          usbmscfileclasscontroller.rsc
 END
 
-START RESOURCE usbmscfileresource.rss
-HEADER
-TARGETPATH      APP_RESOURCE_DIR
-END
-
 LIBRARY         euser.lib
 LIBRARY         usbclasscontroller.lib
 LIBRARY         efsrv.lib
 LIBRARY         bafl.lib
+LIBRARY         centralrepository.lib
 DEBUGLIBRARY	flogger.lib

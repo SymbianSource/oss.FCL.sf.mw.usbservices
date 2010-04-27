@@ -17,6 +17,7 @@
 
 #include <usbuinotif.h>
 #include <d32usbdi_errors.h>
+#include <d32otgdi_errors.h>
 
 #include "cusbotgwatcher.h"
 #include "cusbstatehosthandledropping.h"
@@ -385,8 +386,8 @@ void CUsbStateHostHandleDropping::MessageNotificationReceivedL(TInt aMessage)
 
     switch (aMessage)
         {
-        // USBDI
-        case KEventUsbBadDeviceDetached:
+        // OTGDI
+        case KEventUsbOtgBadDeviceDetached:
             {
             LOG("BadDeviceDetached" );
             ChangeHostStateL( EUsbStateHostUndefined);

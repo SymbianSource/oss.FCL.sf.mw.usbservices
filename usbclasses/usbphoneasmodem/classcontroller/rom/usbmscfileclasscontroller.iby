@@ -23,7 +23,6 @@
 #ifdef FF_USB_MODEM
 
 ECOM_PLUGIN(usbmscfileclasscontroller.dll, usbmscfileclasscontroller.rsc)
-S60_APP_RESOURCE(usbmscfileresource)
 
 #endif
 

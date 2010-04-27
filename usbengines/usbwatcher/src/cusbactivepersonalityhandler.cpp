@@ -29,8 +29,7 @@
 #include <usbuinotif.h>
 
 // CONSTANTS
-// const TInt KSerialNumberLength = 12;
-const TInt KContainerIdLength = 16;
+const TInt KSerialNumberLength = 12;
 
 const TUid KUsbmanSvrUid = {0x101fe1db};
 
@@ -124,23 +123,19 @@ void CUsbActivePersonalityHandler::ConstructUsbSerialNumberL()
     TLex lex( iPhoneInfo.iSerialNumber );
     TInt length = iPhoneInfo.iSerialNumber.Length();
 
-    // currently the serial number is used for the USB container ID
-    // the container ID length must be at least 16 bytes
-    // also, even when serial number is not used for the container id
-    // it must be at least 12, see below
-    if( length < KContainerIdLength )
+    if( length < KSerialNumberLength )
         {
-        // In GSM, the complete IMEI can used as USB serial number. But in
-        // CDMA, the ESN is too short for a valid Mass Storage serial number
-        // (Mass-Storage and Bulk Only Transport specs both require minimum
-        // 12 byte number), so it is extended with leading zeroes. When
-        // doing this, make sure not to write anything over descriptor's
-        // max length
-        if( iPhoneInfo.iSerialNumber.MaxLength() < KContainerIdLength )
+        // In GSM, the complete IMEI can be used as USB serial
+        // number. But in CDMA, the ESN is too short for a valid Mass
+        // Storage serial number (Mass-Storage and Bulk Only Transport
+        // specs both require minimum 12 byte number), so it is
+        // extended with trailing zeroes. When doing this, make sure
+        // not to write anything over descriptor's max length
+        if( iPhoneInfo.iSerialNumber.MaxLength() < KSerialNumberLength )
             {
-            iPhoneInfo.iSerialNumber.SetLength( KContainerIdLength );
+            iPhoneInfo.iSerialNumber.SetLength( KSerialNumberLength );
             }
-        while( length < KContainerIdLength )
+        while( length < KSerialNumberLength )
             {
             iPhoneInfo.iSerialNumber.Append( '0' );
             ++length;

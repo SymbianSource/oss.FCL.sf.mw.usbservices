@@ -118,33 +118,16 @@ void CMscFileSession::SetupLogicalUnitL( const RMessage2& aMessage )
     TRACE_FUNC_ENTRY
     TInt protocol;
     TInt lun;
-    RBuf buf;
+    RBuf fullImageFileName;
     TInt len = aMessage.GetDesLength( 0 );
-    buf.CreateL( len );
-    buf.CleanupClosePushL();
-    aMessage.ReadL( 0, buf );
+    fullImageFileName.CreateL( len );
+    fullImageFileName.CleanupClosePushL();
+    aMessage.ReadL( 0, fullImageFileName );
     protocol = aMessage.Int1();
     lun = aMessage.Int2();
-
-    //get the directory and name of image file
-    RFs fs;
-    LEAVE_IF_ERROR(fs.Connect());
-    CleanupClosePushL(fs);
     
-    TFileName fileName;
-    const TDriveNumber KResourceDrive = EDriveZ;
-    TDriveUnit driveUnit( KResourceDrive );
-    TDriveName drive = driveUnit.Name();
-    fileName.Insert( 0, drive );
-    // append private path
-    TPath privatePath;
-    fs.PrivatePath(privatePath);
-    fileName.Append(privatePath);      
-    CleanupStack::PopAndDestroy(&fs);   
-
-    fileName.Append(buf);
-    iMscFileServer.Controller().SetupLogicalUnitL( fileName, protocol, lun );
-    CleanupStack::PopAndDestroy( &buf );
+    iMscFileServer.Controller().SetupLogicalUnitL( fullImageFileName, protocol, lun );
+    CleanupStack::PopAndDestroy( &fullImageFileName );
     TRACE_FUNC_EXIT
     }
 /**
