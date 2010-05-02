@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,14 +11,19 @@
 *
 * Contributors:
 *
-* Description: Resource file for the USB mass storage configuration.
+* Description:
+* Resource file for the USB mass storage configuration.
 *
+*/
+
+/**
+ @file
 */
 
 NAME MSCF
 
 #include <badef.rh>
-#include "usbms.rh"
+#include "usbpammscfile.rh"
 
 RESOURCE BA_RSS_SIGNATURE
 	{
@@ -31,4 +36,7 @@ RESOURCE USBMASSSTORAGE_CONFIG usbms_config
     productId   = "S60";      // no more than 16 characters
     productRev  = "1.0";    	    // no more than 4 characters
     }
+
+
+
 

@@ -211,7 +211,7 @@ void CUSBUICableConnectedNotifier::RunQueryL()
         delete iDialog;
         iDialog = NULL;
         }
-    iDialog = CHbDeviceDialog::NewL();
+    iDialog = CHbDeviceDialogSymbian::NewL();
     CHbSymbianVariantMap *parameters =CHbSymbianVariantMap::NewL();
     CleanupStack::PushL(parameters);
 

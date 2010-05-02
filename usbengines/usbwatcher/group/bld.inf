@@ -32,7 +32,7 @@ PRJ_EXPORTS
 backup_registration.xml  /epoc32/data/z/private/101F9696/backup_registration.xml
 backup_registration.xml  /epoc32/release/winscw/udeb/z/private/101F9696/backup_registration.xml
 backup_registration.xml  /epoc32/release/winscw/urel/z/private/101F9696/backup_registration.xml
-../data/numberofacmfunctions.ini    /epoc32/data/z/private/101fe1db/numberofacmfunctions.ini
+
 ../loc/usbman.loc MW_LAYER_LOC_EXPORT_PATH(usbman.loc)
 ../rom/usbwatcher.iby CORE_MW_LAYER_IBY_EXPORT_PATH(usbwatcher.iby)
 // This file contains actual personality rss data
@@ -47,8 +47,5 @@ backup_registration.xml  /epoc32/release/winscw/urel/z/private/101F9696/backup_r
 
 ../rom/mtp_symbian_temp.iby CORE_MW_LAYER_IBY_EXPORT_PATH(mtp_symbian_temp.iby)
 
-// usbacmconfiguration.hby is included by usbacm.iby to define ACM configuration
-// We use this one to overwrite the os default one
-../rom/usbacmconfiguration.hby CORE_MW_LAYER_IBY_EXPORT_PATH(usbacmconfiguration.hby)
-
 // End of file
+

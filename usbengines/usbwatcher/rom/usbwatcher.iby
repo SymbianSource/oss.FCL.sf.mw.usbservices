@@ -24,7 +24,6 @@ file=ABI_DIR\BUILD_DIR\usbwatcher.exe		PROGRAMS_DIR\usbwatcher.exe
 file=ABI_DIR\BUILD_DIR\usbwatcher.dll		PROGRAMS_DIR\usbwatcher.dll
 file=ABI_DIR\BUILD_DIR\usbpersonality.dll		PROGRAMS_DIR\usbpersonality.dll
 data=DATAZ_\private\101F9696\backup_registration.xml	private\101F9696\backup_registration.xml
-data=ZPRIVATE\101fe1db\numberofacmfunctions.ini	private\101fe1db\numberofacmfunctions.ini
 #endif
 
 #endif

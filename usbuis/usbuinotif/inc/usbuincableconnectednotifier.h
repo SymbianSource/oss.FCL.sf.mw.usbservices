@@ -20,7 +20,7 @@
 
 // INCLUDES
 
-#include <hbsymbiandevicedialog.h>
+#include <hbdevicedialogsymbian.h>
 #include <hbsymbianvariant.h>
 
 #include "usbnotifier.h" // Base class
@@ -145,7 +145,7 @@ private:
      */
     CUSBUICableConnectedNotifier();
     
-    CHbDeviceDialog* iDialog; 
+    CHbDeviceDialogSymbian* iDialog; 
 
     };
 #endif // USBUINCABLECONNECTEDNOTIFIER_H

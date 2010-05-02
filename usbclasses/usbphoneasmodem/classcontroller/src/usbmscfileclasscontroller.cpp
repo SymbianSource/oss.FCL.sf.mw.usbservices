@@ -18,11 +18,12 @@
 #include <barsread.h>
 #include <usb_std.h>
 #include <cusbclasscontrollerplugin.h>
-#include <usbms.rsg>
-#include <usbmscfileresource.rsg>
+#include <centralrepository.h>
+#include <usbpammscfile.rsg>
 #include <data_caging_path_literals.hrh> 
 #include "usbmscfileclasscontroller.h"
 #include "usbmscfile.h"
+#include "usbmscfileclasscontroller_crkeys.h"
 #include "debug.h"
  
 // Panic category 
@@ -30,8 +31,7 @@
 _LIT( KMsCcPanicCategory, "UsbMscFileCc" );
 #endif
 
-_LIT( KResourceFileName, "usbmscfileresource.rsc" );
-_LIT( KUsbMsResource, "\\private\\101fe1db\\usbms.rsc" );
+_LIT( KUsbMsResource, "\\private\\101fe1db\\usbpammscfile.rsc" );
 
 /**
  Panic codes for the USB MSC File Class Controller.
@@ -397,38 +397,32 @@ void CUsbMscFileClassController::SetupUnitsL()
     
     LEAVE_IF_ERROR( mscFile.Connect() );
     CleanupClosePushL( mscFile );
-    LEAVE_IF_ERROR( fs.Connect() );
-    CleanupClosePushL( fs );
-
-    TFileName fileName;
-    const TDriveNumber KStoreDrive = EDriveZ;
-    TDriveUnit driveUnit( KStoreDrive );
-    TDriveName drive = driveUnit.Name();
-    fileName.Insert( 0, drive );
-
-    fileName += KDC_APP_RESOURCE_DIR; // From data_caging_path_literals.hrh
-    fileName += KResourceFileName;
-
-    RResourceFile resourceFile;
-    CleanupClosePushL( resourceFile );
-    resourceFile.OpenL( fs, fileName );
-    resourceFile.ConfirmSignatureL();
-
-    HBufC8* buf8 = resourceFile.AllocReadLC( R_USBMSCFILE_IMAGE_PATHS );
+    CRepository* repository = CRepository::NewLC(KCRUidUsbPhoneAsModemMscFileClassController);
     
-    TResourceReader reader;
-    reader.SetBuffer( buf8 );
-    
-    TInt count = reader.ReadInt16(); 
+	RArray<TUint32> lunKeys;
+	CleanupClosePushL(lunKeys);
+	
+	repository->FindL(KCRMscFileLogicalUnitNumberColumn, KCRMscFileColumnMask, lunKeys);
 
-    while ( count-- )
-        {
-        TInt protocol = reader.ReadUint16();
-        TInt lun =      reader.ReadUint16();
-        HBufC* path =   reader.ReadHBufCL();
-        CleanupStack::PushL( path );
-        LEAVE_IF_ERROR( mscFile.SetupLogicalUnit( *path, protocol, lun ) );
-        CleanupStack::PopAndDestroy( path );
-        }
-    CleanupStack::PopAndDestroy( 4 ); // mscFile, fs, resourceFile, buf8
+	
+	TInt count = lunKeys.Count();
+	for (TInt i=0; i<count; i++)
+		{
+		TUint32 lunKey = lunKeys[i];
+		TUint32 fullNameKey = ((lunKey&KCRMscFileRowMask)|KCRMscFileImageFullNameColumn);
+		TRACE_INFO( (_L( "lunKey=%d,fullNameKey=%d" ), lunKey, fullNameKey) )
+
+		TInt lun = 0;
+		LEAVE_IF_ERROR(repository->Get(lunKey, lun));
+		
+		TFileName fullName;
+		LEAVE_IF_ERROR(repository->Get(fullNameKey, fullName));	
+		
+		TRACE_INFO( (_L("lun=%d, fullName=%S"), lun, &fullName) );
+	
+		TInt protocol = 0; // It is not used. Bulk Transport(0x50), SCSI transparent command Set(0x06), PDT CD/DVD device(0x05) is supported only.
+		
+		LEAVE_IF_ERROR(mscFile.SetupLogicalUnit( fullName, protocol, lun ));
+		}
+    CleanupStack::PopAndDestroy( 3 ); // mscFile, repository, lunKeys
     }

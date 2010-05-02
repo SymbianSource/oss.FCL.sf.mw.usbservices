@@ -27,3 +27,5 @@ PRJ_TESTMMPFILES
 PRJ_EXPORTS
 ../rom/usbmscfileclasscontroller.iby     CORE_MW_LAYER_IBY_EXPORT_PATH(usbmscfileclasscontroller.iby)
 
+../conf/usbphoneasmodem_mscfile_classcontroller.confml MW_LAYER_CONFML(usbphoneasmodem_mscfile_classcontroller.confml)
+../conf/usbmanager_mscfile_2000fda8.crml MW_LAYER_CRML(usbmanager_mscfile_2000fda8.crml)
