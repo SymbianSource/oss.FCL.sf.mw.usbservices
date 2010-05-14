@@ -41,11 +41,6 @@ start resource 10274798.rss
 target usbmscpersonality.rsc
 end
 
-start resource usbms.rss
-targetpath /private/10204bbb
-header
-end
-
 LIBRARY euser.lib
 LIBRARY usbpersonality.lib
 LIBRARY usbman.lib
