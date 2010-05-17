@@ -36,7 +36,7 @@
 #include "settingsitems.h"
 #include "settingstables.h"
 #ifdef __SERIES60_HELP
-#include <csxhelp/usb.hlp.hrh>   // Help id
+//#include <csxhelp/usb.hlp.hrh>   // Help id
 #endif
 
 
@@ -254,10 +254,12 @@ void CSettingsContainer::HandleChange()
 //
 void CSettingsContainer::GetHelpContext( TCoeHelpContext& aContext ) const
 	{
+ /*
     FLOG(_L("[IMAGEPRINTUI]\t CSettingsContainer::GetHelpContext"));
 	aContext.iMajor = KUidUSB; 
 	aContext.iContext = KUSB_HLP_PRINT_SETTINGS;
     FLOG(_L("[IMAGEPRINTUI]\t CSettingsContainer::GetHelpContext complete"));
+*/
 	}
 
 

@@ -106,6 +106,7 @@ void CUsbWatcher::ConstructL()
     iGlobalStateObserver = CUsbGlobalSystemStateObserver::NewL( *this );
     iUsbDevConStarter = CUsbDevConStarter::NewL();
     iActiveState = CUsbActiveState::NewL( iUsbMan, *this );
+    iUsbIndicatorHandler   = CUsbIndicatorHandler::NewL();
     }
 
 // ----------------------------------------------------------------------------
@@ -147,6 +148,7 @@ CUsbWatcher::~CUsbWatcher()
     delete iUsbDeviceLock;
     delete iGlobalStateObserver;
     iSupportedPersonalities.Close();
+    delete iUsbIndicatorHandler;
     }
 
 // ----------------------------------------------------------------------------
@@ -217,7 +219,7 @@ void CUsbWatcher::GetPersonalityPluginsL()
 // This method notifies CUsbWatcher class about USB state changes.
 // ----------------------------------------------------------------------------
 //
-void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,  
+void CUsbWatcher::StateChangeNotifyL( TUsbDeviceState aStateOld,  
         TUsbDeviceState aStateNew )
     {
     LOG_FUNC
@@ -226,7 +228,7 @@ void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,
     // Not show USB indicator in charging mode
     if ( iNormalStart ) 
         {
-        iUsbIndicatorHandler.HandleDeviceStateChange( aStateOld, aStateNew );
+        iUsbIndicatorHandler->HandleDeviceStateChangeL( aStateOld, aStateNew, iPersonalityId );
         }
         
     if ( IsDeviceA() ) // Will be handled by UsbOtgWatcher

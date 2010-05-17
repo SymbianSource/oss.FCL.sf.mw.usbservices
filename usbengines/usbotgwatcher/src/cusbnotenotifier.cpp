@@ -130,14 +130,15 @@ void CUsbNoteNotifier::CNotifierActive::RunL()
 
     LOG1( "iStatus = %d" , iStatus.Int());
 
-    // if error occured, deal with it in RunError
-    LEAVEIFERROR(iStatus.Int());
+    // if iStatus contains some other than KErrNone code
+    // do not perform any special actions, 
+    // just forward the error code to caller
 
     iNotifier.CancelNotifier(iUsbNoteNotifier.iCat);
 
     // report to owner that show is over
     iUsbNoteNotifier.iNotifManager.NotifierShowCompletedL(iUsbNoteNotifier,
-            KErrNone, iRes());
+            iStatus.Int(), iRes());
     }
 
 // ---------------------------------------------------------------------------
@@ -158,8 +159,6 @@ TInt CUsbNoteNotifier::CNotifierActive::RunError(TInt aError)
     LOG_FUNC
 
     LOG1("aError = %d" , aError);
-
-    iNotifier.CancelNotifier(iUsbNoteNotifier.iCat);
 
     // try to continue  
     return KErrNone;

@@ -17,15 +17,16 @@
 
 
 // INCLUDE FILES
-#include <eikenv.h>             // Eikon environment
-#include <aknnotedialog.h>
-#include <bautils.h>            // BAFL utils (for language file)
-#include <StringLoader.h>       // Localisation stringloader
-#include <AknMediatorFacade.h>  // for cover display support
-#include <usbuinotif.rsg>       // Own resources
+#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>  
+#include <hb/hbcore/hbtextresolversymbian.h>
 #include "usbuinotifotgwarning.h"        // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
-#include "usbuinotifsecondarydisplay.h"     // Dialog index for cover UI
+
+
+// CONSTANTS
+/** granularity for allocating warning strings */
+const TInt KUsbOtgWarningGranularity = 1; 
+
 // ================= MEMBER FUNCTIONS =========================================
 
 // ----------------------------------------------------------------------------
@@ -51,7 +52,7 @@ CUsbUiNotifOtgWarning* CUsbUiNotifOtgWarning::NewL()
 // ----------------------------------------------------------------------------
 //
 CUsbUiNotifOtgWarning::CUsbUiNotifOtgWarning() :
-    iStringIds( KUsbUiNotifOtgGeneralNoteGranularity), iNote( NULL)
+    iStringIds(NULL), iNote( NULL)
     {
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::constructor()"));
     }
@@ -66,6 +67,7 @@ CUsbUiNotifOtgWarning::~CUsbUiNotifOtgWarning()
     //Make sure that the request is completed. Note that inside the destructor,
     //this virtual function call is to local CUsbUiNotifOtgWarning::Cancel, 
     //not to any possibly derived class implementation. 
+    delete iStringIds;
     Cancel();
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::destructor completed()"));
     }
@@ -73,7 +75,9 @@ CUsbUiNotifOtgWarning::~CUsbUiNotifOtgWarning()
 void CUsbUiNotifOtgWarning::ConstructL()
     {
     CUSBUINotifierBase::ConstructL();
-    iStringIds.AppendL( R_USB_OTG_WARNING_PARTIAL_SUPPORT);
+    iStringIds = new (ELeave) CDesCArrayFlat(KUsbOtgWarningGranularity);
+    _LIT(KPartiallySupported, "txt_usb_info_partially_supported_usb_device_connec");
+    iStringIds->AppendL( KPartiallySupported);
     }
 
 // ----------------------------------------------------------------------------
@@ -102,10 +106,11 @@ void CUsbUiNotifOtgWarning::Cancel()
     if (iNote)
         {
         FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::Cancel - delete iNote"));
+        iNote->Close();
         delete iNote;
         iNote = NULL;
         }
-    CompleteMessage( KErrNone );
+    CUSBUINotifierBase::Cancel();
 
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::Cancel() completed"));
     }
@@ -116,67 +121,73 @@ void CUsbUiNotifOtgWarning::Cancel()
 // This notifier is synchronous so this function is not used.
 // ----------------------------------------------------------------------------
 //
-void CUsbUiNotifOtgWarning::GetParamsL(const TDesC8& aBuffer,
+void CUsbUiNotifOtgWarning::StartDialogL(const TDesC8& aBuffer,
         TInt aReplySlot, const RMessagePtr2& aMessage)
     {
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::GetParamsL"));
-    if (iNote || iReplySlot != 0 || iNeedToCompleteMessage)
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::StartDialogL"));
+    if (iReplySlot != 0 || iNeedToCompleteMessage)
         {
         User::Leave( KErrInUse );
-        }    
+        }
+        
+    InitializeTextResolver();
+
+    iMessage = aMessage;
+    iNeedToCompleteMessage = ETrue;
+    iReplySlot = aReplySlot;
 
     // Get parameters 
     //    
     TPckgC<TInt> pckg( iNoteId );
     pckg.Set( aBuffer );
     iNoteId = pckg();
-    
-    FTRACE(FPrint(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::GetParamsL iNoteId: %d"), iNoteId ));  
-    if ( iNoteId < 0 || iNoteId >= iStringIds.Count() )
+	FTRACE(FPrint(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::GetParamsL iNoteId: %d"), iNoteId ));  
+    if ( iNoteId < 0 || iNoteId >= iStringIds->MdcaCount())
         {        
         User::Leave( KErrArgument);        
         }   
-
-    iMessage = aMessage;
-    iNeedToCompleteMessage = ETrue;
-    iReplySlot = aReplySlot;
-    
-    SetActive();
-    iStatus = KRequestPending;
-    TRequestStatus* stat = &iStatus;
-    User::RequestComplete( stat, KErrNone );
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::GetParamsL() completed"));
+    if (iNote)
+            {
+            delete iNote;
+            iNote = NULL;
+            }
+        
+    iNote = CHbDeviceMessageBoxSymbian::NewL(
+                CHbDeviceMessageBoxSymbian::EWarning, this);
+    HBufC* stringHolder = HbTextResolverSymbian::LoadLC(iStringIds->MdcaPoint(iNoteId) );
+    iNote->SetTextL(*stringHolder);
+    iNote->ShowL();
+    CleanupStack::PopAndDestroy( stringHolder );
+   
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::StartDialogL completed"));
     }
 
 // ----------------------------------------------------------------------------
-// CUsbUiNotifOtgWarning::RunL
-// Mandatory for Active Objects. This notifier is synchronous 
-// so this function is not used.
+// Call back function to observe device message box closing.
 // ----------------------------------------------------------------------------
 //
-void CUsbUiNotifOtgWarning::RunL()
+void CUsbUiNotifOtgWarning::MessageBoxClosed(
+        const CHbDeviceMessageBoxSymbian* /*aMessageBox*/,
+        CHbDeviceMessageBoxSymbian::TButtonId aButton)
     {
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::RunL"));
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::MessageBoxClosed"));
+    int returnValue = KErrNone;
+    
+    //iQuery will be deleted in Cancel. If Cancel is not called, it will be
+    //deleted next time the query is shown. 
 
-    // Create confirmation note
-    //    
-    HBufC* str = StringLoader::LoadL( iStringIds[iNoteId] );
-    CleanupStack::PushL( str );
-    iNote = new (ELeave) CAknWarningNote( ETrue );
-
-    iNote->SetTimeout( CAknNoteDialog::ENoTimeout );
-
-    if (iCoverDisplaySupported)
+    if (aButton == CHbDeviceMessageBoxSymbian::EAcceptButton) 
         {
-        iNote->PublishDialogL( iNoteId, KUsbUiNotifOtgWarning );
+        returnValue = KErrNone;
+        } 
+    else 
+        {
+        returnValue = KErrCancel;
         }
 
-    TInt t = iNote->ExecuteLD( *str );
-    iNote = NULL;
-    CleanupStack::PopAndDestroy( str );
-
-    CompleteMessage( KErrNone );
-  FLOG(_L("[USBUINOTIF]\t CUsbUiNotifOtgWarning::RunL() completed"));
+    CompleteMessage( returnValue );
+    
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::MessageBoxClosed completed"));    
     }
 
 // End of File

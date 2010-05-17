@@ -39,31 +39,16 @@ START RESOURCE ../data/102068DC.rss
 TARGET  usbuinotif.rsc 
 END	
 
-// Notifier resource file
-START RESOURCE  ../data/usbuinotif.rss
-HEADER
-TARGETPATH    RESOURCE_FILES_DIR
-LANGUAGE_IDS
-END
-
-USERINCLUDE     ../inc
-
-SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(SecondaryDisplay/)    //for internal and private API headers
-SYSTEMINCLUDE   /epoc32/include/ecom
-SYSTEMINCLUDE   /epoc32/include/mw/hb/hbcore 
+ 
 MW_LAYER_SYSTEMINCLUDE
-
+USERINCLUDE     ../inc ../../inc ../../../inc
 
 
 LIBRARY ECOM.LIB                            // Symbian E-Com Plugin definitions and types
 LIBRARY euser.lib cone.lib                  // Symbian OS frameworklibraries
-LIBRARY avkon.lib                           // UI library
 LIBRARY bafl.lib                            // Basic Application Framework
 LIBRARY commonengine.lib                    // Series 60 common components
 LIBRARY eikcoctl.lib eiksrv.lib             // Eikon libraries
-LIBRARY eikdlg.lib                          // Eikon dialogs
-LIBRARY estor.lib                           // for Cover Display UI support
-LIBRARY FeatMgr.lib                         // for fetching if Cover Display is supported
 LIBRARY centralrepository.lib               // Central Repository
 LIBRARY efsrv.lib                           // File server
 LIBRARY eikcore.lib                         // for icons
@@ -72,11 +57,9 @@ LIBRARY aknskinsrv.lib
 LIBRARY aknicon.lib
 LIBRARY egul.lib
 LIBRARY usbman.lib                          // for personality IDs and descriptions
-LIBRARY aknnotifierwrapper.lib              // Avkon's notifier wrapper
 LIBRARY         apparc.lib 
-LIBRARY akncapserverclient.lib              // for suppressing the application key
 LIBRARY hbcore.lib
-
+LIBRARY hbwidgets.lib
 DEBUGLIBRARY flogger.lib                    // File logging services
 
 // End of File

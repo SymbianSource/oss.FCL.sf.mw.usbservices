@@ -27,6 +27,7 @@ PRJ_EXPORTS
 ../rom/usbuinotifresources.iby    LANGUAGE_MW_LAYER_IBY_EXPORT_PATH(usbuinotifresources.iby)
 
 PRJ_MMPFILES
+gnumakefile ../group/localization.mk
 usbuinotif.mmp
 
 PRJ_TESTMMPFILES

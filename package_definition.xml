@@ -36,9 +36,6 @@
       </component>
     </collection>
     <collection id="usbuis" name="USB UIs" level="specific">
-      <component id="usbui" filter="s60" name="USB UI">
-        <unit bldFile="usbuis/usbui/group"/>
-      </component>
       <component id="usbuinotif" filter="s60" name="USB UI Notifiers">
         <unit bldFile="usbuis/usbuinotif/group"/>
       </component>

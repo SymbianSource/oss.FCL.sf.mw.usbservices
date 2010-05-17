@@ -33,7 +33,6 @@ backup_registration.xml  /epoc32/data/z/private/101F9696/backup_registration.xml
 backup_registration.xml  /epoc32/release/winscw/udeb/z/private/101F9696/backup_registration.xml
 backup_registration.xml  /epoc32/release/winscw/urel/z/private/101F9696/backup_registration.xml
 
-../loc/usbman.loc MW_LAYER_LOC_EXPORT_PATH(usbman.loc)
 ../rom/usbwatcher.iby CORE_MW_LAYER_IBY_EXPORT_PATH(usbwatcher.iby)
 // This file contains actual personality rss data
 ../rom/usbwatcher_resources.iby LANGUAGE_MW_LAYER_IBY_EXPORT_PATH(usbwatcher_resources.iby)
@@ -46,6 +45,5 @@ backup_registration.xml  /epoc32/release/winscw/urel/z/private/101F9696/backup_r
 ../conf/usbwatcher_101F8801.crml MW_LAYER_CRML(usbwatcher_101F8801.crml)
 
 ../rom/mtp_symbian_temp.iby CORE_MW_LAYER_IBY_EXPORT_PATH(mtp_symbian_temp.iby)
-
 // End of file
 
