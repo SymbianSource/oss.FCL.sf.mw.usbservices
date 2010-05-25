@@ -23,8 +23,8 @@ TARGET          usbuinotif.dll
 TARGETTYPE      PLUGIN
 UID             0x10009D8D  0x102068DC
 
-CAPABILITY	CAP_ECOM_PLUGIN
-VENDORID	VID_DEFAULT
+CAPABILITY	    CAP_ECOM_PLUGIN
+VENDORID	    VID_DEFAULT
 
 SOURCEPATH      ../src
 SOURCE          usbuinmain.cpp
@@ -51,10 +51,8 @@ END
 
 USERINCLUDE     ../inc
 
-SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(SecondaryDisplay/)    //for internal and private API headers
 SYSTEMINCLUDE   /epoc32/include/ecom
 MW_LAYER_SYSTEMINCLUDE
-
 
 
 LIBRARY ECOM.LIB                            // Symbian E-Com Plugin definitions and types
@@ -75,7 +73,7 @@ LIBRARY aknicon.lib
 LIBRARY egul.lib
 LIBRARY usbman.lib                          // for personality IDs and descriptions
 LIBRARY aknnotifierwrapper.lib              // Avkon's notifier wrapper
-LIBRARY         apparc.lib 
+LIBRARY apparc.lib 
 LIBRARY akncapserverclient.lib              // for suppressing the application key
 LIBRARY viewcli.lib 
 LIBRARY featmgr.lib

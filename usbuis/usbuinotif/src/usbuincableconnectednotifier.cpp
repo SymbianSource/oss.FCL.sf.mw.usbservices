@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -33,10 +33,11 @@
 #include <aknmessagequerydialog.h>
 //for cover display support
 #include <AknMediatorFacade.h>
-#include <SecondaryDisplay/usbuinotifsecondarydisplay.h> // Dialog index for cover UI
+#include <secondarydisplay/usbuinotifsecondarydisplay.h> // Dialog index for cover UI
 #include <akndiscreetpopup.h>
 #include <e32uid.h> // KExecutableImageUid
 #include <usbui.mbg>
+
 #include "usbuincableconnectednotifier.h"   // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
 #include "UsbWatcherInternalCRKeys.h"
@@ -47,8 +48,6 @@
 
 _LIT(KUSBExe, "usbclasschangeui.exe");
 const TInt KUSBUIUid = 0x102068E2;
-_LIT(KFileDrive,"z:");
-_LIT(KUSBUIconFileName, "usbui.mif");
 
 // ================= MEMBER FUNCTIONS =========================================
 
@@ -76,7 +75,8 @@ CUSBUICableConnectedNotifier* CUSBUICableConnectedNotifier::NewL()
 // ----------------------------------------------------------------------------
 //
 CUSBUICableConnectedNotifier::CUSBUICableConnectedNotifier(): 
-    iNoteVisible(EFalse)
+    iNoteVisible(EFalse),
+    iNoteTapped(EFalse)
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::default constructor"));
     }
@@ -150,8 +150,6 @@ void CUSBUICableConnectedNotifier::RunL()
     DisableKeylock();
     SuppressAppSwitching(ETrue);
     RunQueryL();
-    SuppressAppSwitching(EFalse);
-    RestoreKeylock();
 
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunL() completed"));
     }
@@ -176,10 +174,10 @@ void CUSBUICableConnectedNotifier::Cancel()
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::Cancel() completed"));
     }
 
-// -----------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::GetPersonalityStringL
 // Get the strings for ask on connection message query 
-// -----------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 //
 void CUSBUICableConnectedNotifier::GetPersonalityStringL(
        HBufC*& aHeader,HBufC*& aDescription )
@@ -199,28 +197,33 @@ void CUSBUICableConnectedNotifier::GetPersonalityStringL(
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::GetPersonalityStringL completed"));
     }
 
-// -----------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::RunQueryL
 // Run the ask on connection message query
-// -----------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 //
 void CUSBUICableConnectedNotifier::RunQueryL()
     {
     FLOG( _L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunQueryL()"));
   
-   HBufC* header = NULL;
-   HBufC* description =NULL;
-   GetPersonalityStringL(header, description);
+    HBufC* header = NULL;
+    HBufC* description =NULL;
+    GetPersonalityStringL(header, description);
   
-   CleanupStack::PushL(header);
-   CleanupStack::PushL(description);
+    CleanupStack::PushL(header);
+    CleanupStack::PushL(description);
   
-   TFileName usbUiIconFilename( KFileDrive );
-   usbUiIconFilename += KDC_APP_BITMAP_DIR;
-   usbUiIconFilename += KUSBUIconFileName;
-   iNoteVisible = ETrue;
-   CAknDiscreetPopup::ShowGlobalPopupL(*header,*description,  KAknsIIDQgnPropUsb, AknIconUtils::AvkonIconFileName(),
-           EMbmAvkonQgn_prop_usb, EMbmAvkonQgn_prop_usb_mask,KAknDiscreetPopupDurationLong, EUSBUICmdDiscreetTapped,( MEikCommandObserver* ) this);    
+    iNoteVisible = ETrue;
+    CAknDiscreetPopup::ShowGlobalPopupL(
+        *header,
+        *description,
+        KAknsIIDQgnPropUsb,
+        AknIconUtils::AvkonIconFileName(),
+        EMbmAvkonQgn_prop_usb,
+        EMbmAvkonQgn_prop_usb_mask,
+        KAknDiscreetPopupDurationLong,
+        EUSBUICmdDiscreetTapped,
+        (MEikCommandObserver*) this);
    
     CleanupStack::PopAndDestroy(description);
     CleanupStack::PopAndDestroy(header);
@@ -251,39 +254,54 @@ void CUSBUICableConnectedNotifier::GetCurrentIdL(TInt& aCurrentPersonality)
 //
 void CUSBUICableConnectedNotifier::ProcessCommandL(TInt aCommandId)
     {
+    FTRACE(FPrint(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::ProcessCommandL: %d"), 
+        aCommandId));
+    SuppressAppSwitching(EFalse);
+    
     switch ( aCommandId )
-            {
+        {
         case EUSBUICmdDiscreetTapped:
             {
-            TUidType uidtype(KExecutableImageUid, TUid::Uid(0x00),TUid::Uid(KUSBUIUid));
-            CreateChosenViewL(KUSBExe(),uidtype);  
+            TUidType uidtype(KExecutableImageUid, TUid::Null(), TUid::Uid(KUSBUIUid));
+            CreateChosenViewL(KUSBExe(),uidtype);
+            iNoteTapped = ETrue;
             }
-        case EAknDiscreetPopupCmdClose:                
+            //fall through
+        case EAknDiscreetPopupCmdClose:
             if ( iNoteWaiter.IsStarted() )
                 {
                 iNoteWaiter.AsyncStop();
                 }
-            iNoteVisible = EFalse;    
-            CompleteMessage( KErrCancel );                    
+            iNoteVisible = EFalse;
+            CompleteMessage( KErrCancel );
             break;
         default:
-                  
-        break;
-            }
+            break;
+        }
+
+    if (!iNoteTapped)
+        {
+        FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::ProcessCommandL() restore keylock"));
+        RestoreKeylock();
+        }
+
+    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::ProcessCommandL() completed"));
     }
+
 // ---------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::CreateChosenViewL()
 // creates the USB UI setting view
 // ---------------------------------------------------------------------------
 //  
-    void CUSBUICableConnectedNotifier::CreateChosenViewL(const TDesC & aProcessName,const TUidType & aUidType) const
+void CUSBUICableConnectedNotifier::CreateChosenViewL(
+    const TDesC & aProcessName, const TUidType & aUidType) const
     {                 
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::CreateDesiredViewL() "));
-        RProcess usbUiProcess;                
-        User::LeaveIfError(usbUiProcess.Create(aProcessName, KNullDesC, aUidType));   
-        usbUiProcess.Resume();
-        usbUiProcess.Close();                     
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::CreateDesiredViewL() "));         
-    
+    RProcess usbUiProcess;
+    User::LeaveIfError(usbUiProcess.Create(aProcessName, KNullDesC, aUidType));
+    usbUiProcess.Resume();
+    usbUiProcess.Close();
+    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::CreateDesiredViewL() "));
     }
+
 // End of File

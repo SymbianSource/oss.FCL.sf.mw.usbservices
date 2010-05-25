@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -96,6 +96,7 @@ private:
      * @param aCurrentPersonality current personality id
      */
     void GetCurrentIdL(TInt& aCurrentPersonality);
+
     /**
      * Get the mode name and header for current personality
      * @param aDescription The returned current personality string.
@@ -107,7 +108,6 @@ private:
      * Runs the connected discreet note
      */
     void RunQueryL();
-
   
     /**
      * creates the USB UI setting view
@@ -115,6 +115,7 @@ private:
      * @param TUidType 
      */
     void CreateChosenViewL(const TDesC & aProcessName,const TUidType & aUidType) const;
+
 private:
     /**
      *  C++ default constructor.
@@ -127,9 +128,15 @@ private:
     CActiveSchedulerWait    iNoteWaiter;    
     
     /**
-    * Note visible
-    */
+     * Note visible
+     */
     TBool   iNoteVisible;
 
+    /**
+     * Note tapped
+     */
+    TBool   iNoteTapped;
+
     };
+
 #endif // USBUINCABLECONNECTEDNOTIFIER_H

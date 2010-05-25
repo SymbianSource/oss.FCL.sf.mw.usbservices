@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -25,9 +25,10 @@
 
 #include <usbuinotif.h>                     // pck
 #include <usbuinotif.rsg>                   // Own resources
+#include <secondarydisplay/usbuinotifsecondarydisplay.h>     // Dialog index for cover UI
+
 #include "usbuinqueriesnotifiermdrv.h"      // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
-#include <SecondaryDisplay/usbuinotifsecondarydisplay.h>     // Dialog index for cover UI
 
 // ================= MEMBER FUNCTIONS =========================================
 

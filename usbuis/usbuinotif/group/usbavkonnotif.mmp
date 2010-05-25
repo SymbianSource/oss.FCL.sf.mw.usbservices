@@ -23,19 +23,20 @@ TARGETTYPE      dll
 UID             0x101fdfae  0x102068DD  
 TARGETPATH      SHARED_LIB_DIR
 
-CAPABILITY	CAP_GENERAL_DLL
-VENDORID	VID_DEFAULT
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        VID_DEFAULT
 
 SOURCEPATH      ../src
 
-SOURCE          usbuincableconnectednotifier.cpp usbavkonmain.cpp
+SOURCE          usbuincableconnectednotifier.cpp
+SOURCE          usbavkonmain.cpp
 SOURCE	        usbnotifier.cpp
 
 USERINCLUDE     ../inc
 
-SYSTEMINCLUDE         ../../inc ../../../inc MW_LAYER_PLATFORM_EXPORT_PATH(SecondaryDisplay/)    //for internal and private API headers
-
 MW_LAYER_SYSTEMINCLUDE
+
+
 LIBRARY ECOM.LIB                            // Symbian E-Com Plugin definitions and types
 LIBRARY euser.lib cone.lib                  // Symbian OS frameworklibraries
 LIBRARY avkon.lib                           // UI library
@@ -54,7 +55,7 @@ LIBRARY aknicon.lib
 LIBRARY egul.lib
 LIBRARY usbman.lib                          // for personality IDs and descriptions
 LIBRARY aknnotifierwrapper.lib              // Avkon's notifier wrapper
-LIBRARY         apparc.lib 
+LIBRARY apparc.lib 
 LIBRARY akncapserverclient.lib              // for suppressing the application key
 
 DEBUGLIBRARY flogger.lib                    // File logging services
