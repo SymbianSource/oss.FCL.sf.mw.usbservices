@@ -19,9 +19,6 @@
 PRJ_PLATFORMS
 DEFAULT
 
-//build files for shortlinkconn
-#include "../../../shortlinkconn/localconnectivityservice/generichid/tsrc/GenericHidTest/group/bld.inf"
-
 //build files for usb
 #include "../../usbclasses/msmmplugin/tsrc/MsmmPluginTest/group/bld.inf"
 #include "../../usbuis/usbuinotif/tsrc/USBUiNotifApiTest/group/bld.inf"

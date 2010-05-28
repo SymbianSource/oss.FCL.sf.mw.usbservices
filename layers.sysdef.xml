@@ -18,6 +18,7 @@
       <module name="usbqtui">
         <unit unitID="lcdo.usbservices.usbuis.usbsettingsapp" mrp="" bldFile="&layer_real_source_path;/usbuis/usbsettingsapp" name="usbservices_usbuis_usbsettingsapp" proFile="USBSettingsApp.pro" qmakeArgs="-r" />
         <unit unitID="lcdo.usbservices.usbuis.usbindicatorplugin" mrp="" bldFile="&layer_real_source_path;/usbuis/usbindicatorplugin" name="usbservices_usbuis_usbindicatorplugin" proFile="usbindicatorplugin.pro" qmakeArgs="-r" />
+        <unit unitID="lcdo.usbservices.usbuis.usbuinotif" mrp="" bldFile="&layer_real_source_path;/usbuis/usbuinotif" name="usbservices_usbuis_usbuinotif" proFile="usbuinotif.pro" qmakeArgs="-r" />
      </module>
     </layer>
     <layer name="api_test_layer">

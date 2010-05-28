@@ -11,9 +11,6 @@
       <component id="usbmscpersonality" filter="s60" name="USB MSC Personality" class="plugin">
         <unit bldFile="usbclasses/usbmscpersonality/group"/>
       </component>
-      <component id="pictbridgeengine" filter="s60" name="PictBridge Engine">
-        <unit bldFile="usbclasses/pictbridgeengine/group"/>
-      </component>
       <component id="usbphoneasmodem" filter="s60" name="USB Phone as Modem" introduced="^3">
         <unit bldFile="usbclasses/usbphoneasmodem/group"/>
       </component>
@@ -36,9 +33,6 @@
       </component>
     </collection>
     <collection id="usbuis" name="USB UIs" level="specific">
-      <component id="usbuinotif" filter="s60" name="USB UI Notifiers">
-        <unit bldFile="usbuis/usbuinotif/group"/>
-      </component>
       <component id="imageprintuiprovider" filter="s60" name="ImagePrint UI Provider" class="plugin">
         <unit bldFile="usbuis/imageprintuiprovider/group"/>
       </component>
