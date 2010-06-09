@@ -122,7 +122,6 @@ data=EPOCROOT##epoc32\data\Z\resource\mtp\2001a97f.rsc  resource\mtp\2001a97f.rs
 ECOM_PLUGIN(mtpmetadataservice.dll, mtpmetadataservice.rsc)
 // MTP plugin registration resource file
 data=EPOCROOT##epoc32\data\Z\resource\mtp\2001A9A3.rsc  resource\mtp\2001A9A3.rsc
-data=EPOCROOT##epoc32\data\Z\deviceexperiences\default\en-us\A42998DC-D9BD-4287-A2EA-46116889443C.devicemetadata-ms deviceexperiences\default\en-us\A42998DC-D9BD-4287-A2EA-46116889443C.devicemetadata-ms
 #endif // SYMBIAN_EXCLUDE_MTP
 #endif // MTP_METADATASERVICE_IBY
 
