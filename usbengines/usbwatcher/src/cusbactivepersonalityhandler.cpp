@@ -270,12 +270,9 @@ void CUsbActivePersonalityHandler::StateChangeNotify(
     iDeviceState = aStateNew;        
     switch ( aStateNew )
         {
-        case EUsbDeviceStateAddress:
+        case EUsbDeviceStateConfigured:
             {
-            if( iAskOnConnectionSetting &&
-                    ( aStateOld != EUsbDeviceStateSuspended ) &&
-                    ( aStateOld != EUsbDeviceStateConfigured ) 
-                     )
+            if( aStateOld != EUsbDeviceStateSuspended ) 
                 {
                 iPersonalityParams->PersonalityNotifier().ShowQuery(
                         KCableConnectedNotifierUid, iDummy,

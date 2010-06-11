@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Declares USB UI connection notifier.
+* Description:  Declares USB OTG Warning notifier.
  *
 */
 
@@ -20,8 +20,9 @@
 #define USBUINOTIFOTGWARNING_H
 
 // INCLUDES
-#include <aknnotewrappers.h>
+
 #include <usbuinotif.h>
+#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
 
 #include "usbnotifier.h"   // Base class
 #define KUsbUiNotifOtgGeneralNoteGranularity 1
@@ -32,7 +33,8 @@
  *  Synchronous call is enouph.
  * 
  */
-NONSHARABLE_CLASS(CUsbUiNotifOtgWarning) : public CUSBUINotifierBase
+NONSHARABLE_CLASS(CUsbUiNotifOtgWarning) : public CUSBUINotifierBase,
+                                           public MHbDeviceMessageBoxObserver
     {
 public:
     // Constructors and destructor
@@ -46,6 +48,13 @@ public:
      * Destructor.
      */
     virtual ~CUsbUiNotifOtgWarning();
+    /**
+       * Call back function to observe device message box closing.
+       * @param aMessageBox Pointer to the closing message box instance.
+       * @param aButton Button that was pressed.
+       */
+    void MessageBoxClosed(const CHbDeviceMessageBoxSymbian* aMessageBox,
+          CHbDeviceMessageBoxSymbian::TButtonId aButton);
 
 protected:
 
@@ -72,13 +81,6 @@ private:
     void Cancel();
 
     /**
-     * From CUSBUINotifierBase. Gets called when a request completes.
-     * @param None.
-     * @return None.
-     */
-    void RunL();
-
-    /**
      * From CUSBUINotifierBase. Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -87,7 +89,7 @@ private:
      * @param aMessage Should be completed when the notifier is deactivated.
      * @return None.
      */
-    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
+    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
 
 private:
@@ -97,25 +99,12 @@ private:
      */
     CUsbUiNotifOtgWarning();
 
-    /**
-     * Publish the dialog to the cover UI
-     * The cover UI may use the personality ID or the localized
-     * personality name e.g. "Mass storage". 
-     * @param aNote           The dialog to be published.
-     * @param aPersonalityId  The personality ID.
-     * @param aLocalizedPersonalityDescriptor The personality as a string.
-     */
-    void
-            PublishToCoverUiL(CAknResourceNoteDialog* aNote,
-                    TInt aPersonalityId,
-                    const HBufC* aLocalizedPersonalityDescriptor);
-
 private:
     // data
-    RArray<TInt> iStringIds;
+    CDesCArrayFlat* iStringIds;
 
     //Own
-    CAknResourceNoteDialog* iNote;
+    CHbDeviceMessageBoxSymbian* iNote;
 
     TInt iNoteId;
     };

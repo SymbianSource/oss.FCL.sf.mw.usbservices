@@ -15,8 +15,5 @@
 *
 */
 
-
-#include "../usbui/group/bld.inf"
-#include "../usbuinotif/group/bld.inf"
 #include "../imageprintuiprovider/group/bld.inf"
 #include "../imageprintui/group/bld.inf"

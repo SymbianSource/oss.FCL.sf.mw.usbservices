@@ -20,8 +20,8 @@
 
 // INCLUDES
 
-#include <hbdevicedialogsymbian.h>
-#include <hbsymbianvariant.h>
+#include <hb/hbcore/hbdevicedialogsymbian.h>
+#include <hb/hbwidgets/hbdevicenotificationdialogsymbian.h>
 
 #include "usbnotifier.h" // Base class
 // CLASS DECLARATION
@@ -32,7 +32,7 @@
  *  @lib
  */
 NONSHARABLE_CLASS(CUSBUICableConnectedNotifier) : public CUSBUINotifierBase, 
-    public MHbDeviceDialogObserver
+    public MHbDeviceNotificationDialogObserver
     {
 public:
     // Constructors and destructor
@@ -66,13 +66,6 @@ private:
     void Cancel();
 
     /**
-     * From CUSBUINotifierBase Gets called when a request completes.
-     * @param None.
-     * @return None.
-     */
-    void RunL();
-
-    /**
      * From CUSBUINotifierBase Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -81,25 +74,21 @@ private:
      * @param aMessage Should be completed when the notifier is deactivated.
      * @return None.
      */
-    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
+    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
  
        
 private:
-    // functions from MHbDeviceDialogObserver
-   
+    // functions from MHbDeviceNotificationDialogObserver
     /**
-    * lunches the QT usb ui setting
-    * @param aData is a CHbSymbianVariantMap daya which contains the keys
-    */ 
-    void DataReceived(CHbSymbianVariantMap& aData);
-    /*
-     * Virtual function from MHbDeviceDialogObserver
-     * Not implemented
-     */     
-    void DeviceDialogClosed(TInt aCompletionCode);
-         
-    
+     * Callback function which is called when the dialog is tapped
+     */
+    void NotificationDialogActivated(const CHbDeviceNotificationDialogSymbian* aDialog);
+    /**
+     * Callback function which is called when the dialog is closed
+     */
+    void NotificationDialogClosed(const CHbDeviceNotificationDialogSymbian* aDialog,
+            TInt aCompletionCode);
 
 private:
     //New functions
@@ -117,27 +106,12 @@ private:
      */
     void GetPersonalityStringLC(HBufC*& aHeader,HBufC*& aDescription );
 
-    /**
-     * Runs the connected discreet note
-     */
-    void RunQueryL();
-
-  
-    /**
+     /**
      * launches the (USB) application
      * @param aProcessName The process name (*.exe)
      * @param TUidType 
      */
     void LaunchApplication(const TDesC & aProcessName,const TUidType & aUidType) const;
-
-    /**
-     * Adds a parameter to the dialog parameters.
-     */
-    void AddParameterL(
-            CHbSymbianVariantMap* aParameters,
-            const TDesC& aKey,
-            const TAny* aData,
-            CHbSymbianVariant::TType aDataType);
 
 private:
     /**
@@ -145,7 +119,7 @@ private:
      */
     CUSBUICableConnectedNotifier();
     
-    CHbDeviceDialogSymbian* iDialog; 
+    CHbDeviceNotificationDialogSymbian* iDialog; 
 
     };
 #endif // USBUINCABLECONNECTEDNOTIFIER_H

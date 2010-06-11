@@ -37,7 +37,7 @@ SOURCE      cusbwatcherscheduler.cpp
 SOURCE      cusbdevicelock.cpp
 SOURCE      cusbdevconstarter.cpp
 SOURCE      cusbglobalsystemstateobserver.cpp
-SOURCE      tusbindicatorhandler.cpp
+SOURCE      cusbindicatorhandler.cpp
 
 
 USERINCLUDE   ../inc
@@ -45,6 +45,7 @@ USERINCLUDE   ../inc
 MW_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE ../../usbotgwatcher/inc
 SYSTEMINCLUDE   /epoc32/include/usb
+SYSTEMINCLUDE   /epoc32/include/mw/hb/hbcore
 
 
 START RESOURCE usbman_pcsmtp.rss
@@ -84,5 +85,6 @@ LIBRARY       usbpersonality.lib
 LIBRARY       centralrepository.lib // Central Repository (USB Personality API)
 LIBRARY       featmgr.lib
 LIBRARY       usbotgwatcher.lib  //OTG
+LIBRARY       hbcore.lib
 
 DEBUGLIBRARY  flogger.lib            // File logging

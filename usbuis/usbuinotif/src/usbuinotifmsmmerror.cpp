@@ -11,25 +11,24 @@
 *
 * Contributors:
 *
-* Description:  USB UI queries notifier class.
+* Description:  USB UI MSMM Error notifier class.
  *
 */
 
 
 // INCLUDE FILES
-#include <eikenv.h>          // Eikon environment
-#include <bautils.h>         // BAFL utils (for language file)
-#include <utf.h>             // Unicode character conversion utilities
-#include <StringLoader.h>    // Localisation stringloader
-#include <AknQueryDialog.h> 
-#include <aknnotewrappers.h>
-#include <usb/hostms/srverr.h> 
-
+#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>      // dialog
+#include <hb/hbcore/hbtextresolversymbian.h>
+#include <usb/hostms/srverr.h>
 #include <usbuinotif.h>                     // pck
-#include <usbuinotif.rsg>                   // Own resources
-#include "usbuinotifmsmmerror.h"             // Own class definition
+#include "usbuinotifmsmmerror.h"            // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
-#include "usbuinotifsecondarydisplay.h"     // Dialog index for cover UI
+
+
+// CONSTANTS
+/** granularity for allocating error strings */
+const TInt KUsbMsmmErrorGranularity = 3; 
+
 // ================= MEMBER FUNCTIONS =========================================
 
 // ----------------------------------------------------------------------------
@@ -53,7 +52,7 @@ CUsbUiNotifMSMMError* CUsbUiNotifMSMMError::NewL()
 // ----------------------------------------------------------------------------
 //
 CUsbUiNotifMSMMError::CUsbUiNotifMSMMError() :
-    iStringIds( KUsbUiNotifOtgGeneralQueryGranularity)
+    iStringIds(NULL)
     {
     }
 
@@ -66,15 +65,21 @@ CUsbUiNotifMSMMError::~CUsbUiNotifMSMMError()
     //Make sure that the request is completed. Note that inside the destructor,
     //this virtual function call is to local CUsbUiNotifMSMMError::Cancel, 
     //not to any possibly derived class implementation. 
+    delete iStringIds;
     Cancel();
     }
 
 void CUsbUiNotifMSMMError::ConstructL()
     {
     CUSBUINotifierBase::ConstructL();
-    iStringIds.AppendL( R_USB_MSMM_ERROR_GENERAL_MASS_STORAGE_ERROR);
-    iStringIds.AppendL( R_USB_MSMM_ERROR_UNKNOWN_FILESYSTEM);
-    iStringIds.AppendL( R_USB_MSMM_ERROR_OUT_OF_MEMORY);  
+    iStringIds = new (ELeave) CDesCArrayFlat(KUsbMsmmErrorGranularity);
+    _LIT(KGeneralError,"txt_usb_info_error_in_usb_connection_disconnect_d");
+    _LIT(KUnknownFileSys, "txt_usb_info_unknown_file_system_disconnect_devic");
+    _LIT(KOutOfMemory, "txt_usb_info_disk_full_remove_some_files_and_try");
+    
+    iStringIds->AppendL(KGeneralError);
+    iStringIds->AppendL(KUnknownFileSys);
+    iStringIds->AppendL(KOutOfMemory);
     }
 
 // ----------------------------------------------------------------------------
@@ -95,14 +100,16 @@ CUsbUiNotifMSMMError::TNotifierInfo CUsbUiNotifMSMMError::RegisterL()
 //  Jump to RunL as soon as possible.
 // ----------------------------------------------------------------------------
 //
-void CUsbUiNotifMSMMError::GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
+void CUsbUiNotifMSMMError::StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
         const RMessagePtr2& aMessage)
     {
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::GetParamsL"));
-    if (iQuery || iReplySlot != 0 || iNeedToCompleteMessage)
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::StartDialogL"));
+    if (iReplySlot != 0 || iNeedToCompleteMessage)
         {
         User::Leave( KErrInUse );
         }
+
+    InitializeTextResolver();
 
     iMessage = aMessage;
     iNeedToCompleteMessage = ETrue;
@@ -111,48 +118,40 @@ void CUsbUiNotifMSMMError::GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
     // Get parameters 
     //    
     THostMsErrData error;
-    TPckgC<THostMsErrData> pckg( error);
+    TPckgC<THostMsErrData> pckg( error );
     pckg.Set( aBuffer );
+    int errorId = EUsbMSMMGeneralError;
     switch (pckg().iError)
         {
         case  EHostMsErrUnknownFileSystem:
-            iErrorId = EUsbMSMMUnknownFileSystem;
+            errorId = EUsbMSMMUnknownFileSystem;
             break;        
         case  EHostMsErrOutOfMemory:
-            iErrorId = EUsbMSMMOutOfMemory;
+            errorId = EUsbMSMMOutOfMemory;
             break;        
         default:
-            iErrorId = EUsbMSMMGeneralError;
+            errorId = EUsbMSMMGeneralError;
         }
-
-    SetActive();
-    iStatus = KRequestPending;
-    TRequestStatus* stat = &iStatus;
-    User::RequestComplete( stat, KErrNone );
+    
+    //Delete the query in case the client didn't cancel the notifier 
+    //or close the session after the previous query.
+    if (iQuery)
+        {
+        FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::GetParamsL() deleting previous dialog"));
+        delete iQuery;
+        iQuery = NULL;
+        }
+    
+    iQuery = CHbDeviceMessageBoxSymbian::NewL(
+            CHbDeviceMessageBoxSymbian::EWarning, this);
+    iQuery->SetTimeout(0);
+    
+    HBufC* stringHolder = HbTextResolverSymbian::LoadLC(iStringIds->MdcaPoint(errorId));
+    iQuery->SetTextL(*stringHolder);
+    iQuery->ShowL();
+    CleanupStack::PopAndDestroy( stringHolder );
+        
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::GetParamsL() completed"));
-    }
-
-// ----------------------------------------------------------------------------
-// CUsbUiNotifMSMMError::RunL
-// Ask user response and return it to caller.
-// ----------------------------------------------------------------------------
-//
-void CUsbUiNotifMSMMError::RunL()
-    {
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::RunL"));
-    TInt returnValue = KErrNone;
-
-    DisableKeylock();
-    SuppressAppSwitching( ETrue );
-
-    //Excute dialog and check return value
-    returnValue = QueryUserResponseL();
-
-    SuppressAppSwitching( EFalse );
-    RestoreKeylock();
-    CompleteMessage( returnValue );
-
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::RunL() completed"));
     }
 
 // ----------------------------------------------------------------------------
@@ -165,43 +164,43 @@ void CUsbUiNotifMSMMError::Cancel()
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel"));
     if (iQuery)
         {
+        FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel closing iQuery"));
+        iQuery->Close();
+        FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel iQuery closed"));
         delete iQuery;
+        FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel iQuery deleted"));
         iQuery = NULL;
         }
-    CompleteMessage( KErrCancel );
-
+    CUSBUINotifierBase::Cancel();
     FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::Cancel() completed"));
     }
 
 // ----------------------------------------------------------------------------
-// CUsbUiNotifMSMMError::QueryUserResponseL
-// Show query dialog. 
+// Call back function to observe device message box closing.
 // ----------------------------------------------------------------------------
 //
-TInt CUsbUiNotifMSMMError::QueryUserResponseL()
+void CUsbUiNotifMSMMError::MessageBoxClosed(
+        const CHbDeviceMessageBoxSymbian* /*aMessageBox*/,
+        CHbDeviceMessageBoxSymbian::TButtonId aButton)
     {
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::QueryUserResponseL"));
-    TInt returnValue = KErrNone;
-    TInt resourceId = R_USB_QUERY_OTG_ERROR;
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::MessageBoxClosed"));
+    int returnValue = KErrNone;
+    
+    //iQuery will be deleted in Cancel. If Cancel is not called, it will be
+    //deleted next time the query is shown. 
 
-    iQuery = CAknQueryDialog::NewL( CAknQueryDialog::EErrorTone );
-
-    if (iCoverDisplaySupported)
+    if (aButton == CHbDeviceMessageBoxSymbian::EAcceptButton) 
         {
-        iQuery->PublishDialogL( iErrorId, KUsbUiNotifMsmmError );
+        returnValue = KErrNone;
+        } 
+    else 
+        {
+        returnValue = KErrCancel;
         }
-    HBufC *stringHolder = StringLoader::LoadLC( iStringIds[iErrorId] );
 
-    TInt keypress = iQuery->ExecuteLD( resourceId, *stringHolder );
-
-    CleanupStack::PopAndDestroy( stringHolder );
-
-    iQuery = NULL; // Dialog destroyed
-
-    returnValue = keypress ? KErrNone : KErrCancel; //OK?
-
-    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::QueryUserResponseL completed"));
-    return returnValue;
+    CompleteMessage( returnValue );
+    
+    FLOG(_L("[USBUINOTIF]\t CUsbUiNotifMSMMError::MessageBoxClosed completed"));    
     }
 
 // End of File

@@ -21,7 +21,6 @@ NAME USBM
 #include <badef.rh>
 #include <bldvariant.hrh>
 #include <usbpersonalityids.h>
-#include <usbman.loc>
 #include "usbman.rh"
 #include "usbvariation.rh"
 
@@ -54,7 +53,7 @@ RESOURCE PERSONALITY_ARRAY device_personalities
             product = per_product;
             id = KUsbPersonalityIdPCSuiteMTP;
             class_uids = "102827B3, 101fbf22, 101fbf24, 10281F2A, 101FB43A";
-            description = qtn_usb_mode_ovisuite_mtp;
+            description = "ovi suite";
             detailedDescription = qtn_usb_mode_msg_ovi_suite;
             property = 0x00000000;
             }
@@ -72,7 +71,7 @@ RESOURCE PERSONALITY_ARRAY device_personalities
             product = per_product;
             id = KUsbPersonalityIdMS;
             class_uids = "10204bbc";
-            description = qtn_usb_mode_mass_storage;
+            description = "mass storage";
             detailedDescription = qtn_usb_mode_msg_mass_storage;
             property = 0x00000000;
             }
@@ -90,7 +89,7 @@ RESOURCE PERSONALITY_ARRAY device_personalities
             product = per_product;
             id = KUsbPersonalityIdMTP;
             class_uids = "102827B3";
-            description = qtn_usb_mode_mtp;
+            description = "media transfer";
             detailedDescription = qtn_usb_mode_msg_mtp;
             property = 0x00000000;
             }
