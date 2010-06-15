@@ -102,11 +102,11 @@ private:
 // Paramters same as above.
 #define LOG( str ) { RDebug::Printf( "["MODULE_NAME"] %s", str  ); }
 
-#define LOG1( s, v ) { RDebug::Printf( "["MODULE_NAME"] "##s , v ); }
+#define LOG1( s, v ) { RDebug::Printf( "["MODULE_NAME"] " s , v ); }
 
-#define LOG2( s, v1,v2 ) { RDebug::Printf( "["MODULE_NAME"] "##s , v1, v2 ); }
+#define LOG2( s, v1,v2 ) { RDebug::Printf( "["MODULE_NAME"] " s , v1, v2 ); }
 
-#define LOG3( s, v1, v2, v3 ) { RDebug::Printf( "["MODULE_NAME"] "##s , \
+#define LOG3( s, v1, v2, v3 ) { RDebug::Printf( "["MODULE_NAME"] " s , \
         v1, v2, v3); }
 
 class TFuncLogger
