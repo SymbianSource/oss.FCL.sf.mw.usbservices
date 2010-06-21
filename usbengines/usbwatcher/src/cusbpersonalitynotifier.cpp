@@ -198,7 +198,11 @@ EXPORT_C TInt CUsbPersonalityNotifier::ShowQuery( TUid aNotifierUid,
             return KErrGeneral;
             }
                 
-        iNotifierClient.Append(ptr);
+        if( (ret = iNotifierClient.Append(ptr)) != KErrNone)
+            {
+            LOG( "append error");
+            }
+        
         }
     
     return ret;
@@ -231,7 +235,10 @@ EXPORT_C TInt CUsbPersonalityNotifier::ShowNote( TUid aNotifierUid,
             return KErrGeneral;
             }
                 
-        iNotifierClient.Append( ptr );
+        if( ( ret = iNotifierClient.Append( ptr ) ) != KErrNone)
+            {
+            LOG( "append error");
+            }
         }
     
     return ret;
@@ -338,7 +345,11 @@ EXPORT_C void CUsbPersonalityNotifier::CancelAllButCurrent()
         //Remove all but the 1st
         TNotifierClient* ptr = iNotifierClient[0];
         iNotifierClient.Reset();
-        iNotifierClient.Append( ptr );
+        TInt ret = iNotifierClient.Append( ptr );
+        if (ret != KErrNone)
+            {
+            LOG("append error");
+            }
         }
     }
 

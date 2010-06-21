@@ -362,7 +362,7 @@ void CUSBClassChangeUIPluginModel::SupportedUSBModeArraysL(
         {
         // Add empty value
         AddIconL (iPersonalityCount, aIconArray);
-        iUsbModeIndexes.Append(0);
+        iUsbModeIndexes.AppendL(0);
         aPopUpItems.AppendL(KNullDesC);
         aListBox.AppendL(KUSBUIEmptyString);
         aListBoxDefault.AppendL(KUSBUIEmptyString);
@@ -544,7 +544,11 @@ void CUSBClassChangeUIPluginModel::HostEventNotify(TDeviceEventInformation aEven
                     case EDriverLoadPartialSuccess:
                         {
                         // Drivers are loaded more or less successfully
-                        iDeviceIDs.Append(aEventInfo.iDeviceId);
+                        TInt ret = iDeviceIDs.Append(aEventInfo.iDeviceId);
+                        if (ret != KErrNone) 
+                            {
+                            FLOG( _L("[CUSBClassChangeUIPlugin]\t CUSBClassChangeUIPluginModel::HostEventNotify *** append error"));       
+                            }
                         iObserver->HostEventNotify(aEventInfo);
                         break;
                         }

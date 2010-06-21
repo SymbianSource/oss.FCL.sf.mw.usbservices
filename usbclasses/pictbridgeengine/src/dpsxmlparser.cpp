@@ -195,7 +195,7 @@ void CDpsXmlParser::OnStartElementL(const RTagInfo& aElement,
                     TDpsArg arg;
                     arg.iElement = (TDpsArgument)i;
                     arg.iContent.Copy(_L(""));
-                    iDpsArgs.Append(arg);
+                    iDpsArgs.AppendL(arg);
                     break;
                     }
                 }

@@ -293,7 +293,7 @@ EXPORT_C void CDpsEngine::GetDpsConfigL(TDpsConfigPrintReq& aConfig)
         TDpsVersion version;
         version.iMajor = static_cast<TInt>(reader.ReadUint8());
         version.iMinor = static_cast<TInt>(reader.ReadUint8());
-        aConfig.iDpsVersions.Append(version); 
+        aConfig.iDpsVersions.AppendL(version); 
         }
     TPtrC vendorString = reader.ReadTPtrC(); 
     aConfig.iVendorName.Copy(vendorString);

@@ -117,9 +117,15 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     // jobConfig    
     TInt count = iReqParam.iJobConfig.Count();
               
+    TInt ret = KErrNone;
+    
     elemsP[0].iElement = EDpsJobConfig;
     elemsP[0].iNum = count;
-    aElements.Append(elemsP[0]);
+    if ( (ret = aElements.Append(elemsP[0])) != KErrNone )
+        {
+        IF_DEBUG(Print(_L("*** append error")));
+        return ret;
+        }
     for (TInt i = 0; i < count; i++)
         {
         argsP[i].iElement = iReqParam.iJobConfig[i].iElement;
@@ -127,11 +133,14 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     	argsP[i].iContent.AppendNumUC(iReqParam.iJobConfig[i].iContent, EHex);
     	// we have to append the low bytes (0000)
     	argsP[i].iContent.Append(KDpsLowZero);
-    	aArgs.Append(argsP[i]);
+    	if ( (ret = aArgs.Append(argsP[i])) != KErrNone ) 
+    	    {
+    	    IF_DEBUG(Print(_L("*** append error")));
+    	    return ret;
+    	    }
     	IF_DEBUG(Print(_L("the element is %d"), argsP[i].iElement));
     	IF_DEBUG(Print(_L("the content is %S"), &(argsP[i].iContent)));
     	}    
-    	
     // printInfo
     for (TInt j = 0; j < imageCount; j++)
         {
@@ -141,7 +150,12 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     	argsP[count].iElement = EDpsArgFileID;
     	argsP[count].iContent.AppendNumFixedWidth(objectHandles[j], EHex, 
     	                                          KFullWordWidth);
-    	aArgs.Append(argsP[count]);
+    	if ( (ret = aArgs.Append(argsP[count])) != KErrNone )
+    	    {
+    	    IF_DEBUG(Print(_L("*** append error")));
+    	    return ret;
+    	    }
+    	
     
     	IF_DEBUG(Print(_L("the element is %d"), argsP[count].iElement));
     	IF_DEBUG(Print(_L("the content is %S"), &(argsP[count].iContent)));
@@ -152,7 +166,11 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     	    {
     	    argsP[count].iElement = EDpsArgFileName;
     	    argsP[count].iContent.Copy(iReqParam.iPrintInfo[j].iFile);
-    	    aArgs.Append(argsP[count]);
+    	    if ( (ret = aArgs.Append(argsP[count])) != KErrNone)
+    	        {
+                IF_DEBUG(Print(_L("*** append error")));
+    	        return ret;
+    	        }
     	    
     	    IF_DEBUG(Print(_L("the element is %d"), argsP[count].iElement));
     	    IF_DEBUG(Print(_L("the content is %S"), &(argsP[count].iContent)));
@@ -164,7 +182,11 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     	    {
             argsP[count].iElement = EDpsArgDate;
             argsP[count].iContent.Copy(iReqParam.iPrintInfo[j].iDate);
-            aArgs.Append(argsP[count]);
+            if ( (ret = aArgs.Append(argsP[count])) != KErrNone) 
+                {
+                IF_DEBUG(Print(_L("*** append error")));
+                return ret;
+                }
             IF_DEBUG(Print(_L("the element is %d"), argsP[count].iElement));
     	    IF_DEBUG(Print(_L("the content is %S"), &(argsP[count].iContent)));
             k++; count++;
@@ -174,7 +196,11 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
             argsP[count].iElement = EDpsArgCopies;
             argsP[count].iContent.AppendNumFixedWidthUC(
                 iReqParam.iPrintInfo[j].iCopies, EDecimal, KCopyFileWidth);
-            aArgs.Append(argsP[count]);
+            if ( (ret = aArgs.Append(argsP[count])) != KErrNone) 
+                {
+                IF_DEBUG(Print(_L("*** append error")));
+                return ret;
+                }
             IF_DEBUG(Print(_L("the element is %d"), argsP[count].iElement));
     	    IF_DEBUG(Print(_L("the content is %S"), &(argsP[count].iContent)));
     	    k++; count++;
@@ -183,7 +209,11 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     	    {
             argsP[count].iElement = EDpsArgPrtPID;
             argsP[count].iContent.AppendNumUC(iReqParam.iPrintInfo[j].iPrtPID);
-            aArgs.Append(argsP[count]);
+            if ( (ret = aArgs.Append(argsP[count])) != KErrNone) 
+                {
+                IF_DEBUG(Print(_L("*** append error")));
+                return ret;
+                }
             IF_DEBUG(Print(_L("the element is %d"), argsP[count].iElement));
     	    IF_DEBUG(Print(_L("the content is %S"), &(argsP[count].iContent)));
     	    k++; count++;
@@ -192,14 +222,22 @@ EXPORT_C TInt TDpsStartJob::FillReqArgs(TDpsArgArray& aArgs,
     	    {
             argsP[count].iElement = EDpsArgCopyID;
             argsP[count].iContent.AppendNumUC(iReqParam.iPrintInfo[j].iCopyID);
-            aArgs.Append(argsP[count]);
+            if ( (ret = aArgs.Append(argsP[count])) != KErrNone) 
+                {
+                IF_DEBUG(Print(_L("*** append error")));
+                return ret;
+                }
             IF_DEBUG(Print(_L("the element is %d"), argsP[count].iElement));
     	    IF_DEBUG(Print(_L("the content is %S"), &(argsP[count].iContent)));
     	    k++; count++;
     	    }
         
     	elemsP[j + 1].iNum = k;
-    	aElements.Append(elemsP[j + 1]);    
+    	if ( (ret = aElements.Append(elemsP[j + 1])) != KErrNone) 
+    	    {
+            IF_DEBUG(Print(_L("*** append error")));
+    	    return ret;
+    	    }
     	}
     	        
     delete[] objectHandles;	
@@ -257,9 +295,13 @@ EXPORT_C TInt TDpsAbortJob::FillReqArgs(TDpsArgArray& aArgs,
     arg.iElement = EDpsArgAbortStyle;
     arg.iContent.AppendNumUC(iReqParam.iAbortStyle, EHex);
     arg.iContent.Append(KDpsLowZero);
-    aArgs.Append(arg);
+    TInt ret = aArgs.Append(arg);
+    if (ret != KErrNone) 
+        {
+        IF_DEBUG(Print(_L("*** append error")));
+        }
     IF_DEBUG(Print(_L("<<<TDpsAbortJob::FillReqArgs")));                            
-    return KErrNone;
+    return ret;
     }
     
 // ---------------------------------------------------------------------------
@@ -276,12 +318,21 @@ EXPORT_C TInt TDpsGetCapability::FillReqArgs(TDpsArgArray& aArgs,
     TDpsEle elems;
     elems.iElement = EDpsCapability;
     elems.iNum = 1;
-    aElements.Append(elems);
+    TInt ret = KErrNone;
+    if ( (ret = aElements.Append(elems)) != KErrNone)
+        {
+        IF_DEBUG(Print(_L("*** append error")));
+        return ret;
+        }
     
     // only one parameter
     TDpsArg argsP;
     argsP.iElement = iReqParam.iCap;
-    aArgs.Append(argsP);
+    if ( (ret = aArgs.Append(argsP)) != KErrNone)
+        {
+        IF_DEBUG(Print(_L("*** append error")));
+        return ret;
+        }
     if (EDpsArgPaperTypes == iReqParam.iCap || EDpsArgLayouts == iReqParam.iCap)
         {
         if (iReqParam.iAttribute != 0)
@@ -337,7 +388,8 @@ EXPORT_C TInt TDpsConfigPrintService::FillReqArgs(TDpsArgArray& aArgs,
         {
         return KErrNoMemory;
         }
-    TInt count;     
+    TInt count;
+    TInt ret = KErrNone;     
     for (TInt i = 0; i < KConfigPrintService; i++)
         {
         switch (i)
@@ -354,14 +406,14 @@ EXPORT_C TInt TDpsConfigPrintService::FillReqArgs(TDpsArgArray& aArgs,
                 argsP[i].iContent.AppendNumUC
                     (iReqParam.iDpsVersions[j].iMinor);    
                 }
-            aArgs.Append(argsP[i]);
+            ret = aArgs.Append(argsP[i]);
         break;    
         
         case EDpsArgVendorName: // vender name
             
             argsP[i].iElement = EDpsArgVendorName;
             argsP[i].iContent.Append(iReqParam.iVendorName);
-            aArgs.Append(argsP[i]);
+            ret = aArgs.Append(argsP[i]);
                         
         break;  
         
@@ -373,7 +425,7 @@ EXPORT_C TInt TDpsConfigPrintService::FillReqArgs(TDpsArgArray& aArgs,
                 argsP[i].iContent.AppendNumUC(iReqParam.iVendorVersion.iMajor);
                 argsP[i].iContent.Append(_L("."));    
                 argsP[i].iContent.AppendNumUC(iReqParam.iVendorVersion.iMinor);
-                aArgs.Append(argsP[i]);        
+                ret = aArgs.Append(argsP[i]);        
                 }
             
         break;
@@ -381,7 +433,7 @@ EXPORT_C TInt TDpsConfigPrintService::FillReqArgs(TDpsArgArray& aArgs,
         case EDpsArgProductName: // produce name
             argsP[i].iElement = EDpsArgProductName;
             argsP[i].iContent.Append(iReqParam.iProductName);
-            aArgs.Append(argsP[i]);
+            ret = aArgs.Append(argsP[i]);
         break;
         
         case EDpsArgSerialNo: // serialNo (optional)
@@ -389,7 +441,7 @@ EXPORT_C TInt TDpsConfigPrintService::FillReqArgs(TDpsArgArray& aArgs,
                 {
                 argsP[i].iElement = EDpsArgSerialNo;
                 argsP[i].iContent.Append(iReqParam.iSerialNo);    
-                aArgs.Append(argsP[i]);
+                ret = aArgs.Append(argsP[i]);
                 }
             
         break;
@@ -401,9 +453,15 @@ EXPORT_C TInt TDpsConfigPrintService::FillReqArgs(TDpsArgArray& aArgs,
             }
         
         }
+    
+    if (ret != KErrNone) 
+        {
+        IF_DEBUG(Print( _L("***TDpsConfigPrintService::FillReqArgs append error = %d"), ret));
+        }
+    
     delete[] argsP;
     IF_DEBUG(Print(_L("<<<TDpsConfigPrintService::FillReqArgs")));    
-    return KErrNone;    
+    return ret;    
     }
 
 // ---------------------------------------------------------------------------
@@ -419,6 +477,8 @@ EXPORT_C TInt TDpsGetCapability::FillRepArgs(const TDpsArgArray& aArgs,
     IF_DEBUG(Print(_L(">>>TDpsGetCapability::FillRepArgs")));    
     CDpsXmlParser* XmlPar = aTrader->Parser();
     
+    TInt ret = KErrNone;
+    
     if (aArgs.Count())
         {
         if (EDpsArgPaperTypes == aArgs[0].iElement || 
@@ -428,12 +488,18 @@ EXPORT_C TInt TDpsGetCapability::FillRepArgs(const TDpsArgArray& aArgs,
                 {
                 TDpsAttribute attrib;
 		        XmlPar->GetAttribute(attrib);
-		        iRepParam.iContent.Append(attrib);            
+		        ret = iRepParam.iContent.Append(attrib);            
                 }
             else
                 {
-                iRepParam.iContent.Append(0);
-                }    
+                ret = iRepParam.iContent.Append(0);
+                }
+            
+            if (ret != KErrNone)
+                {
+                IF_DEBUG(Print(_L("*** append error")));
+                return ret;
+                }
             }
         TUint32 value;
         TLex8 converter;
@@ -466,16 +532,21 @@ EXPORT_C TInt TDpsGetCapability::FillRepArgs(const TDpsArgArray& aArgs,
                 TInt major = value >> KShiftLength;
                 paperType.iMajor = (TDpsPaperTypeMajor)major;
                 paperType.iMinor = (TDpsPaperTypeMinor)(value & KDpsMinorMask);
-                iRepParam.iPaperType.Append(paperType);
+                ret = iRepParam.iPaperType.Append(paperType);
                 }
             else
                 {
                 // remove the extra zeros
                 value = value >> KShiftLength; 
-                iRepParam.iContent.Append(value);
+                ret = iRepParam.iContent.Append(value);
                 IF_DEBUG(Print(_L("the value is %x"), value));
                 }
             
+            if (ret != KErrNone) 
+                {
+                IF_DEBUG(Print(_L("*** append error")));
+                return ret;
+                }
             }
         iRepParam.iCap = aArgs[0].iElement;
            
@@ -543,7 +614,12 @@ EXPORT_C TInt TDpsConfigPrintService::FillRepArgs(const TDpsArgArray& aArgs,
                         {
                         return error;
                         }
-                    iRepParam.iDpsVersions.Append(version);            
+                    error = iRepParam.iDpsVersions.Append(version);
+                    if (error != KErrNone)
+                        {
+                        IF_DEBUG(Print(_L("*** append error")));
+                        return error;
+                        }
                     }
             break;
         
