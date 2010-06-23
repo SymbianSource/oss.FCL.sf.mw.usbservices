@@ -15,10 +15,10 @@
 *
 */
 #include "usbindicator.h" 
-#include <QVariant.h>
+#include <QVariant>
 #include <e32uid.h>
 #include <apadef.h>
-
+#include "usbdebug.h"
 
 const QString TextIdPrefix = ("txt_usb_dblist_usb_connected_val_");
 /*!
@@ -44,6 +44,7 @@ USBIndicator::~USBIndicator()
 */
 bool USBIndicator::handleInteraction(InteractionType type)
 {
+    myDebug() << ">>> USBIndicator::handleInteraction";
     bool handled = false;
     TUidType uidtype(KExecutableImageUid, TUid::Uid(0x00),
                             TUid::Uid(KUSBUIUid));    
@@ -56,6 +57,7 @@ bool USBIndicator::handleInteraction(InteractionType type)
         usbUiProcess.Close();         
         handled = true;                
     }
+    myDebug() << "<<< USBIndicator::handleInteraction";
     return handled;
 }
 
@@ -65,23 +67,24 @@ bool USBIndicator::handleInteraction(InteractionType type)
 */
 QVariant USBIndicator::indicatorData(int role) const
 {
+    myDebug() << ">>> USBIndicator::indicatorData, role is " << role;
     switch(role) {
-    case PrimaryTextRole: 
+    	case PrimaryTextRole: 
         {
-        QString text = QString(hbTrId("txt_usb_dblist_usb_connected"));
-        return text;
+        	QString text = QString(hbTrId("txt_usb_dblist_usb_connected"));
+        	return text;
         }
-    case SecondaryTextRole:
+    	case SecondaryTextRole:
         {
-        return mSecDisplayName;
+        	return mSecDisplayName;
         }
-    case DecorationNameRole:
+   	 	case DecorationNameRole:
         {
-        QString iconName(KUsbIconFile);
-        return iconName;
+        	QString iconName(KUsbIconFile);
+        	return iconName;
         }
-    default: 
-        return QVariant();      
+    	default: 
+        	return QVariant();      
     }
 }
 
@@ -92,6 +95,7 @@ QVariant USBIndicator::indicatorData(int role) const
 bool USBIndicator::handleClientRequest( RequestType type, 
         const QVariant &parameter)
 { 
+    myDebug() << ">>> USBIndicator::handleClientRequest";
     switch (type) {
         case RequestActivate:
             {
@@ -108,5 +112,6 @@ bool USBIndicator::handleClientRequest( RequestType type,
             break;
     }
     //request always handled
+   	myDebug() << "<<< USBIndicator::handleClientRequest";
     return true;
 }

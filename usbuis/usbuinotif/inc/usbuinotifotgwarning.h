@@ -25,7 +25,6 @@
 #include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
 
 #include "usbnotifier.h"   // Base class
-#define KUsbUiNotifOtgGeneralNoteGranularity 1
 // CLASS DECLARATION
 
 /**

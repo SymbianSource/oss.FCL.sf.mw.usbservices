@@ -4,11 +4,19 @@ CONFIG += plugin
 CONFIG += hb
 HEADERS += inc/usbindicatorplugin.h \
     inc/usbindicator.h \
-    inc/usbaddressedindicator.h
+    inc/usbaddressedindicator.h \
+    inc/usbmassstorageindicator.h \
+    inc/usbdisconnectingindicator.h
 	
 SOURCES += src/usbindicatorplugin.cpp \
     src/usbindicator.cpp \
-    src/usbaddressedindicator.cpp
+    src/usbaddressedindicator.cpp \
+    src/usbmassstorageindicator.cpp \
+    src/usbdisconnectingindicator.cpp
+
+LIBS += -lmsmmindicatorsession
+
+SYMBIAN_PLATFORMS = ARMV5
 
 TRANSLATIONS = usbindimenu.ts	
 

@@ -21,9 +21,9 @@
 
 // INCLUDES
 #include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
+#include <hb/hbwidgets/hbdevicenotificationdialogsymbian.h>
 #include "usbnotifier.h"      // Base class
 
-#define KUsbUiNotifOtgGeneralQueryGranularity 3
 
 // CLASS DECLARATION
 
@@ -34,7 +34,8 @@
  *  @lib
  */
 NONSHARABLE_CLASS(CUsbUiNotifMSMMError) : public CUSBUINotifierBase,
-                                          public MHbDeviceMessageBoxObserver
+                                          public MHbDeviceMessageBoxObserver,
+                                          public MHbDeviceNotificationDialogObserver
     {
 public:
 
@@ -45,7 +46,9 @@ public:
         {
         EUsbMSMMGeneralError,	
         EUsbMSMMUnknownFileSystem,
-        EUsbMSMMOutOfMemory
+        EUsbMSMMOutOfMemory,
+        EUsbMSMMSafeToRemove,
+        EUsbMSMMUnableToEject
         };
 
     // Constructors and destructor
@@ -110,11 +113,21 @@ private:
     CUsbUiNotifMSMMError();
 
 private:
-    // New functions
+    // functions from MHbDeviceNotificationDialogObserver
+    /**
+     * Callback function which is called when the dialog is tapped
+     */
+    void NotificationDialogActivated(const CHbDeviceNotificationDialogSymbian* aDialog);
+    /**
+     * Callback function which is called when the dialog is closed
+     */
+    void NotificationDialogClosed(const CHbDeviceNotificationDialogSymbian* aDialog,
+            TInt aCompletionCode);
 
 private:
     // Data
     CHbDeviceMessageBoxSymbian* iQuery;
+    CHbDeviceNotificationDialogSymbian* iDiscreet; 
     CDesCArrayFlat* iStringIds;
      };
 #endif // USBUINOTIFMSMMERROR_H

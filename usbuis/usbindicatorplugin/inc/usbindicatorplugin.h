@@ -25,6 +25,8 @@
 
 const QString ConnectedIndicator = ("com.nokia.hb.indicator.usb.device.connected/1.0");
 const QString AddressedIndicator = ("com.nokia.hb.indicator.usb.device.inprogress/1.0" );
+const QString MassStorageIndicator = ("com.nokia.hb.indicator.usb.host.massstorage/1.0" );
+const QString UsbDisconnectingIndicator = ("com.nokia.hb.indicator.usb.host.disconnecting/1.0" );
 
 _LIT(KUSBExe, "USBSettingsApp.exe");
 const TInt KUSBUIUid = 0x2002E70C;

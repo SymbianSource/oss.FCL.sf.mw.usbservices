@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -15,9 +15,8 @@
  *
  */
 
-#include <AknSmallIndicator.h>
-#include <avkon.hrh>
 #include <usbuinotif.h>
+#include <hb/hbcore/hbindicatorsymbian.h>
 
 #include "cusbindicatornotifier.h"
 #include "cusbstate.h"
@@ -62,6 +61,8 @@ CUsbIndicatorNotifier::~CUsbIndicatorNotifier()
 
     // Unsubscribe from otg watcher states change notifications
     TRAP_IGNORE(iOtgWatcher.UnsubscribeL(*this));
+
+    delete iUsbConnectingIndicator; 
     }
 
 // ---------------------------------------------------------------------------
@@ -74,10 +75,7 @@ CUsbIndicatorNotifier::CUsbIndicatorNotifier(CUsbNotifManager& aNotifManager,
             aOtgWatcher)
     {
     LOG_FUNC
-
-    //To be changed to EAknIndicatorStateAnimate and remove iIconBlinkingTimer
-    //when AVKON implements animation form of usb indicator.
-    iIndicatorState = EAknIndicatorStateOn;
+    
     }
 
 // ---------------------------------------------------------------------------
@@ -88,6 +86,8 @@ void CUsbIndicatorNotifier::ConstructL()
     {
     LOG_FUNC
 
+    iUsbConnectingIndicator = CHbIndicatorSymbian::NewL();
+    
     // Subscribe for VBus change notifications
     iOtgWatcher.VBusObserver()->SubscribeL(*this);
 
@@ -95,7 +95,7 @@ void CUsbIndicatorNotifier::ConstructL()
     iOtgWatcher.SubscribeL(*this);
 
     // check here for condition to set usb indicator
-    SetIndicatorL();
+    SetIndicator();
     }
 
 // ---------------------------------------------------------------------------
@@ -104,26 +104,26 @@ void CUsbIndicatorNotifier::ConstructL()
 // form of the indicator.
 // ---------------------------------------------------------------------------
 //
-void CUsbIndicatorNotifier::ShowStaticL(TBool aVisible)
+void CUsbIndicatorNotifier::ShowStatic(TBool aVisible)
     {
     LOG_FUNC
 
     LOG1("aVisible = %d" , aVisible);
 
-    SetIndicatorStateL(aVisible
-                                ? EAknIndicatorStateOn
-                                   : EAknIndicatorStateOff);
+    SetIndicatorState(aVisible
+                                ? EIndicatorStateOn
+                                   : EIndicatorStateOff);
     }
 
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbIndicatorNotifier::BlinkL()
+void CUsbIndicatorNotifier::Blink()
     {
     LOG_FUNC
 
-    SetIndicatorStateL( EAknIndicatorStateAnimate );
+    SetIndicatorState( EIndicatorConnecting );
     }
 
 // ---------------------------------------------------------------------------
@@ -134,7 +134,7 @@ void CUsbIndicatorNotifier::ShowL()
     {
     LOG_FUNC
 
-    ShowStaticL(ETrue);
+    ShowStatic(ETrue);
     }
 
 // ---------------------------------------------------------------------------
@@ -145,31 +145,55 @@ void CUsbIndicatorNotifier::Close()
     {
     LOG_FUNC
 
-    TRAP_IGNORE( ShowStaticL(EFalse) );
+    ShowStatic(EFalse);
     }
 
 // ---------------------------------------------------------------------------
 // Set USB indicator On or Off
 // ---------------------------------------------------------------------------
 //
-void CUsbIndicatorNotifier::SetIndicatorStateL(const TInt aState)
+void CUsbIndicatorNotifier::SetIndicatorState(const TInt aState)
     {
-
     LOG1( "USB indicator State = %d" , aState);
-
-    CAknSmallIndicator* indicator = CAknSmallIndicator::NewLC(TUid::Uid(
-            EAknIndicatorUSBConnection));
-    indicator->SetIndicatorStateL(aState);
-    CleanupStack::PopAndDestroy(indicator); //indicator    
+    
+    TBool success = ETrue;
+    
+    if ((aState == EIndicatorConnecting) && !iConnectingIndicatorOn)
+        {
+        success = iUsbConnectingIndicator->Activate(KUsbConnectingIndicator);   
+        LOG1( "calling CHbIndicatorSymbian::Activate(), returned %d", success);   
+        if (success)
+            {
+            iConnectingIndicatorOn = ETrue;
+            }  
+                   
+        }
+   
+    if ((aState != EIndicatorConnecting) && iConnectingIndicatorOn)
+        {
+        success = iUsbConnectingIndicator->Deactivate(KUsbConnectingIndicator); 
+        if (success)
+            {
+            iConnectingIndicatorOn = EFalse;
+            }  
+        LOG1( "calling CHbIndicatorSymbian::Deactivate(), returned %d", success);                  
+        }   
+        
+    // if success became false loading the indicator failed, log the error    
+    if (!success)
+        {
+        TInt error = iUsbConnectingIndicator->Error();
+        LOG1( "indicator error is %d", error);       
+        }         
     }
-
+       
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
 //
 void CUsbIndicatorNotifier::OtgWatcherStateChangedL(TUsbStateIds aState)
     {
-    SetIndicatorL();
+    SetIndicator();
     }
 
 // ---------------------------------------------------------------------------
@@ -178,7 +202,7 @@ void CUsbIndicatorNotifier::OtgWatcherStateChangedL(TUsbStateIds aState)
 //
 void CUsbIndicatorNotifier::VBusDownL()
     {
-    SetIndicatorL();
+    SetIndicator();
     }
 
 // ---------------------------------------------------------------------------
@@ -187,7 +211,7 @@ void CUsbIndicatorNotifier::VBusDownL()
 //
 void CUsbIndicatorNotifier::VBusUpL()
     {
-    SetIndicatorL();
+    SetIndicator();
     }
 
 // ---------------------------------------------------------------------------
@@ -203,7 +227,7 @@ void CUsbIndicatorNotifier::VBusObserverErrorL(TInt aError)
 // 
 // ---------------------------------------------------------------------------
 //  
-void CUsbIndicatorNotifier::SetIndicatorL()
+void CUsbIndicatorNotifier::SetIndicator()
     {
     if (!(iOtgWatcher.IsDeviceA()) || iOtgWatcher.CurrentHostState()->Id() == EUsbStateHostAPeripheral)
         {
@@ -216,18 +240,18 @@ void CUsbIndicatorNotifier::SetIndicatorL()
     if ((iOtgWatcher.VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp)
             && (iOtgWatcher.CurrentHostState()->Id() == EUsbStateHostAHost))
         {
-        ShowStaticL(ETrue);
+        ShowStatic(ETrue);
         }
     // if VBus up and we are not host -> Blink indicator
     else if ((iOtgWatcher.VBusObserver()->VBus() == CUsbVBusObserver::EVBusUp)
             && (iOtgWatcher.CurrentHostState()->Id() != EUsbStateHostAHost))
         {
-        BlinkL();
+        Blink();
         }
     else
     // Otherwise do not show indicator
         {
-        ShowStaticL(EFalse);
+        ShowStatic(EFalse);
         }
     }
 

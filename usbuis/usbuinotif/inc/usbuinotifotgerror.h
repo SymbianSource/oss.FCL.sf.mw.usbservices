@@ -24,7 +24,6 @@
 #include "usbnotifier.h"      // Base class
 
 
-#define KUsbUiNotifOtgGeneralQueryGranularity 3
 // CLASS DECLARATION
 
 /**

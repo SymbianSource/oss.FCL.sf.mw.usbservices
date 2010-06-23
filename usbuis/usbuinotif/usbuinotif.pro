@@ -17,6 +17,16 @@ SOURCES += src/usbuincableconnectednotifier.cpp \
     src/usbuinmain.cpp
 TRANSLATIONS = usbdialogs.ts
 
+defBlock = \      
+    "$${LITERAL_HASH}if defined(EABI)" \
+    "DEFFILE  .\eabi/usbavkonnotif.def" \
+    "$${LITERAL_HASH}else" \
+    "DEFFILE  .\BWINS/usbavkonnotif.def" \
+    "$${LITERAL_HASH}endif"
+	
+MMP_RULES += defBlock
+
+
 symbian*: { 
     TARGET.UID2 = 0x10009D8D 
     TARGET.UID3 = 0x102068DC
@@ -41,6 +51,8 @@ symbian*: {
    -lcommonengine \
    -lcentralrepository \
    -lusbman \
-   -lflogger
+   -lflogger \
+   -lcone \
+   -leiksrv
 }
 
