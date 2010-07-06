@@ -93,7 +93,7 @@ public:
      * Return certain type list of Capabilities
      * @param aCapability the Capabilities type requested
      */
-    RArray<TUint>& GetCapabilities(TInt aCapability);
+    RArray<TUint>& GetCapabilitiesL(TInt aCapability);
     
     /**
     * Stores value choosed by user

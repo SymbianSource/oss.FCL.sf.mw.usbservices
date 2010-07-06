@@ -22,7 +22,7 @@
 #include <e32property.h>
 #include <locodbearerplugin.h>
 #include "usblcdactive.h"
-#include <usb/usblogger.h>
+
 
 /**
  *  Class of EComm interface implementation
