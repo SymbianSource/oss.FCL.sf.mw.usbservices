@@ -16,6 +16,8 @@ SOURCES += src/usbindicatorplugin.cpp \
 
 LIBS += -lmsmmindicatorsession
 
+SYMBIAN_PLATFORMS = ARMV5
+
 TRANSLATIONS = usbindimenu.ts	
 
 symbian { 
