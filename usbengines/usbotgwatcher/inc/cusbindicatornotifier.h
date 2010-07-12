@@ -40,8 +40,11 @@ enum
  * Class implements functionality of showing/blinking usb indicator
  * Class does not provide method to get response from the user
  */
-NONSHARABLE_CLASS( CUsbIndicatorNotifier ): public CUsbNotifier, MUsbOtgWatcherStateObserver, MUsbVBusObserver
+NONSHARABLE_CLASS( CUsbIndicatorNotifier ): public MUsbOtgWatcherStateObserver, MUsbVBusObserver
     {
+
+    friend class CtUsbOtgWatcher;
+    
 public:
     /**
      * Two-phased constructor.
@@ -78,12 +81,6 @@ public:
      */
     virtual void VBusObserverErrorL(TInt aError);
 
-    // From base class CUsbNotifier
-    /**
-     * Start to show notifier
-     */
-    virtual void ShowL();
-
     /**
      * Stop showing notifier
      */
@@ -104,23 +101,10 @@ private:
     void ConstructL();
 
     /**
-     * Set USB indicator On or Off
+     * Set USB Connecting indicator On or Off
      * @param aState Indicator states 
      */
-    void SetIndicatorState(const TInt aState);
-
-    /**
-     * Show/hide static icon of the indicator. 
-     * If the indicator is blinking, stop blinking it and show/hide the static 
-     * form of the indicator.
-     * @param aVisible ETrue - Show the indicator, EFalse - Hide the indicator 
-     */
-    void ShowStatic(TBool aVisible);
-
-    /**
-     * Blinks indicator
-     */
-    void Blink();
+    void ToggleConnectingIndicator(TBool aEnable);
 
     /**
      * Sets indicator accordingly
