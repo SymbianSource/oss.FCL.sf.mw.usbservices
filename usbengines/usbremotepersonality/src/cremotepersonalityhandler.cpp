@@ -361,7 +361,7 @@ void CRemotePersonalityHandler::ReadPersonalitiesL()
         p.iIndex = KStringDescriptorsBase - i;
         
         // iPersonalities is a dynamic array, no error handling is needed on Append    
-        iPersonalities.Append(p);
+        iPersonalities.AppendL(p);
             
         FTRACE(FPrint(
           _L("[USBREMOTEPERSONALITY]\tCRemotePersonalityHandler::ReadPersonalities Personality id = %d Index = %d" ), iPersonalities[i].iId, iPersonalities[i].iIndex));

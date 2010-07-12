@@ -18,14 +18,12 @@
 
 
 #include "usblcdplugin.h"
+#include "debug.h"
 
-#ifdef __FLOG_ACTIVE
-_LIT8(KLogComponent, "USBLcdPlugin");
-#endif
 
 CUsbLcdPlugin* CUsbLcdPlugin::NewL(TLocodBearerPluginParams& aParams)
     {
-    LOG_STATIC_FUNC_ENTRY
+    LOG_FUNC
     CUsbLcdPlugin* self = new (ELeave) CUsbLcdPlugin(aParams);
     CleanupStack::PushL(self);
     self->ConstructL();

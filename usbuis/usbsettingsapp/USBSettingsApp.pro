@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = USBSettingsApp
 QT += core \
     gui
+CONFIG += no_icon    
 HEADERS += inc/usbsettingsapp.h \
     inc/usbuimodelactive.h \
     inc/usbuisettingmodel.h
@@ -20,7 +21,6 @@ RESOURCES += src/usbsettinglayout.qrc \
 symbian: { 
     TARGET.UID3 = 0x2002E70C
     TARGET.CAPABILITY = LocalServices WriteDeviceData
-    RSS_RULES = "hidden = KAppIsHidden;"
 }
 
 BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <platform_paths.hrh>" \
