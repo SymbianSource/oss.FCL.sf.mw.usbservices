@@ -15,12 +15,12 @@
 *
 */
 #include "usbaddressedindicator.h" 
-#include <QVariant.h>
+#include <QVariant>
 #include <e32uid.h>
 #include <apadef.h>
-#include <usbpersonalityids.h>
 #include "usbindicatorplugin.h"
 #include "usbindicator.h"
+#include "usbdebug.h"
 
 
 /*!
@@ -30,27 +30,27 @@ UsbAddressedIndicator::UsbAddressedIndicator(const QString &indicatorType) :
 HbIndicatorInterface(indicatorType,
         HbIndicatorInterface::ProgressCategory,
         InteractionActivated)
-    {
-    }
+{
+}
 
 /*!
    UsbAddressedIndicator::~UsbAddressedIndicator
 */
 UsbAddressedIndicator::~UsbAddressedIndicator()
-    {
-    }
+{
+}
 
 
 /*!
    UsbAddressedIndicator::handleInteraction
 */
 bool UsbAddressedIndicator::handleInteraction(InteractionType type)
-    { 
+{ 
+    myDebug() << ">>> UsbAddressedIndicator::handleInteraction";
     bool handled = false;
     TUidType uidtype(KExecutableImageUid, TUid::Uid(0x00),
                             TUid::Uid(KUSBUIUid));    
-    if (type == InteractionActivated) 
-        {
+    if (type == InteractionActivated) {
         RProcess usbUiProcess;                
         TInt result = usbUiProcess.Create(KUSBExe(), KNullDesC, uidtype);
         if (result == KErrNone) {
@@ -58,9 +58,10 @@ bool UsbAddressedIndicator::handleInteraction(InteractionType type)
         }
         usbUiProcess.Close();         
         handled = true;                
-        }
-    return handled;
     }
+    myDebug() << "<<< UsbAddressedIndicator::handleInteraction";
+    return handled;
+}
 
 /*!
    UsbAddressedIndicator::indicatorData
@@ -68,21 +69,21 @@ bool UsbAddressedIndicator::handleInteraction(InteractionType type)
 */
 QVariant UsbAddressedIndicator::indicatorData(int role) const
 {
-    switch(role)
-    {
-    case PrimaryTextRole: 
-        {
-        QString text = QString(hbTrId("txt_usb_dblist_usb_connecting"));
-        return text;
-        }
-    case DecorationNameRole:
-        {
-        QString iconName(KUsbIconFile);
-        return iconName;
-        }
-    default: 
-        return QVariant();      
-     }
+    myDebug() << ">>> UsbAddressedIndicator::indicatorData";
+    switch (role) {
+    	case PrimaryTextRole:
+		{ 
+        	QString text = QString(hbTrId("txt_usb_dblist_usb_connecting"));
+        	return text;
+    	}
+		case DecorationNameRole:
+    	{
+	    	QString iconName(KUsbIconFile);
+        	return iconName;
+    	}
+		default: 
+        	return QVariant();      
+    }
 }
 
 /*!
@@ -92,19 +93,18 @@ QVariant UsbAddressedIndicator::indicatorData(int role) const
 bool UsbAddressedIndicator::handleClientRequest( RequestType type, 
         const QVariant &parameter)
 { 
+    myDebug() << ">>> UsbAddressedIndicator::handleClientRequest";
     switch (type) {
-        case RequestActivate:
-            {
-            emit dataChanged();
-            }
-
-            break;
-        default:
-            emit deactivate();
-            break;
+    	case RequestActivate:
+    		emit dataChanged();
+        	break;
+    	default:
+    		emit deactivate();
+        	break;
     }
-    //request always handled
-    return true;
+   	myDebug() << "<<< UsbAddressedIndicator::handleClientRequest";
+   	//request always handled
+   	return true;
 }
 
 

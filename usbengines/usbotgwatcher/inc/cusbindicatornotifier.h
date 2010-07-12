@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -19,14 +19,23 @@
 #define C_USBINDICATORNOTIFIER_H
 
 #include <e32base.h>
-#include <AknNotifyStd.h>       // SAknSmallIndicatorParams
-#include <AknNotifySignature.h> // SAknNotifierPackage
-#include <avkon.hrh>            // EAknIndicatorUSBConnection
 
 #include "cusbnotifier.h"
 #include "cusbvbusobserver.h"
 #include "cusbotgwatcher.h"
 
+class CHbIndicatorSymbian;
+
+_LIT(KUsbConnectingIndicator, "com.nokia.hb.indicator.usb.device.inprogress/1.0");  
+
+// indicator states
+enum  
+    {
+    EIndicatorStateOff,
+    EIndicatorStateOn,
+    EIndicatorConnecting
+    };
+  
 /**
  * Class implements functionality of showing/blinking usb indicator
  * Class does not provide method to get response from the user
@@ -98,7 +107,7 @@ private:
      * Set USB indicator On or Off
      * @param aState Indicator states 
      */
-    void SetIndicatorStateL(const TInt aState);
+    void SetIndicatorState(const TInt aState);
 
     /**
      * Show/hide static icon of the indicator. 
@@ -106,17 +115,17 @@ private:
      * form of the indicator.
      * @param aVisible ETrue - Show the indicator, EFalse - Hide the indicator 
      */
-    void ShowStaticL(TBool aVisible);
+    void ShowStatic(TBool aVisible);
 
     /**
      * Blinks indicator
      */
-    void BlinkL();
+    void Blink();
 
     /**
      * Sets indicator accordingly
      */
-    void SetIndicatorL();
+    void SetIndicator();
 
 private:
     // data
@@ -127,11 +136,17 @@ private:
      */
     CUsbOtgWatcher& iOtgWatcher;
 
-    /**
-     * Current indicator state
-     */
-    TInt iIndicatorState;
 
+    /**    
+    * Pointer to a class for using Orbit indicator framework
+    * Owned  
+    */
+    CHbIndicatorSymbian* iUsbConnectingIndicator;
+    
+    /**    
+    * Whether we have activated the connecting indicator 
+    */    
+    TBool iConnectingIndicatorOn;
     };
 
 #endif // C_USBINDICATORNOTIFIER_H

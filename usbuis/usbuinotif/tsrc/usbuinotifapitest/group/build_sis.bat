@@ -18,6 +18,6 @@
 @rem Description:  
 @rem
 
-call sbs -k -c armv5.test 
-call makesis usbuinotifapitest_phone.pkg
-call signsis usbuinotifapitest_phone.sis usbuinotifapitest_phone.sisx Nokia_RnDCert_02.der Nokia_RnDCert_02.key
+call abld test build armv5
+call makesis usbuinotifapitest.pkg
+call signsis usbuinotifapitest.sis usbuinotifapitest.sisx rd.cer rd-key.pem

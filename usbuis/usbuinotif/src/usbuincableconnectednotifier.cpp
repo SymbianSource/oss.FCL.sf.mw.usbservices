@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -98,7 +98,6 @@ CUSBUICableConnectedNotifier::TNotifierInfo CUSBUICableConnectedNotifier::Regist
 
 // ----------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::StartDialogL
-//  Jump to RunL as soon as possible.
 // ----------------------------------------------------------------------------
 //
 void CUSBUICableConnectedNotifier::StartDialogL(const TDesC8& /*aBuffer*/,
@@ -115,6 +114,12 @@ void CUSBUICableConnectedNotifier::StartDialogL(const TDesC8& /*aBuffer*/,
     iMessage = aMessage;
     iNeedToCompleteMessage = ETrue;
     iReplySlot = aReplySlot;
+    if (iDialog)
+        {
+        FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::StartDialogL() deleting previous dialog"));
+        delete iDialog;
+        iDialog = NULL;
+        }
     iDialog = CHbDeviceNotificationDialogSymbian::NewL(this);
       
     HBufC* header = NULL;
@@ -154,7 +159,7 @@ void CUSBUICableConnectedNotifier::Cancel()
 
 // -----------------------------------------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::GetPersonalityStringL
-// Get the strings for ask on connection message query 
+// Get the strings for the discreet popup dialog
 // -----------------------------------------------------------------------------------------------------------
 //
 void CUSBUICableConnectedNotifier::GetPersonalityStringLC(

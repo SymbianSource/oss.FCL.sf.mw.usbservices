@@ -20,6 +20,9 @@
 #include <QApplication>
 #include "usbindicator.h"
 #include "usbaddressedindicator.h"
+#include "usbmassstorageindicator.h"
+#include "usbdisconnectingindicator.h"
+#include "usbdebug.h"
 
 Q_EXPORT_PLUGIN(UsbIndicatorPlugin)
 
@@ -46,9 +49,12 @@ UsbIndicatorPlugin::~UsbIndicatorPlugin()
 */
 QStringList UsbIndicatorPlugin::indicatorTypes() const
 {
+    myDebug() << ">>> UsbIndicatorPlugin::indicatorTypes";
     QStringList types; 
     types << ConnectedIndicator;
     types << AddressedIndicator;
+    types << MassStorageIndicator;
+    types << UsbDisconnectingIndicator;
     return types;
 }
 
@@ -60,6 +66,7 @@ QStringList UsbIndicatorPlugin::indicatorTypes() const
 */
 HbIndicatorInterface* UsbIndicatorPlugin::createIndicator(const QString &indicatorType)
 {  
+    myDebug() << ">>> UsbIndicatorPlugin::createIndicator";
     if (!mTranslatorLoaded) {
         // add translator for application library
         QString locale = QLocale::system().name();
@@ -76,6 +83,13 @@ HbIndicatorInterface* UsbIndicatorPlugin::createIndicator(const QString &indicat
     else if (indicatorType == AddressedIndicator) {
         indicator = new UsbAddressedIndicator(indicatorType); 
     }
+    else if (indicatorType == MassStorageIndicator) {
+        indicator = new UsbMassStorageIndicator(indicatorType); 
+    }
+    else if (indicatorType == UsbDisconnectingIndicator) {
+        indicator = new USBDisconnectingIndicator(indicatorType); 
+    }    
+    myDebug() << "<<< UsbIndicatorPlugin::createIndicator";
     return indicator;
 }
 

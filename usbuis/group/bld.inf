@@ -17,3 +17,7 @@
 
 #include "../imageprintuiprovider/group/bld.inf"
 #include "../imageprintui/group/bld.inf"
+
+PRJ_EXPORTS
+../inc/msmmclient.h MW_LAYER_PLATFORM_EXPORT_PATH(usb/hostms/msmmclient.h)
+../inc/msmmindicatorclient.h MW_LAYER_PLATFORM_EXPORT_PATH(usb/hostms/msmmindicatorclient.h)
