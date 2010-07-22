@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -16,18 +16,15 @@
  */
 
 // INCLUDE FILES
-#include <eikenv.h>          // Eikon environment
+
 #include <bautils.h>         // BAFL utils (for language file)
-#include <StringLoader.h>    // Localisation stringloader
-#include <centralrepository.h> 
-#include <coreapplicationuisdomainpskeys.h>
 #include <data_caging_path_literals.hrh> 
-#include <featmgr.h>
 #include <AknNotiferAppServerApplication.h>
+#include <hb/hbcore/hbtextresolversymbian.h>
 
 #include "usbnotifier.h"     // Own class 
 #include "usbuinotifdebug.h"
-#include "aknkeylock.h" //RAknKeyLock
+
 // CONSTANTS
 
 // ================= MEMBER FUNCTIONS =========================================
@@ -39,11 +36,9 @@
 // itself to the active scheduler stack.
 // ----------------------------------------------------------------------------
 //
-CUSBUINotifierBase::CUSBUINotifierBase() :
-    CActive( EPriorityStandard )
+CUSBUINotifierBase::CUSBUINotifierBase() 
     {
         FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::Default constructor()"));
-    CActiveScheduler::Add( this );
     }
 
 // ----------------------------------------------------------------------------
@@ -55,27 +50,16 @@ CUSBUINotifierBase::CUSBUINotifierBase() :
 void CUSBUINotifierBase::ConstructL()
     {
     iEikEnv = CEikonEnv::Static();
-    iAppsKeyBlocked = EFalse;
-    iKeylockChanged = EFalse;
-
+   
     FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::ConstructL()"));
-    TFileName filename;
-
-    const TDriveNumber KStoreDrive = EDriveZ;
-    TDriveUnit driveUnit( KStoreDrive );
-    TDriveName drive = driveUnit.Name();
-    filename.Insert( 0, drive );
-
-    filename += KDC_RESOURCE_FILES_DIR; // From data_caging_path_literals.hrh
-    filename += KResourceFileName;
-    BaflUtils::NearestLanguageFile( iEikEnv->FsSession(), filename );
-    iResourceFileFlag = iEikEnv->AddResourceFileL( filename );
-
-    FeatureManager::InitializeLibL();
-    iCoverDisplaySupported = FeatureManager::FeatureSupported(
-            KFeatureIdCoverDisplay );
-    FeatureManager::UnInitializeLib();
-
+        
+    // use TLS as a boolean, set to EFalse
+    TBool initialized = EFalse;
+    TInt error;
+    error = Dll::SetTls((TAny* )initialized); 
+    error = error; // to suppress a compiler warning
+    FTRACE(FPrint(_L("[USBUINOTIF]\t Dll:SetTls returned %d"), error ));       
+   
     FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::ConstructL() completed"));
     }
 
@@ -90,18 +74,10 @@ CUSBUINotifierBase::~CUSBUINotifierBase()
     //this virtual function call is to the local CUSBUINotifierBase::Cancel, 
     //not to any possibly derived class implementation. 
     Cancel();
-    iEikEnv->DeleteResourceFile( iResourceFileFlag );
-
+ 
     // Complete the RMessage2 if needed
     //
     CompleteMessage( KErrDied );
-
-    // Activate apps -key again (if not previously activated yet)
-    SuppressAppSwitching( EFalse );
-
-    // Restore the keylock if not restored before (caused by Leave).
-    // If the Keylock is restored already, the function does nothing.
-    RestoreKeylock();
 
     FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::Destructor completed"));
     }
@@ -150,7 +126,7 @@ void CUSBUINotifierBase::StartL(const TDesC8& aBuffer, TInt aReplySlot,
         const RMessagePtr2& aMessage)
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::StartL()"));
-    TRAPD( err, GetParamsL( aBuffer, aReplySlot, aMessage ));
+    TRAPD( err, StartDialogL( aBuffer, aReplySlot, aMessage ));
     if (err)
         {
         aMessage.Complete( err );
@@ -168,8 +144,9 @@ void CUSBUINotifierBase::StartL(const TDesC8& aBuffer, TInt aReplySlot,
 void CUSBUINotifierBase::Cancel()
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::Cancel()"));
-    CActive::Cancel();
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::Cancel completed()"));
+    //The message box closed callback gets not run in subclass cancel calls.
+    CompleteMessage(KErrCancel);
+    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::Cancel completed"));
     }
 
 // ----------------------------------------------------------------------------
@@ -181,64 +158,6 @@ TPtrC8 CUSBUINotifierBase::UpdateL(const TDesC8& /*aBuffer*/)
     {
     TPtrC8 ret( KNullDesC8 );
     return (ret);
-    }
-
-// ----------------------------------------------------------------------------
-// CUSBUINotifierBase::DoCancel
-// This method will be called by framework (CActive)
-// if active object is still active.
-// Does nothing here.
-// ----------------------------------------------------------------------------
-//
-void CUSBUINotifierBase::DoCancel()
-    {
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::DoCancel()"));
-    }
-
-// ----------------------------------------------------------------------------
-// CUSBUINotifierBase::RunError
-// This method is called if any leaving has been occured
-// during RunL. Optional method for CActive derived objects.
-// ----------------------------------------------------------------------------
-//
-TInt CUSBUINotifierBase::RunError(TInt aError)
-    {
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RunError()"));
-
-    // Activate apps -key again (if not previously activated yet)
-    //
-    SuppressAppSwitching( EFalse );
-
-    // Write error message to caller
-    //
-    CompleteMessage( aError );
-
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RunError() completed"));
-
-    return aError;
-    }
-
-// ----------------------------------------------------------------------------
-// CUSBUINotifierBase::SuppressAppSwitching
-// 
-// ----------------------------------------------------------------------------
-//
-void CUSBUINotifierBase::SuppressAppSwitching(TBool aEnable)
-    {
-    FTRACE(FPrint(_L("[USBUINOTIF]\t CUSBUINotifierBase::SuppressAppSwitching() %d"), aEnable));
-
-    if (iAppsKeyBlocked != aEnable)
-        {
-        TInt err = iAknServer.ConnectAndSendAppsKeySuppress( aEnable ); // error is stored only for logging purposes
-        iAppsKeyBlocked = aEnable;
-        FTRACE(FPrint(_L("[USBUINOTIF]\t CUSBUINotifierBase::SuppressAppSwitching() ConnectAndSendAppsKeySuppress returned %d"), err ));
-        }
-
-    if (!iAppsKeyBlocked)
-        {
-        iAknServer.Close(); // close the connection once we have re-enabled swithcing
-        }
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::SuppressAppSwitching() completed"));
     }
 
 // ----------------------------------------------------------------------------
@@ -258,61 +177,33 @@ void CUSBUINotifierBase::CompleteMessage(TInt aReason)
     FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::CompleteMessage() completed"));
     }
 
-// ----------------------------------------------------------------------------
-// CUSBUINotifierBase::DisableKeylock
-// ----------------------------------------------------------------------------
-// Turn off the keyguard if it was on.
-//
-void CUSBUINotifierBase::DisableKeylock()
+void CUSBUINotifierBase::InitializeTextResolver()
     {
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::DisableKeylock()"));
-    RAknKeylock2 keylock;
-    iKeylockChanged = EFalse;
-    if (KErrNone == keylock.Connect())
+    _LIT(KFileName, "usbdialogs_");
+    _LIT(KPath, "z:/resource/qt/translations/");         
+    TInt error;
+        
+    iTranslator = (TBool )Dll::Tls();
+    
+    FTRACE(FPrint(_L("[USBUINOTIF]\t Dll:Tls returned %d"), iTranslator ));    
+    
+    if (!iTranslator)
         {
-        if (keylock.IsKeyLockEnabled()) //Check and save the keylock status
+        iTranslator = HbTextResolverSymbian::Init(KFileName, KPath);
+        FTRACE(FPrint(_L("[USBUINOTIF]\t HbTextResolverSymbian::Init returned %d"), iTranslator ));    
+        if (iTranslator)
             {
-            keylock.DisableWithoutNote();// Unlock
-            iKeylockChanged = ETrue;
+            error = Dll::SetTls((TAny* )iTranslator);      
             }
-        keylock.Close();
-        }
-    else
-        {
-        FLOG( _L( "[USBUINOTIF]\t CUSBUINotifierBase::DisableKeylock() fail caused by RAknKeylock2::Connect()") );
-        }
-
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::DisableKeylock() completed"));
+        FTRACE(FPrint(_L("[USBUINOTIF]\t Dll:SetTls returned %d"), error ));    
+        }    
+       
+     error = error;   // to suppress a compiler warning
+     FTRACE( FPrint(
+        _L( "[USBUINOTIF]\t CUSBUINotifierBase::InitializeTextResolver result = %d" ),
+        iTranslator ) );                     
+        
     }
 
-// ----------------------------------------------------------------------------
-// CUSBUINotifierBase::RestoreKeylock
-// ----------------------------------------------------------------------------
-// Restore the keyguard on.
-//
-void CUSBUINotifierBase::RestoreKeylock()
-    {
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock()"));
-    if (iKeylockChanged)
-        {
-        FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock(): iKeylockChanged true"));
-        RAknKeylock2 keylock;
-        FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock(): RAknKeyLock2 initialized"));
-        if (KErrNone == keylock.Connect())
-            {
-            FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock(): RAknKeyLock2::Connect() complete"));
-            keylock.EnableWithoutNote();// Lock back
-            FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock(): RAknKeyLock2::EnableWithoutNote() complete"));
-            keylock.Close();
-            FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock(): RAknKeyLock2::Close() complete"));
-            iKeylockChanged = EFalse;
-            }
-        else
-            {
-            FLOG( _L( "[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock() fail caused by RAknKeylock2::Connect()") );
-            }
-        }
-    FLOG(_L("[USBUINOTIF]\t CUSBUINotifierBase::RestoreKeylock() completed"));
-    }
 
 // End of File

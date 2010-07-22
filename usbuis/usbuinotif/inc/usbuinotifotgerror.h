@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Declares USB UI Queries notifier.
+* Description:  Declares USB UI OTG Errors notifier.
  *
 */
 
@@ -20,19 +20,20 @@
 #define USBUINOTIFOTGERROR_H
 
 // INCLUDES
-
+#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
 #include "usbnotifier.h"      // Base class
-#include <AknQueryDialog.h>   // AVKON component
-#define KUsbUiNotifOtgGeneralQueryGranularity 3
+
+
 // CLASS DECLARATION
 
 /**
- *  This class is used to show general USB query.
+ *  This class is used to show general USB OTG errors
  *  Asynchronous call is required.
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUsbUiNotifOtgError) : public CUSBUINotifierBase
+NONSHARABLE_CLASS(CUsbUiNotifOtgError) : public CUSBUINotifierBase, 
+                                        public MHbDeviceMessageBoxObserver
     {
 public:
     // Constructors and destructor
@@ -46,7 +47,14 @@ public:
      * Destructor.
      */
     virtual ~CUsbUiNotifOtgError();
-
+   
+    /**
+     * Call back function to observe device message box closing.
+     * @param aMessageBox Pointer to the closing message box instance.
+     * @param aButton Button that was pressed.
+     */
+    void MessageBoxClosed(const CHbDeviceMessageBoxSymbian* aMessageBox,
+            CHbDeviceMessageBoxSymbian::TButtonId aButton);
 protected:
 
     /**
@@ -71,11 +79,6 @@ private:
     void Cancel();
 
     /**
-     * From CUSBUINotifierBase Gets called when a request completes.
-     */
-    void RunL();
-
-    /**
      * From CUSBUINotifierBase Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -83,7 +86,7 @@ private:
      * @param aReplySlot A reply slot.
      * @param aMessage Should be completed when the notifier is deactivated.
      */
-    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
+    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
 
 private:
@@ -94,22 +97,12 @@ private:
     CUsbUiNotifOtgError();
 
 private:
-    // New functions
-
-    /**
-     * Show query dialog     
-     * @return KErrNone - accepted, KErrCancel - Cancel or End call key
-     */
-    TInt QueryUserResponseL();
-
-private:
     // Data
     /**
      *  Query
-     *  Not own, destroys self when lauched.
+     *  Owned
      */
-    CAknQueryDialog* iQuery; 
-    RArray<TInt> iStringIds;
-    TInt iErrorId;
+    CHbDeviceMessageBoxSymbian* iQuery; 
+    CDesCArrayFlat* iStringIds;
     };
 #endif // USBUINOTIFOTGERROR_H

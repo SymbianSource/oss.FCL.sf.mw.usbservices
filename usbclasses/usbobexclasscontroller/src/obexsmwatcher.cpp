@@ -18,18 +18,15 @@
 #include "obexsmwatcher.h"
 #include <e32base.h>
 #include <obexservicemanprop.h>
-#include <usb/usblogger.h>
+#include "debug.h"
 
-#ifdef __FLOG_ACTIVE
-_LIT8(KLogComponent, "UsbObexCcSMW");
-#endif
 
 /**
  * @since S60 V5.2
  */
 CObexSMWatcher* CObexSMWatcher::NewL(MObexSMObserver& aObserver)
     {
-    LOG_STATIC_FUNC_ENTRY
+    LOG_FUNC
 
     CObexSMWatcher* self = new (ELeave) CObexSMWatcher(aObserver);
     CleanupStack::PushL( self);
@@ -79,7 +76,7 @@ void CObexSMWatcher::RunL()
     {
     LOG_FUNC 
     
-    LOGTEXT2(_L8(">>CObexSMWatcher::RunL [iStatus=%d]"), iStatus.Int());
+    LOG1("iStatus=%d", iStatus.Int());
     
     iObexSMPostInit.Subscribe( iStatus );
     SetActive();
@@ -89,9 +86,8 @@ void CObexSMWatcher::RunL()
     if (err == KErrNone && value != KErrNone)
         {
         iObserver.MosmError(value);
-        }
-    
-    LOGTEXT(_L8("<<CObexSMWatcher::RunL"));
+        }    
+
     }
 
 /**

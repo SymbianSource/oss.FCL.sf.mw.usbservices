@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -15,17 +15,13 @@
  *
  */
 // INCLUDE FILES
-#include <eikenv.h>          // Eikon environment
-#include <bautils.h>         // BAFL utils (for language file)
-#include <aknlists.h>
-#include <aknPopup.h> 
-#include <StringLoader.h>    // Localisation stringloader
 #include <utf.h>             // Unicode character conversion utilities
 #include <usbman.h>
-#include <usbuinotif.rsg>                   // Own resources
 #include <centralrepository.h> 
 #include <e32property.h>
 #include <e32uid.h> // KExecutableImageUid
+#include <hb/hbwidgets/hbdevicenotificationdialogsymbian.h>
+#include <hb/hbcore/hbtextresolversymbian.h>
 #include "usbuincableconnectednotifier.h"   // Own class definition
 #include "usbuinotifdebug.h"                // Debugging macros
 #include "UsbWatcherInternalCRKeys.h"
@@ -33,10 +29,11 @@
 
 // Literals
 
-_LIT(KUSBExe, "usbapplication.exe");
-const TInt KUSBUIUid = 0x2002BCA3;
-_LIT(KFileDrive,"z:");
-_LIT(KUSBUIconFileName, "usbui.mif");
+_LIT(KUSBExe, "USBSettingsApp");
+const TInt KUSBUIUid = 0x2002E70C;
+const TInt KTextIdLength = 40;
+
+_LIT(KUSBUIconFileName, "qtg_large_usb");
 
 // ================= MEMBER FUNCTIONS =========================================
 
@@ -79,8 +76,7 @@ CUSBUICableConnectedNotifier::~CUSBUICableConnectedNotifier()
     //this virtual function call is to the local CUSBUICableConnectedNotifier::
     //Cancel, not to any possibly derived class implementation. 
     Cancel();
-    delete iDialog;
-         
+           
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::destructor completed"));
     }
 
@@ -101,48 +97,44 @@ CUSBUICableConnectedNotifier::TNotifierInfo CUSBUICableConnectedNotifier::Regist
     }
 
 // ----------------------------------------------------------------------------
-// CUSBUICableConnectedNotifier::GetParamsL
-//  Jump to RunL as soon as possible.
+// CUSBUICableConnectedNotifier::StartDialogL
 // ----------------------------------------------------------------------------
 //
-void CUSBUICableConnectedNotifier::GetParamsL(const TDesC8& /*aBuffer*/,
+void CUSBUICableConnectedNotifier::StartDialogL(const TDesC8& /*aBuffer*/,
         TInt aReplySlot, const RMessagePtr2& aMessage)
     {
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::GetParamsL"));
+    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::StartDialogL"));
     if ( iReplySlot != 0 || iNeedToCompleteMessage)
         {
         User::Leave(KErrInUse);
         }
 
+    InitializeTextResolver();
+
     iMessage = aMessage;
     iNeedToCompleteMessage = ETrue;
     iReplySlot = aReplySlot;
-
-    // Call SetActive() so RunL() will be called by the active scheduler
-    //
-    iStatus = KRequestPending;
-    TRequestStatus* stat = &iStatus;
-    SetActive();
-    User::RequestComplete(stat, KErrNone);
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::GetParamsL() completed"));
-    }
-
-// ----------------------------------------------------------------------------
-// CUSBUICableConnectedNotifier::RunL
-// Ask user response and return it to caller.
-// ----------------------------------------------------------------------------
-//
-void CUSBUICableConnectedNotifier::RunL()
-    {
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunL"));
-
-    DisableKeylock();
-    SuppressAppSwitching(ETrue);
-    RunQueryL();
-    SuppressAppSwitching(EFalse);
-    RestoreKeylock();
-
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunL() completed"));
+    if (iDialog)
+        {
+        FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::StartDialogL() deleting previous dialog"));
+        delete iDialog;
+        iDialog = NULL;
+        }
+    iDialog = CHbDeviceNotificationDialogSymbian::NewL(this);
+      
+    HBufC* header = NULL;
+    HBufC* description =NULL;   
+    GetPersonalityStringLC(header, description);
+   
+    iDialog->SetTitleL(*header);
+    iDialog->SetTextL(*description);
+    iDialog->SetIconNameL(KUSBUIconFileName );
+    iDialog->EnableTouchActivation(ETrue);
+    iDialog->ShowL();
+    
+    CleanupStack::PopAndDestroy(header);
+    CleanupStack::PopAndDestroy(description);
+    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::StartDialogL completed"));
     }
 
 // ----------------------------------------------------------------------------
@@ -153,8 +145,12 @@ void CUSBUICableConnectedNotifier::RunL()
 void CUSBUICableConnectedNotifier::Cancel()
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::Cancel() "));
-
-    iDialog->Cancel(); // cancel the dialog, if it is active
+    if (iDialog)
+        {
+        iDialog->Close();
+        delete iDialog;
+        iDialog = NULL;
+        }
     CompleteMessage(KErrCancel);
     CUSBUINotifierBase::Cancel();
 
@@ -163,76 +159,57 @@ void CUSBUICableConnectedNotifier::Cancel()
 
 // -----------------------------------------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::GetPersonalityStringL
-// Get the strings for ask on connection message query 
+// Get the strings for the discreet popup dialog
 // -----------------------------------------------------------------------------------------------------------
 //
 void CUSBUICableConnectedNotifier::GetPersonalityStringLC(
        HBufC*& aHeader,HBufC*& aDescription )
     {
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::GetPersonalityStringL"));
+    _LIT(KFixedPart, "txt_usb_dpinfo_");
+    _LIT(KSpace, " ");
+    _LIT(KUnderline, "_");
+    _LIT(KUsbConnected, "txt_usb_dpophead_usb_connected");
     TInt CurrentPersonalityID = 0; // The ID of current USB mode
     GetCurrentIdL(CurrentPersonalityID);
     RUsb usbman;
     User::LeaveIfError(usbman.Connect());
+    FLOG(_L("[USBUINOTIF]\t usbman connect called"));     
     CleanupClosePushL(usbman);
+    HBufC* description = NULL;
     User::LeaveIfError(usbman.GetDescription(CurrentPersonalityID,
-            aDescription));
+            description));
+     FLOG(_L("[USBUINOTIF]\t get description called"));  
     CleanupStack::PopAndDestroy(&usbman);
+    
+    CleanupStack::PushL(description);
+    TPtr descriptionPtr = description->Des();
+    TInt position = descriptionPtr.Find(KSpace);
+    while (position != KErrNotFound)
+        {
+        descriptionPtr.Replace(position, 1, KUnderline);     
+        position = descriptionPtr.Find(KSpace); 
+        }
+    HBufC* textId = HBufC::NewL( KTextIdLength );
+    CleanupStack::PushL(textId);
+    TPtr textIdPtr = textId->Des();
+    textIdPtr.Append(KFixedPart);
+    textIdPtr.Append(descriptionPtr);  
+
+    aDescription = HbTextResolverSymbian::LoadL(textIdPtr);
+    CleanupStack::PopAndDestroy(textId);
+    CleanupStack::PopAndDestroy(description);
     CleanupStack::PushL(aDescription);
-    aHeader = StringLoader::LoadL(R_USB_MODE_MSG_HEADER);
+
+    FLOG(_L("[USBUINOTIF]\t get description called"));  
+    aHeader = HbTextResolverSymbian::LoadL(KUsbConnected);
+    FLOG(_L("[USBUINOTIF]\t get header called"));  
+ 
     CleanupStack::PushL(aHeader);
+    
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::GetPersonalityStringL completed"));
     }
 
-// -----------------------------------------------------------------------------------------------------------
-// CUSBUICableConnectedNotifier::RunQueryL
-// Run the ask on connection message query
-// -----------------------------------------------------------------------------------------------------------
-//
-void CUSBUICableConnectedNotifier::RunQueryL()
-    {
-    FLOG( _L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunQueryL()"));
- 
-    _LIT(KNotificationType,"com.nokia.hb.devicenotificationdialog/1.0");
-    _LIT(KTouchActivation, "touchActivation");
-    _LIT(KIconName, "iconName");
-    _LIT(KTitle, "title");
-    _LIT(KText, "text");
-
-    HBufC* header = NULL;
-    HBufC* description =NULL;   
-    GetPersonalityStringLC(header, description);
-   
-    TFileName usbUiIconFilename( KFileDrive );
-    usbUiIconFilename += KDC_APP_BITMAP_DIR;
-    usbUiIconFilename += KUSBUIconFileName;
-    if( iDialog )
-        {
-        delete iDialog;
-        iDialog = NULL;
-        }
-    iDialog = CHbDeviceDialogSymbian::NewL();
-    CHbSymbianVariantMap *parameters =CHbSymbianVariantMap::NewL();
-    CleanupStack::PushL(parameters);
-
-    AddParameterL(parameters, KTitle, header, CHbSymbianVariant::EDes);
-    AddParameterL(parameters, KText, description, CHbSymbianVariant::EDes);
-    AddParameterL(parameters, KIconName, &usbUiIconFilename, CHbSymbianVariant::EDes);
-    TBool activation=ETrue;
-    AddParameterL(parameters, KTouchActivation, &activation, CHbSymbianVariant::EBool);
-
-    FLOG( _L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunQueryL() show") );     
-    TBool error = iDialog->Show(KNotificationType ,*parameters, this);
-    FTRACE( FPrint(
-        _L( "[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunQueryL() error = %d" ),
-        error ) );
-
-    CleanupStack::PopAndDestroy(parameters);    
-    CleanupStack::PopAndDestroy(header);
-    CleanupStack::PopAndDestroy(description);
-    
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::RunQueryL completed"));
-    }
 // ----------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::GetCurrentIdL
 // get the current personality id
@@ -253,54 +230,28 @@ void CUSBUICableConnectedNotifier::GetCurrentIdL(TInt& aCurrentPersonality)
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::GetCurrentIdL completed"));
     }
 
-// ----------------------------------------------------------------------------
-// CUSBUICableConnectedNotifier::DataReceived
-// launches the QT usb ui setting
-// ----------------------------------------------------------------------------
-//
-void CUSBUICableConnectedNotifier::DataReceived(CHbSymbianVariantMap& aData)
-    {
-    FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::DataReceived"));
-    _LIT(KResult, "result");
-    _LIT(KActivated, "activated");
-    TInt result = 0;
-    MDesCArray& keys = aData.Keys();
-    HBufC* key = NULL;
-    for(TInt i = 0; i < keys.MdcaCount(); i++)
-        {
-        result = keys.MdcaPoint(i).Compare(KResult); 
-        if (result == 0)
-            {        
-            key = HBufC::New(KResult().Length());
-            if (key)
-                {
-                *key = KResult;            
-                const CHbSymbianVariant* variant = aData.Get(*key);
-                delete key;
-                HBufC* value = static_cast<HBufC*>(variant->Data());
-                result = value->Des().Compare(KActivated);
-                if (result == 0)
-                    {
-                    TUidType uidtype(KExecutableImageUid, TUid::Uid(0x00),
-                            TUid::Uid(KUSBUIUid));
-                    LaunchApplication(KUSBExe(), uidtype);
-                    }
-                break;
-                }
-            }            
-        }
-    }
 
-// ----------------------------------------------------------------------------
-// CUSBUICableConnectedNotifier::DeviceDialogClosed
-// ----------------------------------------------------------------------------
-//      
- void CUSBUICableConnectedNotifier::DeviceDialogClosed(TInt aCompletionCode)
-     {
-     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::DeviceDialogClosed()"));
-     CompleteMessage(aCompletionCode);  
-     }
-      
+
+void CUSBUICableConnectedNotifier::NotificationDialogActivated(
+        const CHbDeviceNotificationDialogSymbian* /*aDialog*/)
+       {
+       
+           FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::NotificationDialogActivated()"));
+           TUidType uidtype(KExecutableImageUid, TUid::Uid(0x00),
+                                   TUid::Uid(KUSBUIUid));
+           iDialog->Close();
+           LaunchApplication(KUSBExe(), uidtype);
+         
+       }
+   
+void CUSBUICableConnectedNotifier::NotificationDialogClosed(
+        const CHbDeviceNotificationDialogSymbian* /*aDialog*/, TInt /*aCompletionCode*/)
+       {
+       FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::NotificationDialogClosed()"));
+       CompleteMessage( KErrCancel ); 
+       FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::NotificationDialogClosed() complete"));
+
+       }
 // ---------------------------------------------------------------------------
 // CUSBUICableConnectedNotifier::LaunchApplication()
 // launches the application 
@@ -318,27 +269,6 @@ void CUSBUICableConnectedNotifier::LaunchApplication(const TDesC & aProcessName,
     usbUiProcess.Resume();
     usbUiProcess.Close();                     
     FLOG(_L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::LaunchApplication() completed"));             
-    }
-    
-// ---------------------------------------------------------------------------
-// CUSBUICableConnectedNotifier::AddParameter()
-// Adds a string parameter to the dialog parameters.
-// ---------------------------------------------------------------------------
-//  
-void CUSBUICableConnectedNotifier::AddParameterL(
-        CHbSymbianVariantMap* aParameters,
-        const TDesC& aKey,
-        const TAny* aData,
-        CHbSymbianVariant::TType aDataType)
-    {
-    FLOG( _L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::AddStringParameter()") );
-    FTRACE( FPrint(
-        _L( "[USBWATCHER]\t CUSBUICableConnectedNotifier::RunQueryL() aKey = %S" ),
-        &aKey ) );
-    CHbSymbianVariant* variant = CHbSymbianVariant::NewL(aData, aDataType);
-    //aParameters takes variant ownership
-    User::LeaveIfError(aParameters->Add(aKey, variant));
-    FLOG( _L("[USBUINOTIF]\t CUSBUICableConnectedNotifier::AddStringParameter() completed") );
     }
 
 // End of File

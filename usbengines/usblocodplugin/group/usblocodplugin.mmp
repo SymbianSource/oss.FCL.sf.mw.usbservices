@@ -48,4 +48,3 @@ LIBRARY                 euser.lib  // Kernel API
 LIBRARY                 ECom.lib   // ECOM framework API
 LIBRARY                 usbman.lib // RUSB API (USB Manager)
 
-#include <usb/usblogger.mmh>

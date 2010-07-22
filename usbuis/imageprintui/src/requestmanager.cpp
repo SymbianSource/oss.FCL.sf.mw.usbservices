@@ -225,15 +225,15 @@ void CRequestManager::ExecuteStartJobRequestL()
     
     req_quality.iElement = EDpsArgQuality;
     req_quality.iContent = quality;
-    iStart.iReqParam.iJobConfig.Append(req_quality);
+    iStart.iReqParam.iJobConfig.AppendL(req_quality);
     
     req_papersize.iElement = EDpsArgPaperSize;
     req_papersize.iContent = paperSize;
-    iStart.iReqParam.iJobConfig.Append(req_papersize);
+    iStart.iReqParam.iJobConfig.AppendL(req_papersize);
 
     req_layout.iElement = EDpsArgLayout;
     req_layout.iContent = layout;
-    iStart.iReqParam.iJobConfig.Append(req_layout);
+    iStart.iReqParam.iJobConfig.AppendL(req_layout);
               
    
     // retrieve  images
@@ -256,7 +256,7 @@ void CRequestManager::ExecuteStartJobRequestL()
     		{
     		FLOG(_L("[IMAGEPRINTUI]<<< CRequestManager, Start job, file exist"));
     		helpTDpsPrintInfo[i].iFile.Copy(iImageArrayFlat->operator[](i));
-        	iStart.iReqParam.iPrintInfo.Append(helpTDpsPrintInfo[i]);
+        	iStart.iReqParam.iPrintInfo.AppendL(helpTDpsPrintInfo[i]);
     		}
     	}
     

@@ -245,7 +245,8 @@ void CSettingsItems::HandleEventL(TInt aCapability,
     {
     HBufC* item; 
     FLOG(_L("[IMAGEPRINTUI]\t CSettingsItems::HandleEvent START"));
-    RArray<TUint> capabilityArray = iCapabilityManager->GetCapabilities(aCapability); 
+    RArray<TUint> capabilityArray = iCapabilityManager->GetCapabilitiesL(aCapability); 
+    
     TInt currentItemIndex(0);
     CDesCArrayFlat* items = new ( ELeave ) CDesCArrayFlat( KDefaultArrayValue );
     CleanupStack::PushL(items); 

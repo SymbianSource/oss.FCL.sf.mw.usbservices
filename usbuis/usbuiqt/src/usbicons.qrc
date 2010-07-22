@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/" >
-        <file>../icons/usb_icon_mode_2.svg</file>
-        <file>../icons/usb_icon_mode_4.svg</file>
-        <file>../icons/usb_icon_mode_5.svg</file>
-    </qresource>
-</RCC>

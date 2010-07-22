@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Declares USB UI Queries notifier.
+* Description:  Declares MSMM error notifier.
  *
 */
 
@@ -20,10 +20,11 @@
 #define USBUINOTIFMSMMERROR_H
 
 // INCLUDES
-
+#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
+#include <hb/hbwidgets/hbdevicenotificationdialogsymbian.h>
 #include "usbnotifier.h"      // Base class
-#include <AknQueryDialog.h>   // AVKON component
-#define KUsbUiNotifOtgGeneralQueryGranularity 3
+
+
 // CLASS DECLARATION
 
 /**
@@ -32,19 +33,24 @@
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUsbUiNotifMSMMError) : public CUSBUINotifierBase
+NONSHARABLE_CLASS(CUsbUiNotifMSMMError) : public CUSBUINotifierBase,
+                                          public MHbDeviceMessageBoxObserver,
+                                          public MHbDeviceNotificationDialogObserver
     {
 public:
 
-/**
- * Possible parameter values for KUsbUiNotifMSMMError
- */
-enum TUsbUiNotifMSMMError
-    {
-    EUsbMSMMGeneralError,	
-    EUsbMSMMUnknownFileSystem,
-    EUsbMSMMOutOfMemory
-    };
+    /**
+     * Indexes for the strings used in KUsbUiNotifMSMMError which are mapped to 5 errors.
+     */
+    enum TUsbUiNotifMSMMError
+        {
+        EUsbMSMMGeneralError,	
+        EUsbMSMMUnknownFileSystem,
+        EUsbMSMMOutOfMemory,
+        EUsbMSMMSafeToRemove,
+        EUsbMSMMUnableToEject
+        };
+
     // Constructors and destructor
 
     /**
@@ -56,6 +62,14 @@ enum TUsbUiNotifMSMMError
      * Destructor.
      */
     virtual ~CUsbUiNotifMSMMError();
+
+    /**
+     * Call back function to observe device message box closing.
+     * @param aMessageBox Pointer to the closing message box instance.
+     * @param aButton Button that was pressed.
+     */
+    void MessageBoxClosed(const CHbDeviceMessageBoxSymbian* aMessageBox,
+        CHbDeviceMessageBoxSymbian::TButtonId aButton);
 
 protected:
 
@@ -81,11 +95,6 @@ private:
     void Cancel();
 
     /**
-     * From CUSBUINotifierBase Gets called when a request completes.
-     */
-    void RunL();
-
-    /**
      * From CUSBUINotifierBase Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -93,7 +102,7 @@ private:
      * @param aReplySlot A reply slot.
      * @param aMessage Should be completed when the notifier is deactivated.
      */
-    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
+    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
 
 private:
@@ -104,22 +113,21 @@ private:
     CUsbUiNotifMSMMError();
 
 private:
-    // New functions
-
+    // functions from MHbDeviceNotificationDialogObserver
     /**
-     * Show query dialog     
-     * @return KErrNone - accepted, KErrCancel - Cancel or End call key
+     * Callback function which is called when the dialog is tapped
      */
-    TInt QueryUserResponseL();
+    void NotificationDialogActivated(const CHbDeviceNotificationDialogSymbian* aDialog);
+    /**
+     * Callback function which is called when the dialog is closed
+     */
+    void NotificationDialogClosed(const CHbDeviceNotificationDialogSymbian* aDialog,
+            TInt aCompletionCode);
 
 private:
     // Data
-    /**
-     *  Query
-     *  Not own, destroys self when lauched.
-     */
-    CAknQueryDialog* iQuery; 
-    RArray<TInt> iStringIds;
-    TInt iErrorId;
-    };
+    CHbDeviceMessageBoxSymbian* iQuery;
+    CHbDeviceNotificationDialogSymbian* iDiscreet; 
+    CDesCArrayFlat* iStringIds;
+     };
 #endif // USBUINOTIFMSMMERROR_H

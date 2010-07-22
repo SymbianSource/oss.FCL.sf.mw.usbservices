@@ -277,7 +277,7 @@ void CCapabilityManager::DoCancel()
 //  
 // ---------------------------------------------------------------------------
 //	
-RArray<TUint>& CCapabilityManager::GetCapabilities(TInt aCapabilities)
+RArray<TUint>& CCapabilityManager::GetCapabilitiesL(TInt aCapabilities)
     {
     FLOG(_L("[IMAGEPRINTUI]<<<CCapabilityManager.GetCapabilities"));
     iReturnArray.Reset();
@@ -287,21 +287,21 @@ RArray<TUint>& CCapabilityManager::GetCapabilities(TInt aCapabilities)
 	    case EDpsArgQualities:
 	    	for(int i = 0; i < iCurrentQualities.Count(); i++ )
 	    		{
-	    		iReturnArray.Append(iCurrentQualities.operator[](i));
+	    		iReturnArray.AppendL(iCurrentQualities.operator[](i));
 	    		}
 	        break;
 	  
 	    case EDpsArgPaperSizes:
 	        for(int i = 0; i < iCurrentPaperSizes.Count(); i++ )
 	    		{
-	    		iReturnArray.Append(iCurrentPaperSizes.operator[](i));
+	    		iReturnArray.AppendL(iCurrentPaperSizes.operator[](i));
 	    		}	
 	        break;
 	        
 	    case EDpsArgLayouts:
 	    	for(int i = 0; i < iCurrentLayouts.Count(); i++ )
 	    		{
-	    		iReturnArray.Append(iCurrentLayouts.operator[](i));
+	    		iReturnArray.AppendL(iCurrentLayouts.operator[](i));
 	    		}
 			break;		
 	    default:
@@ -432,14 +432,14 @@ void CCapabilityManager::StoreQualitiesL(RArray<TUint>& aPrinterQualities)
 		    	{
 		    	iIsCapabilityEmpty = ETrue;
 		    	FTRACE(FPrint(_L("[IMAGEPRINTUI]\t CCapabilityManager compareValue save quality is %x"), compareValue ));
-		    	iCurrentQualities.Append(compareValue);
+		    	iCurrentQualities.AppendL(compareValue);
 		    	}
 			}
 		}
 	if(!iIsCapabilityEmpty)	
 		{
 		FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: qualities add default value"));
-		iCurrentQualities.Append(EDpsPrintQualityDefault);
+		iCurrentQualities.AppendL(EDpsPrintQualityDefault);
 		}
 	FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: qualities stored, ask layout"));	
     iCurrentQualities.Sort();
@@ -474,14 +474,14 @@ void CCapabilityManager::StorePaperSizeL(RArray<TUint>& aPrinterPaperSize)
 		    	{
 		    	iIsCapabilityEmpty = ETrue;
 		    	FTRACE(FPrint(_L("[IMAGEPRINTUI]\t CCapabilityManager compareValue save paper size is %x"), compareValue ));
-		    	iCurrentPaperSizes.Append(compareValue);
+		    	iCurrentPaperSizes.AppendL(compareValue);
 		    	}
 			}	
 		}
 	if(!iIsCapabilityEmpty)	
 		{
 		FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: paper size add default value"));
-		iCurrentPaperSizes.Append(EDpsPaperSizeDefault);
+		iCurrentPaperSizes.AppendL(EDpsPaperSizeDefault);
 		}
 	FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: paper sizes stored, ask quality"));
 	iCurrentPaperSizes.Sort();
@@ -496,6 +496,7 @@ void CCapabilityManager::StoreLayouts(RArray<TUint>& aPrinterLayouts)
 	{
 	FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: Store layouts"));
 	TInt countPrinter, countPhone;
+	TInt ret = KErrNone;
 	TUint compareValue;
 	countPrinter = aPrinterLayouts.Count();
 	countPhone = iPhoneSuppLayout.Count();	
@@ -513,7 +514,10 @@ void CCapabilityManager::StoreLayouts(RArray<TUint>& aPrinterLayouts)
 		    	{
 		    	iIsCapabilityEmpty = ETrue;
 		    	FTRACE(FPrint(_L("[IMAGEPRINTUI]\t CCapabilityManager compareValue save layout is %x"), compareValue ));
-		    	iCurrentLayouts.Append(compareValue);
+		    	if ( (ret = iCurrentLayouts.Append(compareValue)) != KErrNone)
+		    	    {
+		    	    FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: Store layouts *** append error"));
+		    	    }
 		    	}
 			}	
 		}
@@ -521,7 +525,11 @@ void CCapabilityManager::StoreLayouts(RArray<TUint>& aPrinterLayouts)
 	if(!iIsCapabilityEmpty)	
 		{
 		FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: layout add default value"));
-		iCurrentLayouts.Append(EDpsLayoutDefault);
+		ret = iCurrentLayouts.Append(EDpsLayoutDefault);
+		if (ret != KErrNone) 
+		    {
+            FLOG(_L("[IMAGEPRINTUI]<<< CCapabilityManager: Store layouts *** append error"));
+		    }
 		}
 	
 	iCurrentLayouts.Sort();	
@@ -575,7 +583,7 @@ void CCapabilityManager::HandleCapabilitiesL(TCapabilityType aType)
 			// if fails add default value
 			iAppUi->NotifyError();
 			iCurrentQualities.Reset();
-			iCurrentQualities.Append(EDpsPrintQualityDefault);
+			iCurrentQualities.AppendL(EDpsPrintQualityDefault);
 			AskLayoutL();
 			}
 		
@@ -600,7 +608,7 @@ void CCapabilityManager::HandleCapabilitiesL(TCapabilityType aType)
  			// if fails add default value;
  			iAppUi->NotifyError();
  			iCurrentPaperSizes.Reset();
- 			iCurrentPaperSizes.Append(EDpsPaperSizeDefault);
+ 			iCurrentPaperSizes.AppendL(EDpsPaperSizeDefault);
  			AskQualityL();
  			}
  		
@@ -624,7 +632,7 @@ void CCapabilityManager::HandleCapabilitiesL(TCapabilityType aType)
  			//if fails add default value
  			iAppUi->NotifyError();
  			iCurrentLayouts.Reset();
- 			iCurrentLayouts.Append(EDpsLayoutDefault);
+ 			iCurrentLayouts.AppendL(EDpsLayoutDefault);
  			// complete even if not succesfull, UI must activate
  			iAppUi->CapabilitiesReady();
  			}
@@ -666,19 +674,19 @@ void CCapabilityManager::GetPhoneConfigL()
        
     for (TInt i = 0; i < qualityCount; i++)
     	{
-    	iPhoneSuppQuality.Append(reader.ReadUint16());
+    	iPhoneSuppQuality.AppendL(reader.ReadUint16());
     	}
     FLOG(_L("[IMAGEPRINTUI]>>> CImagePrintUi:CCapabilityManager, quality readed"));
     	
     for (TInt i = 0; i < papersizeCount; i++)
     	{
-       	iPhoneSuppPaperSize.Append(reader.ReadUint16());
+       	iPhoneSuppPaperSize.AppendL(reader.ReadUint16());
     	}		
     
     FLOG(_L("[IMAGEPRINTUI]>>> CImagePrintUi:CCapabilityManager, papersize readed"));
     for (TInt i = 0; i < layoutCount; i++)
     	{
-    	iPhoneSuppLayout.Append(reader.ReadUint16());
+    	iPhoneSuppLayout.AppendL(reader.ReadUint16());
     	}
     FLOG(_L("[IMAGEPRINTUI]>>> CImagePrintUi:CCapabilityManager, layout readed"));
     	

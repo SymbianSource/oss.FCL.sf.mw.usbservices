@@ -62,7 +62,7 @@ void CRequestsHandler::ConstructL()
         TUid uid(implementations[i]->ImplementationUid());
         CUsbCMHandler* handler = (reinterpret_cast<CUsbCMHandler*>(REComSession::CreateImplementationL
                                                                                                     (uid, _FOFF(CUsbCMHandler, iPrivateEComUID))));
-        iHandlers.Append(handler);
+        iHandlers.AppendL(handler);
         }
        
    implementations.Close(); // cleanup

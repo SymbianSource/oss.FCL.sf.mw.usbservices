@@ -19,10 +19,9 @@
 #include <ecom/ecom.h>
 #include <ecom/implementationproxy.h>
 #include <eiknotapi.h>
-#include <eikenv.h>
 
 #include "usbuincableconnectednotifier.h"
-#include "usbuinqueriesnotifier.h"
+#include "usbuinqueriesnotifiermdrv.h"
 #include "usbuinotifdebug.h"
 #include "usbuinotifotgwarning.h"    
 #include "usbuinotifotgerror.h"    
@@ -115,9 +114,9 @@ CArrayPtr<MEikSrvNotifierBase2>* NotifierArray()
 // ----------------------------------------------------------------------------
 
 const TImplementationProxy ImplementationTable[] =
-    {
+{
     IMPLEMENTATION_PROXY_ENTRY( 0x10281F23, NotifierArray )
-    };
+};
 
 EXPORT_C const TImplementationProxy* ImplementationGroupProxy(
         TInt& aTableCount)
