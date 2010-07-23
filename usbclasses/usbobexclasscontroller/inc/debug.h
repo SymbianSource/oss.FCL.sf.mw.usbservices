@@ -54,19 +54,19 @@ _LIT( KUsbLogFile, ""WIDEN(MODULE_NAME)L".txt" );
 // s: c string. 
 #define LOG(s) RFileLogger::WriteFormat( KUsbLogDir, \
                 KUsbLogFile, EFileLoggingModeAppend, \
-                DESC8( "["MODULE_NAME"] "##s ) )
+                DESC8( "["MODULE_NAME"] " s ) )
 
 // s: c string contains "%x"
 // v: varaible corresponding to %x
 #define LOG1(s, v) RFileLogger::WriteFormat( KUsbLogDir, \
                 KUsbLogFile, EFileLoggingModeAppend, \
-                DESC8( "["MODULE_NAME"] "##s ), v)
+                DESC8( "["MODULE_NAME"] " s ), v)
 // s: c string contains "%x%y"
 // v1: varaible corresponding to %x
 // v2: varaible corresponding to %y
 #define LOG2(s, v1, v2) RFileLogger::WriteFormat( KUsbLogDir, \
                 KUsbLogFile, EFileLoggingModeAppend, \
-                DESC8( "["MODULE_NAME"] "##s ), v1, v2)
+                DESC8( "["MODULE_NAME"] " s ), v1, v2)
 
 // s: c string contains "%x%y%z"
 // v1: varaible corresponding to %x
@@ -74,7 +74,7 @@ _LIT( KUsbLogFile, ""WIDEN(MODULE_NAME)L".txt" );
 // v3: varaible corresponding to %z
 #define LOG3(s, v1, v2, v3) RFileLogger::WriteFormat( KUsbLogDir, \
             KUsbLogFile, EFileLoggingModeAppend, \
-            DESC8( "["MODULE_NAME"] "##s ), v1, v2, v3 )
+            DESC8( "["MODULE_NAME"] " s ), v1, v2, v3 )
 
 class TFuncLogger
     {
@@ -102,11 +102,11 @@ private:
 // Paramters same as above.
 #define LOG( str ) { RDebug::Printf( "["MODULE_NAME"] %s", str  ); }
 
-#define LOG1( s, v ) { RDebug::Printf( "["MODULE_NAME"] "##s , v ); }
+#define LOG1( s, v ) { RDebug::Printf( "["MODULE_NAME"] " s , v ); }
 
-#define LOG2( s, v1,v2 ) { RDebug::Printf( "["MODULE_NAME"] "##s , v1, v2 ); }
+#define LOG2( s, v1,v2 ) { RDebug::Printf( "["MODULE_NAME"] " s , v1, v2 ); }
 
-#define LOG3( s, v1, v2, v3 ) { RDebug::Printf( "["MODULE_NAME"] "##s , \
+#define LOG3( s, v1, v2, v3 ) { RDebug::Printf( "["MODULE_NAME"] " s , \
         v1, v2, v3); }
 
 inline void LogBuf(const TDesC8& aBuf8)
