@@ -19,7 +19,6 @@
 
 #include <bautils.h>         // BAFL utils (for language file)
 #include <data_caging_path_literals.hrh> 
-#include <AknNotiferAppServerApplication.h>
 #include <hb/hbcore/hbtextresolversymbian.h>
 
 #include "usbnotifier.h"     // Own class 

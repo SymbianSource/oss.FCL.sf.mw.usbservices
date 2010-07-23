@@ -30,7 +30,7 @@
       <meshitem src="text-2" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="var(hb-param-margin-gene-middle-vertical)" />
       
       <meshitem src="selection-icon" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" />
-      <meshitem src="selection-icon" srcEdge="TOP" dstEdge="TOP" spacing="-var(hb-param-margin-gene-top)" />
+      <meshitem src="selection-icon" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-var(hb-param-margin-gene-top)" />
     
       <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
       <meshitem src="background" srcEdge="TOP" dst="" dstEdge="TOP" />

@@ -7,10 +7,6 @@ HbListViewItem[layoutName="usb"]{
 	layout:usb-1;
 }
 
-HbListViewItem[layoutName="usb"][modelItemType="SeparatorItem"]{
-	layout:separator-1;
-}
-
 /*
     Standard primitive properties
 */

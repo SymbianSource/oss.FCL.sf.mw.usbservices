@@ -186,19 +186,17 @@ void CUsbActivePersonalityHandler::ConfirmPersonalityUnload( TRequestStatus&
 // ----------------------------------------------------------------------------
 //
 void CUsbActivePersonalityHandler::StartPersonality( TInt& aPersonalityId,
-        TInt aAskOnConnectionSetting, TRequestStatus& aStatus )
+        TRequestStatus& aStatus )
     {
     LOG_FUNC
 
-    LOG2( "PersonalityId = %d, AskOnConnectionSetting = %d", aPersonalityId,
-            aAskOnConnectionSetting );
+    LOG1( "PersonalityId = %d ", aPersonalityId);
 
     // Remove all notes.
     iPersonalityNotifier->CancelAll();
      
 
     iPersonalityId = &aPersonalityId;
-    iAskOnConnectionSetting = aAskOnConnectionSetting;
     aStatus = KRequestPending;
     iRequestStatus = &aStatus;
 
@@ -435,7 +433,6 @@ void CUsbActivePersonalityHandler::RunL()
             delete iCurrentPersonalityHandler;
             iCurrentPersonalityHandler = NULL;
 
-            //iAskOnConnectionSetting may be have been set to off
             if ( iDeviceState == EUsbDeviceStateUndefined )
                 {
 	            iPersonalityParams->PersonalityNotifier().CancelQuery(

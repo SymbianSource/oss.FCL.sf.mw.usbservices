@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -248,16 +248,6 @@ public: // from base class CActive
      */
     void DoCancel();
 
-	/**
-     * Check if there is an observer with ask on connection suppression.
-     * Check if one or more sessions have suppressed the ask on 
-     * connection mode query.
-     *
-     * @since S60 5.0
-     * @return ETrue if suppression found
-     */	
-    TBool IsAskOnConnectionSuppression();
-	
 private:
 
     /**
@@ -360,11 +350,6 @@ private: // Data
      * Earlier previous personality id
      */
     TInt iOldPrevPersonalityId;
-    
-    /**
-     * Current ask on connection setting
-     */
-    TInt iAskOnConnectionSetting;
     
     /**
      * State for USB starting/stoping
