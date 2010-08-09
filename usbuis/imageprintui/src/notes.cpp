@@ -192,7 +192,6 @@ void CNotes::PrepareShowProgressNoteL()
     FLOG(_L("[IMAGEPRINTUI]<<< CNotes::PrepareShowProgressNoteL; PrepareLC next"));	
    	iProgressDialog->PrepareLC(R_PROGRESS_NOTE);
 	CEikProgressInfo* progressBar = iProgressDialog->GetProgressInfoL(); // not taking ownership
-	progressBar = iProgressDialog->GetProgressInfoL();
 	FLOG(_L("[IMAGEPRINTUI]<<< CNotes::PrepareShowProgressNoteL; progressinfo got"));	
 	
     progressBar->SetFinalValue( KProgressFinishValue );

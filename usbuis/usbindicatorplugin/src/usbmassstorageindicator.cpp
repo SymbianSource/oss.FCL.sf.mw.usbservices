@@ -64,11 +64,7 @@ bool UsbMassStorageIndicator::handleInteraction(InteractionType type)
             myDebug() << "    UsbMassStorageIndicator::handleInteraction hostMassStorage connected";
             if (err == KErrNone) {
                 hostMassStorage.EjectUsbDrives();
-                myDebug() << ">>> UsbMassStorageIndicator::handleInteraction EjectUsbDrives called";
-                if (err != KErrNone) {
-                    myDebug() << "    UsbMassStorageIndicator::handleInteraction "
-                            <<"RHostMassStorage EjectUsbDrives fail " << err;
-                }
+                myDebug() << "UsbMassStorageIndicator::handleInteraction EjectUsbDrives called";
             }
             else {
                 myDebug() << "    UsbMassStorageIndicator::handleInteraction "

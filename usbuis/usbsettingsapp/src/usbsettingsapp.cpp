@@ -76,6 +76,7 @@ void USBSettingsApp::load(Qt::Orientation orientation)
         if (listViewWidget) {
             myDebug() << "    USBSettingsApp::load listView found";
             HbListView *listView = qobject_cast<HbListView*>(listViewWidget);
+            listView->setItemPixmapCacheEnabled(true);
             listView->setModel(mModel);
             listView->setSelectionMode(HbAbstractItemView::SingleSelection);
             listView->setSelectionModel(mSelectionModel);

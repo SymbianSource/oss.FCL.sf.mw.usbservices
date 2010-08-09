@@ -180,7 +180,7 @@ void CUSBUINotifierBase::InitializeTextResolver()
     {
     _LIT(KFileName, "usbdialogs_");
     _LIT(KPath, "z:/resource/qt/translations/");         
-    TInt error;
+    TInt error = KErrNone;
         
     iTranslator = (TBool )Dll::Tls();
     

@@ -898,7 +898,7 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
 
     iUsbServiceRequest = CUsbServiceControl::ERequestUndefined;
 
-    TUsbServiceState serviceState;
+    TUsbServiceState serviceState = EUsbServiceIdle;
     TInt err = iUsb.GetServiceState(serviceState);
 
     if (KErrNone != err)

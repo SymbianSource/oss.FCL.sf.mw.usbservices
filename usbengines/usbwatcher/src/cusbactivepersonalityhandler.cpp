@@ -270,7 +270,8 @@ void CUsbActivePersonalityHandler::StateChangeNotify(
         {
         case EUsbDeviceStateConfigured:
             {
-            if( aStateOld != EUsbDeviceStateSuspended ) 
+            if ((aStateOld != EUsbDeviceStateSuspended) && (ESwStateCharging
+                    != CUsbGlobalSystemStateObserver::GlobalSystemState()))
                 {
                 iPersonalityParams->PersonalityNotifier().ShowQuery(
                         KCableConnectedNotifierUid, iDummy,
@@ -315,9 +316,13 @@ TInt CUsbActivePersonalityHandler::RunError( TInt aError )
     	                iQueryParams, iDummyBuf);
             break;
         case KErrDiskFull:
-            iQueryParams().iQuery = EUSBDiskFull;
-            iPersonalityParams->PersonalityNotifier().ShowQuery(KQueriesNotifier, 
-    	                iQueryParams, iDummyBuf);
+            if (ESwStateCharging
+                    != CUsbGlobalSystemStateObserver::GlobalSystemState())
+                {
+                iQueryParams().iQuery = EUSBDiskFull;
+                iPersonalityParams->PersonalityNotifier().ShowQuery(
+                        KQueriesNotifier, iQueryParams, iDummyBuf);
+                }
             break;
         default:
         	LOG( "Ignored" );
