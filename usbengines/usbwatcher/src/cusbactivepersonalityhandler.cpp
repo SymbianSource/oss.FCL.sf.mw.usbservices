@@ -186,19 +186,17 @@ void CUsbActivePersonalityHandler::ConfirmPersonalityUnload( TRequestStatus&
 // ----------------------------------------------------------------------------
 //
 void CUsbActivePersonalityHandler::StartPersonality( TInt& aPersonalityId,
-        TInt aAskOnConnectionSetting, TRequestStatus& aStatus )
+        TRequestStatus& aStatus )
     {
     LOG_FUNC
 
-    LOG2( "PersonalityId = %d, AskOnConnectionSetting = %d", aPersonalityId,
-            aAskOnConnectionSetting );
+    LOG1( "PersonalityId = %d ", aPersonalityId);
 
     // Remove all notes.
     iPersonalityNotifier->CancelAll();
      
 
     iPersonalityId = &aPersonalityId;
-    iAskOnConnectionSetting = aAskOnConnectionSetting;
     aStatus = KRequestPending;
     iRequestStatus = &aStatus;
 
@@ -272,10 +270,9 @@ void CUsbActivePersonalityHandler::StateChangeNotify(
         {
         case EUsbDeviceStateAddress:
             {
-            if( iAskOnConnectionSetting &&
-                    ( aStateOld != EUsbDeviceStateSuspended ) &&
-                    ( aStateOld != EUsbDeviceStateConfigured ) 
-                     )
+            if ((aStateOld != EUsbDeviceStateSuspended) && (aStateOld
+                    != EUsbDeviceStateConfigured) && (ESwStateCharging
+                    != CUsbGlobalSystemStateObserver::GlobalSystemState()))
                 {
                 iPersonalityParams->PersonalityNotifier().ShowQuery(
                         KCableConnectedNotifierUid, iDummy,
@@ -320,9 +317,13 @@ TInt CUsbActivePersonalityHandler::RunError( TInt aError )
     	                iQueryParams, iDummyBuf);
             break;
         case KErrDiskFull:
-            iQueryParams().iQuery = EUSBDiskFull;
-            iPersonalityParams->PersonalityNotifier().ShowQuery(KQueriesNotifier, 
-    	                iQueryParams, iDummyBuf);
+            if (ESwStateCharging
+                    != CUsbGlobalSystemStateObserver::GlobalSystemState())
+                {
+                iQueryParams().iQuery = EUSBDiskFull;
+                iPersonalityParams->PersonalityNotifier().ShowQuery(
+                        KQueriesNotifier, iQueryParams, iDummyBuf);
+                }
             break;
         default:
         	LOG( "Ignored" );
@@ -438,7 +439,6 @@ void CUsbActivePersonalityHandler::RunL()
             delete iCurrentPersonalityHandler;
             iCurrentPersonalityHandler = NULL;
 
-            //iAskOnConnectionSetting may be have been set to off
             if ( iDeviceState == EUsbDeviceStateUndefined )
                 {
 	            iPersonalityParams->PersonalityNotifier().CancelQuery(

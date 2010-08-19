@@ -254,15 +254,6 @@ void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,
                 }
             LOG1( "Starting USB personality in device state: %d", aStateNew );
             iPersonalityHandler->StateChangeNotify( aStateOld, aStateNew );
-            // Check AskOnConnection setting every time
-            if( ( iSupportedPersonalities.Count() > 1 ) &&
-                    !IsAskOnConnectionSuppression() )
-                {
-                // read setting if there is more than one personality
-                iPersonalityRepository->Get(
-                        KUsbWatcherChangeOnConnectionSetting,
-                        iAskOnConnectionSetting );
-                }
 
             if( ( iState == EUsbIdle ) && !iPersonalityChangeOngoing )
                 {
@@ -273,10 +264,6 @@ void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,
                 Cancel();
                 Start();
                 }
-
-            // Let's turn ask on connection off after start cause we will
-            // issue it only when cable is connected
-            iAskOnConnectionSetting = KUsbWatcherChangeOnConnectionOff;
 
             //start usbdevcon only in normal global state
             TInt globalState =
@@ -530,17 +517,7 @@ void CUsbWatcher::Unlock()
     if( EUsbDeviceStateAttached == state || EUsbDeviceStatePowered == state)
         {
         LOG( "Starting USB personality" );
-        TInt err = iPersonalityRepository->Get(
-           KUsbWatcherChangeOnConnectionSetting, iAskOnConnectionSetting );
-        if( KErrNone == err )
-            {
-            Start();
-            iAskOnConnectionSetting = KUsbWatcherChangeOnConnectionOff;
-            }
-        else
-            {
-            LOG1( "Error: CRepository::Get = %d", err );
-            }
+        Start();
         }
     }
 
@@ -770,8 +747,7 @@ void CUsbWatcher::Start()
                 iStarted = ETrue;
                 // Restore personality to normal in charging mode
                 iSetPreviousPersonalityOnDisconnect = ETrue;
-                iPersonalityHandler->StartPersonality( iPersonalityId,
-                    KUsbWatcherChangeOnConnectionOff, iStatus );
+                iPersonalityHandler->StartPersonality( iPersonalityId, iStatus );
                 }
             else
                 {
@@ -790,8 +766,7 @@ void CUsbWatcher::Start()
                 RProperty::Set( KPSUidUsbWatcher,
                             KUsbWatcherSelectedPersonality, iPersonalityId );
                 iStarted = ETrue;
-                iPersonalityHandler->StartPersonality( iPersonalityId,
-                        iAskOnConnectionSetting, iStatus );
+                iPersonalityHandler->StartPersonality( iPersonalityId, iStatus );
                 }
             else
                 {
@@ -1030,27 +1005,6 @@ TInt CUsbWatcher::GetChargingPersonalityId( TInt& aPersonalityId )
 
     ret = iPersonalityRepository->Get( chargingKey, aPersonalityId );
     LOG2( "ret = %d ( aPersonalityId: %d )", ret, aPersonalityId );
-    return ret;
-    }
-
-// ----------------------------------------------------------------------------
-// Check if there is an observer with ask on connection suppression
-// ----------------------------------------------------------------------------
-//
-TBool CUsbWatcher::IsAskOnConnectionSuppression()
-    {
-    LOG_FUNC
-    
-    TBool ret( EFalse );
-    for( TInt i = 0; i < iObservers.Count(); i++ )
-        {
-        if( iObservers[i]->IsAskOnConnectionSuppressed() )
-            {
-            ret = ETrue;
-            break;
-            }
-        }
-    LOG1( "Return = %d", ret );
     return ret;
     }
 

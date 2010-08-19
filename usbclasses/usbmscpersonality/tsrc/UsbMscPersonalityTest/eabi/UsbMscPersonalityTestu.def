@@ -1,0 +1,7 @@
+EXPORTS
+	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
+	_ZTI15CDismountClient @ 2 NONAME
+	_ZTI34CUsbMscPersonalityTestActiveObject @ 3 NONAME
+	_ZTV15CDismountClient @ 4 NONAME
+	_ZTV34CUsbMscPersonalityTestActiveObject @ 5 NONAME
+
