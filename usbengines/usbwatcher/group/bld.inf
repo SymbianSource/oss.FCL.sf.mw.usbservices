@@ -38,6 +38,5 @@ backup_registration.xml  /epoc32/release/winscw/urel/z/private/101F9696/backup_r
 ../conf/usbwatcher.confml MW_LAYER_CONFML(usbwatcher.confml)
 ../conf/usbwatcher_101F8801.crml MW_LAYER_CRML(usbwatcher_101F8801.crml)
 
-../rom/mtp_symbian_temp.iby CORE_MW_LAYER_IBY_EXPORT_PATH(mtp_symbian_temp.iby)
 // End of file
 
