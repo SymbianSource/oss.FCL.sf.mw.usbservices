@@ -88,7 +88,7 @@ TInt CFileSystemImage::Write( const TInt64& /*aPos*/, TDesC8& /*aBuf*/ )
 
 TInt64 CFileSystemImage::Size()
 	{
-	TInt size;
+	TInt size = 0;
 	iFile.Size( size );
 	return size;
 	}

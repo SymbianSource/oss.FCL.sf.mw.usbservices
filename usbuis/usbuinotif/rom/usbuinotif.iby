@@ -22,7 +22,6 @@ REM USB UI notifiers ecom plug-in
 #ifdef __USB_MULTIPERSONALITY 
 
 ECOM_PLUGIN(usbuinotif.dll, 102068DC.rsc)  
-file=ABI_DIR\BUILD_DIR\usbavkonnotif.dll       SHARED_LIB_DIR\usbavkonnotif.dll
 
 #endif //__USB_MULTIPERSONALITY
 #endif //__USBUINOTIF_IBY__

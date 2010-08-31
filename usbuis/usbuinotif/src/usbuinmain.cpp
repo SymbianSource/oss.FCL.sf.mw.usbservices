@@ -19,22 +19,17 @@
 #include <ecom/ecom.h>
 #include <ecom/implementationproxy.h>
 #include <eiknotapi.h>
-#include <eikenv.h>
-#include <AknNotifierWrapper.h>
-#include <usbuinotif.h>
 
 #include "usbuincableconnectednotifier.h"
-#include "usbuinqueriesnotifier.h"
-
-
+#include "usbuinqueriesnotifiermdrv.h"
 #include "usbuinotifdebug.h"
 #include "usbuinotifotgwarning.h"    
 #include "usbuinotifotgerror.h"    
 #include "usbuinotifmsmmerror.h" 
 
 // CONSTANTS
-const TInt KUSBUINotifierArrayIncrement = 4;
-_LIT( KUSBUINotifdll, "usbavkonnotif.dll" ); 
+const TInt KUSBUINotifierArrayIncrement = 5;
+
 // ================= EXPORTED FUNCTIONS =======================================
 // ----------------------------------------------------------------------------
 //
@@ -46,20 +41,12 @@ void CreateUSBUINotifiersL(CArrayPtrFlat<MEikSrvNotifierBase2>* aNotifiers)
     {
     FLOG(_L("[USBUINOTIF]\t CreateUSBUINotifiersL"));
 
-    /* The CableconnectionNotifier is created on the Avkon Wrapper
- * because it contains the discreet popups which are only possible
- * to be launched in a UI framework
- */
-    CAknCommonNotifierWrapper* master = 
-                CAknCommonNotifierWrapper::NewL(KCableConnectedNotifierUid,
-                                                KCableConnectedNotifierUid,
-                                                MEikSrvNotifierBase2::ENotifierPriorityVHigh,
-                                                KUSBUINotifdll,
-                                                1); // no synchronous reply used.
-        CleanupStack::PushL(master);
-        
-        aNotifiers->AppendL(master ); 
-        CleanupStack::Pop( master );
+    CUSBUICableConnectedNotifier* cableConnectedNotifier =
+        CUSBUICableConnectedNotifier::NewL();
+    CleanupStack::PushL( cableConnectedNotifier );
+    aNotifiers->AppendL( cableConnectedNotifier );
+    CleanupStack::Pop( cableConnectedNotifier );
+
     CUSBUIQueriesNotifier* queriesNotifier = CUSBUIQueriesNotifier::NewL();
     CleanupStack::PushL( queriesNotifier );
     aNotifiers->AppendL( queriesNotifier );
@@ -127,9 +114,9 @@ CArrayPtr<MEikSrvNotifierBase2>* NotifierArray()
 // ----------------------------------------------------------------------------
 
 const TImplementationProxy ImplementationTable[] =
-    {
+{
     IMPLEMENTATION_PROXY_ENTRY( 0x10281F23, NotifierArray )
-    };
+};
 
 EXPORT_C const TImplementationProxy* ImplementationGroupProxy(
         TInt& aTableCount)

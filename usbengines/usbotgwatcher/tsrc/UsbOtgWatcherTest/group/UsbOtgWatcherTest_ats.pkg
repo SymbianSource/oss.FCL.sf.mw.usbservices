@@ -54,7 +54,7 @@
 "/epoc32/release/armv5/udeb/UsbOtgWatcherTest.exe"-"C:/Sys/Bin/UsbOtgWatcherTest.exe"
 
 "../conf/UsbOtgWatcherTest.cfg"-"E:/testing/conf/UsbOtgWatcherTest.cfg"
-"../init/UsbOtgWatcherTest_ats.ini"-"E:/testing/init/UsbOtgWatcherTest.ini"
+"../init/UsbOtgWatcherTest.ini"-"E:/testing/init/UsbOtgWatcherTest_ats.ini"
   
 ; Embedded SIS 
 ; None

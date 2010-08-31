@@ -20,10 +20,8 @@
 #include "usblcdactive.h"
 #include <UsbWatcherInternalPSKeys.h>
 #include <usbpersonalityids.h>
+#include "debug.h"
 
-#ifdef __FLOG_ACTIVE
-_LIT8(KLogComponent, "USBLcdPlugin");
-#endif
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -33,7 +31,7 @@ _LIT8(KLogComponent, "USBLcdPlugin");
 //
 CUsbLcdActive* CUsbLcdActive::NewL(MLocodBearerPluginObserver& aObserver)
     {
-    LOG_STATIC_FUNC_ENTRY
+    LOG_FUNC
     CUsbLcdActive* self = new (ELeave) CUsbLcdActive(aObserver);
     CleanupStack::PushL(self);
     self->ConstructL();
@@ -74,13 +72,13 @@ void CUsbLcdActive::RunL()
     
     if( iStatus != KErrNone )
        {
-       LOGTEXT2(_L8("CUsbLcdActive::RunL() error = %d"),iStatus.Int());
+       LOG1("CUsbLcdActive::RunL() iStatus = %d",iStatus.Int());
        }
     else
        {
 
         TInt ret = iProperty.Get( value );
-        LOGTEXT3(_L8("Personality: %d, ret: %d"), value, ret);  
+        LOG2("Personality: %d, ret: %d", value, ret);  
         iProperty.Subscribe(iStatus);
         SetActive();
         if (ret == KErrNone)
@@ -152,7 +150,7 @@ void CUsbLcdActive::Start()
 void CUsbLcdActive::HandleUsbPersonalityChange( TInt aNewPersonalityId )
     {
     LOG_FUNC
-    LOGTEXT2( _L8( "aNewPersonalityId: %d"), aNewPersonalityId );
+    LOG1( "aNewPersonalityId: %d", aNewPersonalityId );
     TBool isPcSuiteActive( EFalse );
     if ( ( aNewPersonalityId == KUsbPersonalityIdPCSuite ) ||
          ( aNewPersonalityId == KUsbPersonalityIdPCSuiteMTP ) )

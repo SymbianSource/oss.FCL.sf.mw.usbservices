@@ -189,7 +189,7 @@ void CUsbStateHostABase::MessageNotificationReceivedL(TInt aMessage)
         case KErrUsbBadDevice: // = -6656
         case KErrUsbBadHub:
         case KErrUsbEventOverflow:
-        
+        case KErrUsbBadDeviceAttached:
 
             // hosterrors.h
         case KErrUsbUnsupportedDevice:

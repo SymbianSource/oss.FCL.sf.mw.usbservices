@@ -26,7 +26,6 @@
 #include <UsbWatcherInternalPSKeys.h>
 #include <e32property.h>
 #include <startupdomainpskeys.h> //for global system state
-#include <featmgr.h> //FeatureManager
 
 #include "cusbwatcher.h"
 #include "cusbactivestate.h"
@@ -107,6 +106,7 @@ void CUsbWatcher::ConstructL()
     iGlobalStateObserver = CUsbGlobalSystemStateObserver::NewL( *this );
     iUsbDevConStarter = CUsbDevConStarter::NewL();
     iActiveState = CUsbActiveState::NewL( iUsbMan, *this );
+    iUsbIndicatorHandler   = CUsbIndicatorHandler::NewL();
     }
 
 // ----------------------------------------------------------------------------
@@ -148,6 +148,7 @@ CUsbWatcher::~CUsbWatcher()
     delete iUsbDeviceLock;
     delete iGlobalStateObserver;
     iSupportedPersonalities.Close();
+    delete iUsbIndicatorHandler;
     }
 
 // ----------------------------------------------------------------------------
@@ -218,7 +219,7 @@ void CUsbWatcher::GetPersonalityPluginsL()
 // This method notifies CUsbWatcher class about USB state changes.
 // ----------------------------------------------------------------------------
 //
-void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,  
+void CUsbWatcher::StateChangeNotifyL( TUsbDeviceState aStateOld,  
         TUsbDeviceState aStateNew )
     {
     LOG_FUNC
@@ -227,7 +228,7 @@ void CUsbWatcher::StateChangeNotify( TUsbDeviceState aStateOld,
     // Not show USB indicator in charging mode
     if ( iNormalStart ) 
         {
-        iUsbIndicatorHandler.HandleDeviceStateChange( aStateOld, aStateNew );
+        iUsbIndicatorHandler->HandleDeviceStateChangeL( aStateOld, aStateNew, iPersonalityId );
         }
         
     if ( IsDeviceA() ) // Will be handled by UsbOtgWatcher
@@ -983,30 +984,13 @@ void CUsbWatcher::StartPersonality()
 TInt CUsbWatcher::GetChargingPersonalityId( TInt& aPersonalityId )
     {
     LOG_FUNC
-    
-    TUint32 chargingKey( KUsbWatcherChargingDefaultPersonality );
-    // Check if it is now in certificate test mode
-    TRAPD(ret, FeatureManager::InitializeLibL());
-    LOG1( "FeatureManager::InitializeLibL(): %d", ret );
-    if ( KErrNone == ret )
-        {
-        if( FeatureManager::FeatureSupported(
-             KFeatureIdEnableIsiCommunicationInUsbChargingMode  ) )
-            {
-            chargingKey = KUsbWatcherCertTestChargingPersonality;
-            LOG( "KFeatureIdEnableIsiCommunicationInUsbChargingMode true" );
-            }
-        else
-            {
-            LOG( "KFeatureIdEnableIsiCommunicationInUsbChargingMode false" );
-            }
-        FeatureManager::UnInitializeLib();
-        }
 
-    ret = iPersonalityRepository->Get( chargingKey, aPersonalityId );
-    LOG2( "ret = %d ( aPersonalityId: %d )", ret, aPersonalityId );
+    TInt ret = iPersonalityRepository->Get(
+            KUsbWatcherChargingDefaultPersonality, aPersonalityId );
     return ret;
     }
+
+
 
 // ----------------------------------------------------------------------------
 // Check current A or B device state

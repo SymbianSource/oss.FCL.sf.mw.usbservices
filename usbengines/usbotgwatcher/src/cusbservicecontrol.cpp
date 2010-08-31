@@ -80,7 +80,7 @@ TInt CUsbServiceControl::StartL(TInt aPersonalityId)
 
     LOG1( "aPersonalityId = %d" , aPersonalityId);
 
-    TUsbServiceState serviceState;
+    TUsbServiceState serviceState = EUsbServiceIdle;
     TInt err = iUsb.GetServiceState(serviceState);
 
     if (KErrNone != err)
@@ -182,7 +182,7 @@ TInt CUsbServiceControl::StopL()
     {
     LOG_FUNC
 
-    TUsbServiceState serviceState;
+    TUsbServiceState serviceState = EUsbServiceIdle;
     TInt err = iUsb.GetServiceState(serviceState);
 
     LOG2("err = %d; serviceState = %d" , err, serviceState);
@@ -270,7 +270,7 @@ void CUsbServiceControl::RunL()
         return;
         }
 
-    TUsbServiceState serviceState;
+    TUsbServiceState serviceState = EUsbServiceIdle;
     TInt err = iUsb.GetServiceState(serviceState);
 
     if (KErrNone != err)

@@ -245,10 +245,9 @@ void CUsbStateHostAInitiate::DeviceAttachedL(TDeviceEventInformation aTdi)
             }
         case KErrUsbDeviceDetachedDuringDriverLoading:
             {
-            LOG( "KErrUsbDeviceDetachedDuringDriverLoading" );
-            // do not show error, due to device is already detached
-            // Device Detachment will not come after this (it was not 
-            // normally attached yet), therefore emulate detachment 
+            //do not show error, due to device is already detached
+            // Device Detachment will not come after this (it was not attached yet)
+            // therefore emulate detachment
             // content of aTdi is not important, due to detachment anyway
             DeviceDetachedL(aTdi);
             break;

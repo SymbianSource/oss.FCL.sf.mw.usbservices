@@ -23,6 +23,7 @@
 #ifdef FF_USB_MODEM
 
 ECOM_PLUGIN(usbmscfileclasscontroller.dll, usbmscfileclasscontroller.rsc)
+data=DATAZ_\private\101fe1db\usbpammscfile.rsc    \private\101fe1db\usbpammscfile.rsc
 
 #endif
 

@@ -19,9 +19,10 @@
 #define USBUINQUERIESNOTIFIER_H
 
 // INCLUDES
-
+#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
 #include "usbnotifier.h"      // Base class
-#include <AknQueryDialog.h>   // AVKON component
+
+
 // CLASS DECLARATION
 
 /**
@@ -30,7 +31,8 @@
  *  @lib 
  *  @since S60 3.0
  */
-NONSHARABLE_CLASS(CUSBUIQueriesNotifier) : public CUSBUINotifierBase
+NONSHARABLE_CLASS(CUSBUIQueriesNotifier) : public CUSBUINotifierBase,
+                                           public MHbDeviceMessageBoxObserver
     {
 public:
     // Constructors and destructor
@@ -44,6 +46,14 @@ public:
      * Destructor.
      */
     virtual ~CUSBUIQueriesNotifier();
+    /**
+     * Call back function to observe device message box closing.
+     * @param aMessageBox Pointer to the closing message box instance.
+     * @param aButton Button that was pressed.
+     */
+    void MessageBoxClosed(const CHbDeviceMessageBoxSymbian* aMessageBox,
+            CHbDeviceMessageBoxSymbian::TButtonId aButton);
+
 
 private:
     // Functions from base class
@@ -64,13 +74,6 @@ private:
     void Cancel();
 
     /**
-     * From CUSBUINotifierBase Gets called when a request completes.
-     * @param None.
-     * @return None.
-     */
-    void RunL();
-
-    /**
      * From CUSBUINotifierBase Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -79,53 +82,24 @@ private:
      * @param aMessage Should be completed when the notifier is deactivated.
      * @return None.
      */
-    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
+    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
 
 private:
-    /*
-     * From MEikSrvNotifierBase2 Synchronic notifier launch.        
-     * @param aBuffer Received parameter data.
-     * @return A pointer to return value.
-     */
-    virtual TPtrC8 StartL(const TDesC8& aBuffer);
-
+    
     /**
      *  C++ default constructor.
      */
     CUSBUIQueriesNotifier();
 
-private:
-    // New functions
-
-    /**
-     * Show query dialog 
-     * @param aStringHolder   The string for the query. 
-     * @param aCoverDialogId  The dialog ID for the cover UI.
-     * @param aIsCancelKey    Does the dialog show Cancel key.
-     * @return KErrNone - accepted, KErrCancel - Cancel or End call key
-     */
-    TInt QueryUserResponseL(const TDesC& aStringHolder, TInt aCoverDialogId,
-            TBool aIsCancelKey, TBool aIsErrorQuery);
-
-    /**
-     * Get attributes for the query dialog
-     * The query type is idenfied by the member variable iQueryType.
-     * The caller should pop and destroy the returned heap descriptor 
-     * when it is no longer needed.
-     * @param aCoverDialogId  Returned dialog ID for the cover UI.
-     * @param aIsCancelKey    Returned info about showing the Cancel key.
-     * @return                The string holder for the query. 
-     */
-    HBufC* GetQueryAttributesLC(TInt& aCoverDialogId, TBool& aIsCancelKey, TBool& aIsErrorQuery);
 
 private:
     // Data
     
     /**
-    * Not own, destroys self when lauched.
+    * owned
     */
-    CAknQueryDialog* iUSBQueryDlg;
+    CHbDeviceMessageBoxSymbian*  iUSBQueryDlg;
     TUSBUIQueries iQueryType; // To store the type of the query
 
     };

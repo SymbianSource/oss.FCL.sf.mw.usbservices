@@ -29,7 +29,6 @@
 #define per_productId_MediaTransfer 0x4A4
 #define per_productId_PCSuiteMTP per_productId_PCSuite
 #define per_productId_ModemInstall      0x0396
-#define per_productId_RNDIS 0x03A3
 
 #define per_bcdDevice 0x0100
 

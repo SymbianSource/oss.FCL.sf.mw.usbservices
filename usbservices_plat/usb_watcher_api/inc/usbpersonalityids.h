@@ -25,7 +25,6 @@
 #define KUsbPersonalityIdMTP          0x04
 #define KUsbPersonalityIdPCSuiteMTP  0x05
 #define KUsbPersonalityIdModemInst  0x06
-#define KUsbPersonalityIdRNDIS       0x08
 
 #endif   // USBPERSONALITYIDS_H
 

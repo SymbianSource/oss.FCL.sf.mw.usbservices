@@ -19,7 +19,7 @@
 #include <usb_std.h>
 #include <cusbclasscontrollerplugin.h>
 #include <centralrepository.h>
-#include <usbms.rsg>
+#include <usbpammscfile.rsg>
 #include <data_caging_path_literals.hrh> 
 #include "usbmscfileclasscontroller.h"
 #include "usbmscfile.h"
@@ -31,7 +31,7 @@
 _LIT( KMsCcPanicCategory, "UsbMscFileCc" );
 #endif
 
-_LIT( KUsbMsResource, "\\private\\101fe1db\\usbms.rsc" );
+_LIT( KUsbMsResource, "\\private\\101fe1db\\usbpammscfile.rsc" );
 
 /**
  Panic codes for the USB MSC File Class Controller.

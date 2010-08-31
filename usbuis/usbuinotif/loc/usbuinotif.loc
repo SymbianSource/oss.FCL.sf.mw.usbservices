@@ -139,16 +139,11 @@
 //
 #define qtn_usb_otg_general_mass_storage_error "General Mass storage error"
 
-// End of USB_OTG
-
 //d: Memory not enough or full error
 //l: popup_note_window
 //r: 5.2
 #define qtn_usb_error_memory_not_enough "Memory full. Close some applications and try to connect USB cable again"
 
-//d: Disk full error
-//l: popup_note_window
-//r: 5.2
-#define qtn_usb_error_disk_full "Disk full. Remove some files and try to connect USB cable again."
+// End of USB_OTG
 
 // End of File

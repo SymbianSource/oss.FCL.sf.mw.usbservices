@@ -15,7 +15,6 @@
  *
  */
 
-#include <d32otgdi_errors.h>
 #include "cusbotgwatcher.h"
 #include "cusbstatehostundefined.h"
 
@@ -169,8 +168,7 @@ void CUsbStateHostUndefined::DriverLoadSuccessL(TDeviceEventInformation)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostUndefined::DriverLoadPartialSuccessL(
-        TDeviceEventInformation)
+void CUsbStateHostUndefined::DriverLoadPartialSuccessL(TDeviceEventInformation)
     {
     LOG_FUNC
     }
@@ -210,25 +208,7 @@ void CUsbStateHostUndefined::SessionRequestedL()
 void CUsbStateHostUndefined::MessageNotificationReceivedL(TInt aMessage)
     {
     LOG_FUNC
-    LOG1( "aMessage = %d" , aMessage);
-
-    switch (aMessage)
-        {
-        // OTGDI
-        case KErrUsbOtgBadDeviceAttached:
-            {
-            LOG( "BadDeviceAttached" );
-            HandleL(EUsbWatcherErrUnsupportedDevice,
-                    EUsbStateHostHandleDropping);
-            break;
-            }
-        default:
-            {
-            LOG1( "Unhandled message = %d" , aMessage);
-            break;
-            }
-
-        }
+    LOG1( "Unhandled message aMessage = %d" , aMessage);
     }
 
 // ---------------------------------------------------------------------------

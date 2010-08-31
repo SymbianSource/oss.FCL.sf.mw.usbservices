@@ -26,6 +26,7 @@
 #include "mockusbman.h"
 #include "mockcusbnotifmanager.h"
 #include <usbpersonalityids.h>
+#include "cusbindicatornotifier.h"
 
 // EXTERNAL DATA STRUCTURES
 
@@ -142,6 +143,11 @@ void CtUsbOtgWatcher::TestBlocksInfoL()
                 }
     
     TESTENTRY( "DeviceDetached_SupportedDevice", CtUsbOtgWatcher::DeviceDetached_SupportedDeviceL )
+                {
+                TESTPARAM( eGetString, eTestOption1 )
+                }
+ 
+     TESTENTRY( "IndicatorNotifier_IndicatorActivateL", CtUsbOtgWatcher::IndicatorNotifier_IndicatorActivateL )
                 {
                 TESTPARAM( eGetString, eTestOption1 )
                 }
@@ -613,6 +619,29 @@ void CtUsbOtgWatcher::DeviceDetached_SupportedDeviceL( TUsbOtgWatcherTestBlockPa
     TRACE("<<CtUsbOtgWatcher::DeviceDetached_SupportedDeviceL");
     }
 
+void CtUsbOtgWatcher::IndicatorNotifier_IndicatorActivateL( TUsbOtgWatcherTestBlockParams& aParams,
+                            TUsbOtgWatcherTestResult& aTestResult )
+    {
+    TRACE(">> IndicatorNotifier_IndicatorActivateL"); 
+     
+    SetupL();
+    
+    CUsbNotifManager* notifManager = CUsbNotifManager::NewL(*iWatcher);
+    CleanupStack::PushL(notifManager);
+    CUsbIndicatorNotifier* notifier = CUsbIndicatorNotifier::NewL(*notifManager, *iWatcher);
+    CleanupStack::PushL(notifier);        
+    
+    notifier->ToggleConnectingIndicator(ETrue);
+    
+    STIF_ASSERT_TRUE(notifier->iConnectingIndicatorOn);
+                                
+    CleanupStack::PopAndDestroy(2);         
+    
+    TearDown();
+      
+    aTestResult = ETestCasePassed;                         
+    TRACE("<< IndicatorNotifier_IndicatorActivateL");                                   
+    }
 
 // Add other member functions implementation here
 
