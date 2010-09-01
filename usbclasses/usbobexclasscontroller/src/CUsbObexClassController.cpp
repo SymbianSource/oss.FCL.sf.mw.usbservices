@@ -22,8 +22,15 @@
 #include <SrcsInterface.h>
 #include <mmf/common/mmfcontrollerpluginresolver.h> //for CleanupResetAndDestroyPushL
 #include <musbclasscontrollernotify.h>
-#include "debug.h"
 
+// Panic category only used in debug builds
+#ifdef _DEBUG
+_LIT( KObexCcPanicCategory, "OBEXCC" );
+#endif
+
+#ifdef __FLOG_ACTIVE
+_LIT8(KLogComponent, "UsbObexCc");
+#endif
 
 /**
  * Panic codes for the USB OBEX Class Controller.
@@ -36,8 +43,6 @@ enum TObexCCPanic
   EBadApiCallStart = 1,
   /** Stop() called while in an illegal state */
   EBadApiCallStop = 2,
-  /** Request completes in uknown state */
-  EUnkownState = 3
   };
 
 // ---------------------------------------------------------------------------
@@ -47,7 +52,7 @@ enum TObexCCPanic
 CUsbObexClassController* CUsbObexClassController::NewL(
   MUsbClassControllerNotify& aOwner)
   {
-  LOG_FUNC
+  LOG_STATIC_FUNC_ENTRY
 
   CUsbObexClassController* self = new (ELeave) CUsbObexClassController(aOwner);
   CleanupStack::PushL(self);
@@ -102,13 +107,13 @@ void CUsbObexClassController::Start(TRequestStatus& aStatus)
 
   LOG_FUNC
   //Start() should never be called if started, starting or stopping (or in state EUsbServiceFatalError)
-  ASSERT_DEBUG(iState == EUsbServiceIdle, EBadApiCallStart );
+  __ASSERT_DEBUG(iState == EUsbServiceIdle, _USB_PANIC(KObexCcPanicCategory, EBadApiCallStart));
 
   // Start OBEX SM
   iRequestStatus = &aStatus;
   iState = EUsbServiceStarting;
   aStatus = KRequestPending;
-  LOG("CUsbObexClassController::Start() calling ManageUSBService(ETrue)"); 
+  LOGTEXT(_L8("CUsbObexClassController::Start() calling ManageUSBService(ETrue)")); 
   iObexSM->ManageUSBServices(ETrue, iStatus);
   SetActive();
   }
@@ -122,10 +127,10 @@ void CUsbObexClassController::Stop(TRequestStatus& aStatus)
   {
 
   LOG_FUNC
-  LOG1("CUsbObexClassController::Stop iState = %d", iState);
+  LOGTEXT2(_L8("CUsbObexClassController::Stop iState = %d"), iState);
   
   //Stop() should never be called if stopping or starting (or in state EUsbServiceFatalError)
-  ASSERT_DEBUG(iState == EUsbServiceStarted || iState == EUsbServiceIdle, EBadApiCallStop );
+  __ASSERT_DEBUG(iState == EUsbServiceStarted || iState == EUsbServiceIdle, _USB_PANIC(KObexCcPanicCategory, EBadApiCallStop));
 
   //state may be idle after Cancel
   if ( iState == EUsbServiceIdle )
@@ -139,7 +144,7 @@ void CUsbObexClassController::Stop(TRequestStatus& aStatus)
     iRequestStatus = &aStatus;
     iState = EUsbServiceStopping;   
     aStatus = KRequestPending;
-    LOG("CUsbObexClassController::Stop() calling ManageUSBService(EFalse)"); 
+    LOGTEXT(_L8("CUsbObexClassController::Stop() calling ManageUSBService(EFalse)")); 
     iObexSM->ManageUSBServices(EFalse, iStatus);
     SetActive();
     }
@@ -155,11 +160,11 @@ void CUsbObexClassController::RunL()
   LOG_FUNC
   if (iStatus != KErrNone)
     {
-    LOG1("CUsbObexClassController::RunL() iStatus = %d", iStatus.Int());
+    LOGTEXT2(_L8("CUsbObexClassController::RunL() Error = %d"), iStatus.Int());
     User::RequestComplete(iRequestStatus, iStatus.Int());
     return;
     }
-  LOG1("CUsbObexClassController::RunL() State is %d", iState);
+  LOGTEXT2(_L8("CUsbObexClassController::RunL() State is %d"), iState);
 
             switch (iState)
                 {
@@ -177,8 +182,7 @@ void CUsbObexClassController::RunL()
                 case EUsbServiceIdle:
 
                 default:
-            	     LOG("CUsbObexClassController::RunL() Unknown State");
-            		 PANIC(EUnkownState);
+            LOGTEXT(_L8("CUsbObexClassController::RunL() Error or Unknown State"));
                     break;
                 }
   }
@@ -194,7 +198,7 @@ void CUsbObexClassController::GetDescriptorInfo(TUsbDescriptor& aDescriptorInfo)
   TRAPD(ret, DoGetDescriptorInfoL(aDescriptorInfo));
         if(ret!=KErrNone)
           {
-                 LOG1("CUsbObexClassController::GetDescriptorInfo leave with code: %d", ret);
+                 LOGTEXT2(_L8("CUsbObexClassController::GetDescriptorInfo leave with code: %d"), ret);
           }
         }
 
@@ -213,7 +217,7 @@ void CUsbObexClassController::DoGetDescriptorInfoL(TUsbDescriptor& aDescriptorIn
         resolverParams.SetWildcardMatch(EFalse);
         REComSession::ListImplementationsL(KCSrcsInterfaceUid, resolverParams, implInfoArray);
 
-        LOG1("CUsbObexClassController::DoGetDescriptorInfoL Number of Interfaces is %d",
+        LOGTEXT2(_L8("CUsbObexClassController::DoGetDescriptorInfoL Number of Interfaces is %d"),
                    implInfoArray.Count());
         aDescriptorInfo.iNumInterfaces = (implInfoArray.Count())*KObexNumInterfaces;
         aDescriptorInfo.iLength = 0;
@@ -238,7 +242,7 @@ void CUsbObexClassController::DoCancel()
       break;
 
     default:
-      ASSERT_DEBUG( EFalse,  EBadAsynchronousCall );
+      __ASSERT_DEBUG( EFalse, _USB_PANIC(KObexCcPanicCategory, EBadAsynchronousCall) );
       break;
     }
 
@@ -255,14 +259,14 @@ void CUsbObexClassController::DoCancel()
 TInt CUsbObexClassController::RunError(TInt aError)
   {
   LOG_FUNC
-  LOG1("CUsbObexClassController::RunError aError=%d", aError);
+  LOGTEXT2(_L8("CUsbObexClassController::RunError aError=%d"), aError);
   return KErrNone;
   }
 
 void CUsbObexClassController::MosmError(TInt aError)
     {
     LOG_FUNC
-    LOG1("CUsbObexClassController::MosmError aError=%d", aError);
+    LOGTEXT2(_L8("CUsbObexClassController::MosmError aError=%d"), aError);
     Owner().UccnError(aError);
     }
 

@@ -41,10 +41,10 @@ SOURCE          usbuinotifapitestblocks.cpp
 LIBRARY         euser.lib
 LIBRARY         stiftestinterface.lib
 LIBRARY         stiftestengine.lib
-LIBRARY         centralrepository.lib
-LIBRARY         usbman.lib
-LIBRARY         usbwatcher.lib
-LIBRARY         ecom.lib
+LIBRARY 		centralrepository.lib
+LIBRARY 		usbman.lib
+LIBRARY 		usbwatcher.lib
+LIBRARY     	ecom.lib
 
 LANG            SC
 

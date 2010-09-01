@@ -37,10 +37,8 @@
 #include "errors.h"
 #include "debug.h"
 #include "panic.h"
-#ifndef STIF
 _LIT_SECURITY_POLICY_PASS( KAlwaysPassPolicy );
 _LIT_SECURITY_POLICY_C1( KLocalServicesPolicy, ECapabilityLocalServices );
-#endif
 
 // ---------------------------------------------------------------------------
 // 
@@ -900,7 +898,7 @@ void CUsbOtgWatcher::UsbServiceControlReqCompletedL(TInt aError)
 
     iUsbServiceRequest = CUsbServiceControl::ERequestUndefined;
 
-    TUsbServiceState serviceState = EUsbServiceIdle;
+    TUsbServiceState serviceState;
     TInt err = iUsb.GetServiceState(serviceState);
 
     if (KErrNone != err)

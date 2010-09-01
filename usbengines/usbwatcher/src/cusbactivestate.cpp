@@ -56,7 +56,7 @@ void CUsbActiveState::ConstructL()
     // start USB if cable is pluged-in at bootup
     if( EUsbDeviceStateUndefined != iCurrentState )
         {
-        iOwner.StateChangeNotifyL( iPreviousState, iCurrentState );
+        iOwner.StateChangeNotify( iPreviousState, iCurrentState );
         iPreviousState = iCurrentState;
         }
     iUsbMan.DeviceStateNotification( KUsbAllStates, iCurrentState, iStatus );
@@ -106,7 +106,7 @@ void CUsbActiveState::RunL()
         {
         LOG2( "USB device state changed: %d ==> %d", iPreviousState,
             newState );
-        iOwner.StateChangeNotifyL( iPreviousState, newState );
+        iOwner.StateChangeNotify( iPreviousState, newState );
         iPreviousState = newState;
         }
      else

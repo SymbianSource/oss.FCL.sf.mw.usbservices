@@ -1,0 +1,112 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is a localisation file for USB UI application.
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+
+// *** CAPTION STRINGS ***
+
+// d: USB Class Change UI application name on the application shell's app. list
+// l: list_single_large_graphic_pane_t1
+// r: 3.0
+//
+#define qtn_apps_usb_list "USB"
+
+// d: USB Class Change UI application name on the application shell's app. grid
+// l: cell_app_pane_t1
+// r: 3.0
+//
+#define qtn_apps_usb_grid "USB"
+
+// d: USB Setting folder caption 
+// l: list_single_large_graphic_pane_t1
+// r: 3.1
+#define qtn_set_folder_usb "USB"
+
+
+// *** TITLES ***
+
+// d: Status pane title for main view
+// l: title_pane_t2/opt9
+// r: 3.0
+//
+#define qtn_usb_title "USB"
+
+// *** SECONDARY STATUS INFORMATION ***
+
+// d: Secondary status information when not connected
+// l: list_double_large_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_not_connected "Not connected"
+
+// d: Shown when USB is connected and the phone is functioning as a USB OTG host.
+// l: list_double_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_otg_conn "Connected"
+
+// d: Secondary status information when connected in mass storage mode
+// l: list_double_large_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_conn_mass_storage "Mass storage mode"
+
+// d: Secondary status information when connected in Ovi suite mode
+// l: list_double_large_graphic_pane_t2
+// r: 5.2
+//
+#define qtn_cp_detail_usb_conn_ovi_suite "Ovi suite mode"
+
+// d: Secondary status information when connected in image print mode
+// l: list_double_large_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_conn_picture_transfer "Image print mode"
+
+// d: Secondary status information when connected in media transfer mode
+// l: list_double_large_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_conn_media_transfer "Media transfer mode"
+
+// d: Secondary status information when connect to internet mode
+// l: list_double_large_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_conn_modem_inst "Connect to internet mode"
+
+// d: Secondary status information when connected in RNDIS mode, not to be localized
+// l: list_double_large_graphic_pane_t2
+// r: 5.0
+//
+#define qtn_cp_detail_usb_conn_rndis "Connect PC with RNDIS mode"
+
+// d: Secondary status information in the USB UI setting list when the mode is a default mode
+// l: list_double_large_graphic_pane_t2_cp2
+// r: 5.2
+#define qtn_usb_settings_default "Default"
+
+// d: Secondary status information in the USB UI setting list when the mode is selected and cable is connected
+// l: list_double_large_graphic_pane_t2_cp2
+// r: 5.2
+#define qtn_usb_settings_active "Active"
+
+
+
+// End of File

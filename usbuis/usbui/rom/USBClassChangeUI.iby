@@ -1,0 +1,33 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+#ifndef __USBCLASSCHANGEUI_IBY__
+#define __USBCLASSCHANGEUI_IBY__
+
+#ifdef __USB_MULTIPERSONALITY 
+
+S60_APP_EXE(usbclasschangeui)
+
+SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,usbui)
+S60_APP_AIF_ICONS(usbclasschangeui)
+S60_APP_AIF_RSC(usbclasschangeui)
+
+//ECom Plugin
+ECOM_PLUGIN(USBClassChangeUIPlugin.dll, 1020E472.rsc)
+
+
+#endif // __USB_MULTIPERSONALITY
+#endif // __USBCLASSCHANGEUI_IBY__

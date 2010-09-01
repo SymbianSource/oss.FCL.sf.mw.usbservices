@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Declares USB UI OTG Errors notifier.
+* Description:  Declares USB UI Queries notifier.
  *
 */
 
@@ -20,20 +20,21 @@
 #define USBUINOTIFOTGERROR_H
 
 // INCLUDES
-#include <hb/hbwidgets/hbdevicemessageboxsymbian.h>
+
 #include "usbnotifier.h"      // Base class
+#include <AknQueryDialog.h>   // AVKON component
+#include "usbuinotifdialerwatcher.h"
 
-
+#define KUsbUiNotifOtgGeneralQueryGranularity 3
 // CLASS DECLARATION
 
 /**
- *  This class is used to show general USB OTG errors
+ *  This class is used to show general USB query.
  *  Asynchronous call is required.
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUsbUiNotifOtgError) : public CUSBUINotifierBase, 
-                                        public MHbDeviceMessageBoxObserver
+NONSHARABLE_CLASS(CUsbUiNotifOtgError) : public CUSBUINotifierBase, public MDialerNotifier
     {
 public:
     // Constructors and destructor
@@ -47,14 +48,7 @@ public:
      * Destructor.
      */
     virtual ~CUsbUiNotifOtgError();
-   
-    /**
-     * Call back function to observe device message box closing.
-     * @param aMessageBox Pointer to the closing message box instance.
-     * @param aButton Button that was pressed.
-     */
-    void MessageBoxClosed(const CHbDeviceMessageBoxSymbian* aMessageBox,
-            CHbDeviceMessageBoxSymbian::TButtonId aButton);
+
 protected:
 
     /**
@@ -79,6 +73,11 @@ private:
     void Cancel();
 
     /**
+     * From CUSBUINotifierBase Gets called when a request completes.
+     */
+    void RunL();
+
+    /**
      * From CUSBUINotifierBase Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -86,8 +85,25 @@ private:
      * @param aReplySlot A reply slot.
      * @param aMessage Should be completed when the notifier is deactivated.
      */
-    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
+    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
+    
+private:
+    
+    /**
+     * From MDialerNotifier     
+     * The function to be when Dialaer is activated
+     *          
+     */
+    void DialerActivated();
+    
+    /**
+     * From MDialerNotifier     
+     * The function to be when Dialaer is deactivated
+     * and note can be shown again
+     *          
+     */
+    void ReActivateDialog();
 
 private:
 
@@ -97,12 +113,31 @@ private:
     CUsbUiNotifOtgError();
 
 private:
+    // New functions
+
+    /**
+     * Show query dialog     
+     * @return KErrNone - accepted, KErrCancel - Cancel or End call key
+     */
+    TInt QueryUserResponseL();
+
+private:
     // Data
     /**
      *  Query
-     *  Owned
+     *  Not own, destroys self when lauched.
      */
-    CHbDeviceMessageBoxSymbian* iQuery; 
-    CDesCArrayFlat* iStringIds;
+    CAknQueryDialog* iQuery; 
+    RArray<TInt> iStringIds;
+    TInt iErrorId;
+    /**
+     * Dialer watcher 
+     * Own.
+     */
+    CUsbuinotifDialerWatcher* iDialerWatcher;
+    /**
+     * Dialog is dismissed. 
+     */
+    TBool iDismissed;
     };
 #endif // USBUINOTIFOTGERROR_H

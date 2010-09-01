@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -20,8 +20,8 @@
 
 // INCLUDES
 
-#include <hb/hbcore/hbdevicedialogsymbian.h>
-#include <hb/hbwidgets/hbdevicenotificationdialogsymbian.h>
+#include <aknlistquerydialog.h> 
+#include <AknQueryDialog.h>
 
 #include "usbnotifier.h" // Base class
 // CLASS DECLARATION
@@ -31,8 +31,8 @@
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUSBUICableConnectedNotifier) : public CUSBUINotifierBase, 
-    public MHbDeviceNotificationDialogObserver
+NONSHARABLE_CLASS(CUSBUICableConnectedNotifier) : public CUSBUINotifierBase,
+       public MEikCommandObserver
     {
 public:
     // Constructors and destructor
@@ -66,6 +66,13 @@ private:
     void Cancel();
 
     /**
+     * From CUSBUINotifierBase Gets called when a request completes.
+     * @param None.
+     * @return None.
+     */
+    void RunL();
+
+    /**
      * From CUSBUINotifierBase Used in asynchronous notifier launch to 
      * store received parameters into members variables and 
      * make needed initializations.
@@ -74,21 +81,13 @@ private:
      * @param aMessage Should be completed when the notifier is deactivated.
      * @return None.
      */
-    void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
+    void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage);
  
-       
-private:
-    // functions from MHbDeviceNotificationDialogObserver
     /**
-     * Callback function which is called when the dialog is tapped
+     * Handles the command on USB connected note
      */
-    void NotificationDialogActivated(const CHbDeviceNotificationDialogSymbian* aDialog);
-    /**
-     * Callback function which is called when the dialog is closed
-     */
-    void NotificationDialogClosed(const CHbDeviceNotificationDialogSymbian* aDialog,
-            TInt aCompletionCode);
+    void ProcessCommandL(TInt aCommandId);
 
 private:
     //New functions
@@ -97,21 +96,25 @@ private:
      * @param aCurrentPersonality current personality id
      */
     void GetCurrentIdL(TInt& aCurrentPersonality);
+
     /**
      * Get the mode name and header for current personality
-     * The parameters are pushed to the cleanup stack in order
-     * aDescription, aHeader.
      * @param aDescription The returned current personality string.
      * @param aHeader The header string for message query.
      */
-    void GetPersonalityStringLC(HBufC*& aHeader,HBufC*& aDescription );
+    void GetPersonalityStringL(HBufC*& aHeader,HBufC*& aDescription );
 
-     /**
-     * launches the (USB) application
-     * @param aProcessName The process name (*.exe)
+    /**
+     * Runs the connected discreet note
+     */
+    void RunQueryL();
+  
+    /**
+     * creates the USB UI setting view
+     * @param aProcessName The process name (USBClassChangeUI.exe)
      * @param TUidType 
      */
-    void LaunchApplication(const TDesC & aProcessName,const TUidType & aUidType) const;
+    void CreateChosenViewL(const TDesC & aProcessName,const TUidType & aUidType) const;
 
 private:
     /**
@@ -119,7 +122,21 @@ private:
      */
     CUSBUICableConnectedNotifier();
     
-    CHbDeviceNotificationDialogSymbian* iDialog; 
+    /**
+     * Waiter for canceling notifier. Canceling is not posible when note is visible
+     */
+    CActiveSchedulerWait    iNoteWaiter;    
+    
+    /**
+     * Note visible
+     */
+    TBool   iNoteVisible;
+
+    /**
+     * Note tapped
+     */
+    TBool   iNoteTapped;
 
     };
+
 #endif // USBUINCABLECONNECTEDNOTIFIER_H

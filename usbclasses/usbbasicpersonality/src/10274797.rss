@@ -76,6 +76,15 @@ RESOURCE REGISTRY_INFO theInfo
 					default_data = "80000006"; //
 					opaque_data = " ";
 					}
+				,
+				IMPLEMENTATION_INFO
+					{
+					implementation_uid = 0xA000EA04;
+					version_no = 1;
+					display_name = "RNDIS";
+					default_data = "80000008";
+					opaque_data = " ";
+					}
 				};
 			}
 		};

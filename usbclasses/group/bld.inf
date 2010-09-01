@@ -19,4 +19,8 @@
 #include "../usbobexclasscontroller/group/bld.inf"
 #include "../usbbasicpersonality/group/bld.inf"
 #include "../usbmscpersonality/group/bld.inf"
+//#include "../ptpstack/group/bld.inf"
+//#include "../sicdusbplugin/group/bld.inf"
+//#include "../ptpserver/group/bld.inf"
+#include "../pictbridgeengine/group/bld.inf"
 #include "../usbphoneasmodem/group/bld.inf"

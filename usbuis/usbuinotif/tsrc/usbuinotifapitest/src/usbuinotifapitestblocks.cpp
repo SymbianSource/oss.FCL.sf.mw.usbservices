@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -15,85 +15,101 @@
 *
 */
 
+
+
+
 // [INCLUDE FILES] - do not remove
 #include <e32svr.h>
 #include <StifParser.h>
 #include <ecom/ecom.h>
 #include <Stiftestinterface.h>
-#include "usbuinotifapitest.h"
+#include "UsbUiNotifApiTest.h"
 
 // EXTERNAL DATA STRUCTURES
+//extern  ?external_data;
 
 // EXTERNAL FUNCTION PROTOTYPES  
+//extern ?external_function( ?arg_type,?arg_type );
 
 // CONSTANTS
-#ifdef __WINS__
-_LIT( KUsbAppProcPattern, "usb[*" );
-#else
-_LIT( KUsbAppProcPattern, "#USBSettingsApp*" );
-#endif
+//const ?type ?constant_var = ?constant;
 
 // MACROS
+//#define ?macro ?macro_def
 
 // LOCAL CONSTANTS AND MACROS
+//const ?type ?constant_var = ?constant;
+//#define ?macro_name ?macro_def
 
 // MODULE DATA STRUCTURES
+//enum ?declaration
+//typedef ?declaration
 
 // LOCAL FUNCTION PROTOTYPES
+//?type ?function_name( ?arg_type, ?arg_type );
 
 // FORWARD DECLARATIONS
+//class ?FORWARD_CLASSNAME;
 
 // ============================= LOCAL FUNCTIONS ===============================
+
+// -----------------------------------------------------------------------------
+// ?function_name ?description.
+// ?description
+// Returns: ?value_1: ?description
+//          ?value_n: ?description_line1
+//                    ?description_line2
+// -----------------------------------------------------------------------------
+//
+/*
+?type ?function_name(
+    ?arg_type arg,  // ?description
+    ?arg_type arg)  // ?description
+    {
+
+    ?code  // ?comment
+
+    // ?comment
+    ?code
+    }
+*/
 
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::Delete
+// CUsbUiNotifApiTest::Delete
 // Delete here all resources allocated and opened from test methods. 
 // Called from destructor. 
 // -----------------------------------------------------------------------------
 //
-void CUSBUiNotifApiTest::Delete() 
-    {
+void CUsbUiNotifApiTest::Delete() 
+	{
     iNotifier -> Close();
     delete iNotifier;
     iNotifier = NULL;
+    iUsbWatcher -> Close();
+    delete iUsbWatcher;
+    iUsbWatcher = NULL;
+    delete iRepository;
+    iRepository = NULL;
     }
 
 // -----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::RunMethodL
+// CUsbUiNotifApiTest::RunMethodL
 // Run specified method. Contains also table of test mothods and their names.
 // -----------------------------------------------------------------------------
 //
-TInt CUSBUiNotifApiTest::RunMethodL( 
+TInt CUsbUiNotifApiTest::RunMethodL( 
     CStifItemParser& aItem ) 
     {
 
     static TStifFunctionInfo const KFunctions[] =
         {  
-        // Copy this line for every implemented function.
-        // First string is the function name used in TestScripter script file.
-        // Second is the actual implementation member function. 
-        ENTRY( "CableConnectedNotifierTest", CUSBUiNotifApiTest::CableConnectedNotifierTest ),
-        ENTRY( "FinishCableConnectedQuery", CUSBUiNotifApiTest::FinishCableConnectedQuery ),        
-        ENTRY( "UsbQueriesNotifierTest", CUSBUiNotifApiTest::UsbQueriesNotifierTest ),
-        ENTRY( "FinishQuery", CUSBUiNotifApiTest::FinishQuery ),
-        ENTRY( "UsbOTGErrorNotifierTests", CUSBUiNotifApiTest::UsbOTGErrorNotifierTests ), 
-        ENTRY( "UsbOTGWarningNotifierTests", CUSBUiNotifApiTest::UsbOTGWarningNotifierTests ),
-        ENTRY( "LoadNotifiers", CUSBUiNotifApiTest::LoadNotifiersL ),
-        ENTRY( "UnLoadNotifiers", CUSBUiNotifApiTest::UnLoadNotifiers ),
-        ENTRY( "UsbMSMMNotifierTests", CUSBUiNotifApiTest::UsbMSMMNotifierTests ),
-        ENTRY( "CancelMsmmNotifier", CUSBUiNotifApiTest::CancelMsmmNotifier ),
-        ENTRY( "CancelQueryNotifier", CUSBUiNotifApiTest::CancelQueryNotifier ),
-        ENTRY( "CancelOtgErrorNotifier", CUSBUiNotifApiTest::CancelOtgErrorNotifier ),
-        ENTRY( "CancelOtgWarningNotifier", CUSBUiNotifApiTest::CancelOtgWarningNotifier ),
-        ENTRY( "CancelCableConnectedNotifier", CUSBUiNotifApiTest::CancelCableConnectedNotifier ),
-        ENTRY( "WaitForRequest", CUSBUiNotifApiTest::WaitForRequest ),
-        ENTRY( "SynchStart", CUSBUiNotifApiTest::SynchStart ),	
-        ENTRY( "Update", CUSBUiNotifApiTest::Update )
         //ADD NEW ENTRY HERE
         // [test cases entries] - Do not remove
-
+		ENTRY( "ExecuteApiTestBlock", CUsbUiNotifApiTest::ExecuteApiTestBlock ),
+        ENTRY( "ExecuteModuleTestBlock", CUsbUiNotifApiTest::ExecuteModuleTestBlock ),
+        ENTRY( "ExecuteBranchTestBlock", CUsbUiNotifApiTest::ExecuteBranchTestBlock ),
         };
 
     const TInt count = sizeof( KFunctions ) / 
@@ -104,128 +120,374 @@ TInt CUSBUiNotifApiTest::RunMethodL(
     }
 
 // -----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::CableConnectedNotifierTests
+// CUsbUiNotifApiTest::GetTestBlockParamsL
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::CableConnectedNotifierTest( CStifItemParser& /*aItem*/ )
+void CUsbUiNotifApiTest::GetTestBlockParamsL( CStifItemParser& aItem )
     {
+    TRACE_INFO( _L(">>> GetTestBlockParamsL") );
+    
+    // Add new test block branches below, get all required test parameters    
+    if ( !iTestBlockParams.iTestBlockName.Compare( _L( "ExampleTestL" ) ) )
+        {              
+        User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption1 ) );        
+        User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );
+        User::LeaveIfError( aItem.GetNextInt( iTestBlockParams.iTestIntOption1 ) );        
+        User::LeaveIfError( aItem.GetNextChar( iTestBlockParams.iTestCharOption1 ) );        
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "CableConnectedNotifierTest" ) ) )
+		{                      
+		User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );       
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbQueriesNotifierTest" ) ) )
+		{                      
+		User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );       
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "FinishQuery" ) ) )
+		{                      
+		User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );       
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbOTGErrorNotifierTests" ) ) )
+		{                      
+		User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );       
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbOTGWarningNotifierTests" ) ) )
+		{                      
+		User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );       
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "LoadNotifiers" ) ) )
+		{                           
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UnLoadNotifiers" ) ) )
+		{                      
+		}
+	else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbMSMMNotifierTests" ) ) )
+		{                      
+		User::LeaveIfError( aItem.GetNextString( iTestBlockParams.iTestOption2 ) );       
+		}
+    else
+        {
+        TRACE_INFO( _L("GetTestBlockParamsL() Test type: not found") );
+        User::Leave( KErrNotFound );
+        }
+    TRACE_INFO( _L("<<< GetTestBlockParamsL") );
+    }
+
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::ExecuteApiTestBlock
+// -----------------------------------------------------------------------------
+
+TInt CUsbUiNotifApiTest::ExecuteApiTestBlock( CStifItemParser& aItem )
+    {
+    TRACE_INFO( _L(">>> ExecuteApiTestBlock") );
+	
+	TInt res;
+    TUsbUiNotifApiTestResult testResult = ETestCaseFailed;
+	
+    TRAP( res, DoExecuteApiTestBlockL( aItem, testResult ) );
+    if ( res != KErrNone )
+        {
+        TRACE_INFO( (_L("DoExecuteApiTestBlockL error: %d"), res) );
+        return res;
+        }
+    
+    STIF_ASSERT_EQUALS( ETestCasePassed, testResult );
+    TRACE_INFO( _L("Test case passed") );
+    
+    TRACE_INFO( _L("<<< ExecuteApiTestBlock") );
+	
+    return KErrNone;
+    }
+	
+	
+void CUsbUiNotifApiTest::DoExecuteApiTestBlockL( CStifItemParser& aItem, TUsbUiNotifApiTestResult& aTestResult )
+    {
+    TRACE_INFO( _L(">>>DoExecuteApiTestBlockL") );
+
+	User::LeaveIfError( aItem.GetString( _L( "ExecuteApiTestBlock" ), iTestBlockParams.iTestBlockName ) );
+        TRACE_INFO( (_L("Api test type: %S"), &iTestBlockParams.iTestBlockName) );
+	
+	GetTestBlockParamsL( aItem );
+	
+	// Add new API test block branches with optional test parameters here	
+    if ( !iTestBlockParams.iTestBlockName.Compare( _L( "ExampleTestL" ) ) )
+        {      
+        ExampleTestL( iTestBlockParams.iTestOption1, iTestBlockParams.iTestOption2, 
+                iTestBlockParams.iTestIntOption1, iTestBlockParams.iTestCharOption1, aTestResult );
+        }	
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "CableConnectedNotifierTest" ) ) )
+        {      
+        CableConnectedNotifierTest( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbQueriesNotifierTest" ) ) )
+        {      
+        UsbQueriesNotifierTest( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "FinishQuery" ) ) )
+        {      
+        FinishQuery( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbQueriesNotifierTest" ) ) )
+        {      
+        UsbQueriesNotifierTest( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbQueriesNotifierTest" ) ) )
+        {      
+        UsbQueriesNotifierTest( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbQueriesNotifierTest" ) ) )
+        {      
+        UsbQueriesNotifierTest( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbOTGErrorNotifierTests" ) ) )
+        {      
+        UsbOTGErrorNotifierTests( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbOTGWarningNotifierTests" ) ) )
+        {      
+        UsbOTGWarningNotifierTests( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "LoadNotifiers" ) ) )
+        {      
+        LoadNotifiersL( aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UnLoadNotifiers" ) ) )
+        {      
+        UnLoadNotifiers( aTestResult );
+        }
+    else if ( !iTestBlockParams.iTestBlockName.Compare( _L( "UsbMSMMNotifierTests" ) ) )
+        {      
+        UsbMSMMNotifierTests( iTestBlockParams.iTestOption2, aTestResult );
+        }
+    else
+        {
+    TRACE_INFO( _L("DoExecuteApiTestBlockL() Test type: not found") );
+        User::Leave( KErrNotFound );
+        }
+	
+    TRACE_INFO( _L("<<<DoExecuteApiTestBlockL") );
+    }
+	
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::ExecuteModuleTestBlock
+// -----------------------------------------------------------------------------	
+
+TInt CUsbUiNotifApiTest::ExecuteModuleTestBlock( CStifItemParser& aItem )
+    {
+    TRACE_INFO( _L(">>>ExecuteModuleTestBlock") );
+	
     TInt res;
-    TPtrC8 dummyPckg; //no parameters used
+    TUsbUiNotifApiTestResult testResult;
+    
+    TRAP( res, DoExecuteModuleTestBlockL( aItem, testResult ) );
+    if ( res != KErrNone )
+        {
+        TRACE_INFO( (_L("DoExecuteModuleTestBlockL error: %d"), res) );
+        return res;
+        }
+    
+    STIF_ASSERT_EQUALS( ETestCasePassed, testResult );
+    TRACE_INFO( _L("Test case passed") );
+    TRACE_INFO( _L("<<<ExecuteModuleTestBlock") );
+    return KErrNone;
+    }	
+	
+	
+void CUsbUiNotifApiTest::DoExecuteModuleTestBlockL( CStifItemParser& aItem, TUsbUiNotifApiTestResult& aTestResult )
+    {
+    TRACE_INFO( _L(">>>DoExecuteModuleTestBlockL") );
+	
+    User::LeaveIfError( aItem.GetString( _L( "ExecuteModuleTestBlock" ), iTestBlockParams.iTestBlockName ) );
+    TRACE_INFO( (_L("Module test type: %S"), &iTestBlockParams.iTestBlockName) );
+    
+    GetTestBlockParamsL( aItem );
+    
+    // Add new module test block branches with optional test parameters here   
+    if ( !iTestBlockParams.iTestBlockName.Compare( _L( "ExampleTestL" ) ) )
+        {      
+        ExampleTestL( iTestBlockParams.iTestOption1, iTestBlockParams.iTestOption2, 
+                iTestBlockParams.iTestIntOption1, iTestBlockParams.iTestCharOption1, aTestResult );
+        }
+    else
+        {
+    TRACE_INFO( _L("DoExecuteModuleTestBlockL() Test type: not found") );
+        User::Leave( KErrNotFound );
+        }
+    
+    TRACE_INFO( _L("<<<DoExecuteModuleTestBlockL") );
+    }
+	
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::ExecuteBranchTestBlock
+// -----------------------------------------------------------------------------
+	
+TInt CUsbUiNotifApiTest::ExecuteBranchTestBlock( CStifItemParser& aItem )
+    {
+    TRACE_INFO( _L(">>>ExecuteBranchTestBlock") );
+	
+    TInt res;
+    TUsbUiNotifApiTestResult testResult;
+    
+    TRAP( res, DoExecuteBranchTestBlockL( aItem, testResult ) );
+    if ( res != KErrNone )
+        {
+        TRACE_INFO( (_L("DoExecuteBranchTestBlockL error: %d"), res) );
+        return res;
+        }   
+    
+    STIF_ASSERT_EQUALS( ETestCasePassed, testResult );
+    TRACE_INFO( _L("Test case passed") );
+    TRACE_INFO( _L("<<<ExecuteBranchTestBlock") );
+    return KErrNone;
+    }
+
+	
+void CUsbUiNotifApiTest::DoExecuteBranchTestBlockL( CStifItemParser& aItem, TUsbUiNotifApiTestResult& aTestResult )
+    {
+    TRACE_INFO( _L(">>>DoExecuteBranchTestBlockL") );
+	
+    User::LeaveIfError( aItem.GetString( _L( "ExecuteBranchTestBlock" ), iTestBlockParams.iTestBlockName ) );
+    TRACE_INFO( (_L("Branch test type: %S"), &iTestBlockParams.iTestBlockName) );
+    
+    GetTestBlockParamsL( aItem );
+    
+    // Add new branch test block branches with optional test parameters here   
+    if ( !iTestBlockParams.iTestBlockName.Compare( _L( "ExampleTestL" ) ) )
+        {      
+        ExampleTestL( iTestBlockParams.iTestOption1, iTestBlockParams.iTestOption2, 
+                iTestBlockParams.iTestIntOption1, iTestBlockParams.iTestCharOption1, aTestResult );
+        }
+    else
+        {
+    TRACE_INFO( _L("DoExecuteBranchTestBlockL() Test type: not found") );
+        User::Leave( KErrNotFound );
+        }
+    
+    TRACE_INFO( _L("<<<DoExecuteBranchTestBlockL") );
+    }
+
+// Add test block methods implementation here
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::ExampleTestL
+// -----------------------------------------------------------------------------
+
+void CUsbUiNotifApiTest::ExampleTestL( TPtrC aTestOption, TPtrC aTestSubOption, 
+        TInt aTestIntOption, TInt aTestCharOption, TUsbUiNotifApiTestResult& aTestResult )
+    {
+    TRACE_INFO( _L(">>>ExampleTestL") );
+    
+    if ( !aTestOption.Compare( _L( "API" ) ) )
+        {
+    TRACE_INFO( (_L("Api test option: %S"), &aTestOption) );
+    TRACE_INFO( (_L("Api test sub-option: %S"), &aTestSubOption) );
+    TRACE_INFO( (_L("Api test int option: %d"), aTestIntOption) );
+    TRACE_INFO( (_L("Api test char option: %c"), aTestCharOption) );
+        }
+    else if ( !aTestOption.Compare( _L( "MODULE" ) ) )
+        {
+    TRACE_INFO( (_L("Module test option: %S"), &aTestOption) );
+    TRACE_INFO( (_L("Module test sub-option: %S"), &aTestSubOption) );
+    TRACE_INFO( (_L("Module test int option: %d"), aTestIntOption) );
+    TRACE_INFO( (_L("Module test char option: %c"), aTestCharOption) );
+        }
+    else if ( !aTestOption.Compare( _L( "BRANCH" ) ) )
+        {
+    TRACE_INFO( (_L("Branch test option: %S"), &aTestOption) );
+    TRACE_INFO( (_L("Branch test sub-option: %S"), &aTestSubOption) );
+    TRACE_INFO( (_L("Branch test int option: %d"), aTestIntOption) );
+    TRACE_INFO( (_L("Branch test char option: %c"), aTestCharOption) );
+        }
+    else
+        {
+        TRACE_INFO( _L("Invalid test parameter") );
+        User::Leave( KErrNotFound );
+        }
+    
+    aTestResult = ETestCasePassed;
+    
+    TRACE_INFO( _L("<<<ExampleTestL") );
+    }
+
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::CableConnectedNotifierTest
+// -----------------------------------------------------------------------------
+
+void CUsbUiNotifApiTest::CableConnectedNotifierTest( TPtrC aTestSubOption, TUsbUiNotifApiTestResult& aTestResult )
+    {
+    TRACE_INFO(  _L(">>>CableConnectedNotifierTest") );
+    
+    TInt res;
+    TUSBConnectionNotifierParamsPckg emptyNotifierInputPckg;
+    TPtrC displayedUsbPersonalityName( KNullDesC );
+    TInt displayedUsbPersonalityId;
+    
+    res = GetPersonalityIdFromString( aTestSubOption, displayedUsbPersonalityId );
+    if ( res != KErrNone )
+        {
+        TRACE_INFO(  (_L("GetPersonalityIdFromString failed with value: %d"), res) );
+        return;
+        }
+    
+    res = iRepository -> Get( KUsbWatcherPersonality, iPersonalityIdBackup );
+    if ( res != KErrNone )
+        {
+        TRACE_INFO(  (_L("Personality backup failed with value (cenrep): %d"), res) );
+        return;
+        }
+    
+    res = iUsbWatcher -> Connect();
+    if ( res != KErrNone )
+        {
+        TRACE_INFO(  (_L("Failed to connect UsbWatcher with value: %d"), res) );
+        return;
+        }   
+    TRACE_INFO(  _L("UsbWatcher connected") );
+        
+    iUsbWatcher -> SetPersonality( iReqStatus, displayedUsbPersonalityId, ETrue, ETrue );
+    User::WaitForRequest( iReqStatus );
+    if ( iReqStatus.Int() != KErrNone )
+        {
+        TRACE_INFO(  (_L("Failed to set usb personality with value: %d"), iReqStatus.Int()) );
+        iUsbWatcher -> Close();
+        return;
+        }   
     
     res = iNotifier -> Connect();
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
-        }   
-    iLog -> Log( _L("RNotifier connected") );
-
-    //kill the possibly running usb application
-    FindAndKillProcess(KUsbAppProcPattern);
-    
-    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KCableConnectedNotifierUid, 
-            dummyPckg, iConnectionNotifierResponseParamsPckg );    
-    
-    return KErrNone;
-    
-    }
-
-
-TInt CUSBUiNotifApiTest::FinishCableConnectedQuery( CStifItemParser& aItem )
-    {
-    //give time for application to start, in microseconds
-    const TInt KAppLaunchDelay = 5000000; 
-    TInt res;
-    TPtrC optionName( KNullDesC );
-    TTestOption option;
-    TPtrC expectedUsbPersonalityName( KNullDesC );
-    TInt expectedErrorCode;
-
-    iLog -> Log( _L("FinishCableConnectedQuery") );
-    
-    res = aItem.GetString( _L( "FinishCableConnectedQuery" ), optionName );
-        
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
-    
-    iLog -> Log( _L("FinishCableConnectedQuery getting option") );
-    res = GetTestOption( optionName, option );
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("GetTestOption failed with value: %d"), res );
+        TRACE_INFO(  (_L("Failed to connect RNotifier with value: %d"), res) );
         iUsbWatcher -> Close();
-        iNotifier -> Close();
-        return res;
-        }
- 
-    iLog -> Log( _L("FinishCableConnectedQuery wait for request") );
+        return;
+        }   
+    TRACE_INFO(  _L("RNotifier connected") );
+
+    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KCableConnectedNotifierUid, emptyNotifierInputPckg, iConnectionNotifierResponseParamsPckg );    
     User::WaitForRequest( iReqStatus );
-    expectedErrorCode = iReqStatus.Int();
-
-    iLog -> Log( _L("FinishCableConnectedQuery request complete") );
     
-    iNotifier -> Close();  
-
-    iLog -> Log( _L("FinishCableConnectedQuery close") );
+    TRACE_INFO((_L("StartNotifierAndGetResponse Status: %d, expected: %d"), iReqStatus.Int(), KErrCancel));
+    if(iReqStatus.Int() == KErrCancel)
+    	aTestResult = ETestCasePassed;
     
-    TInt ret = KErrNone;
-    switch( option )
-        {
-        case EQueryAccepted:
-            iLog -> Log( _L("EQueryAccepted"));
-            User::After(KAppLaunchDelay); //let the app start and let the tester person to see that
-            ret = FindAndKillProcess(KUsbAppProcPattern);
-            if (ret != KErrNone)
-                {
-                iLog -> Log( _L("Process start failed: %d"), ret );
-                return ret;
-                }
-            iLog -> Log( _L("Request status value: %d, expected: %d"), expectedErrorCode, KErrCancel );
-            //the notifier returns KErrCancel when clicked
-            STIF_ASSERT_EQUALS( KErrCancel, expectedErrorCode );
-            break;
-        case EQueryCanceled:
-            iLog -> Log( _L("FinishCableConnectedQuery canceled") );
-            iLog -> Log( _L("Request status value: %d, expected: %d"), expectedErrorCode, KErrCancel );
-            STIF_ASSERT_EQUALS( KErrCancel, expectedErrorCode );
-            break;
-        default:
-            iLog -> Log( _L("FinishCableConnectedQuery default - not found") );
-            return KErrNotFound;
-        }
-
-    iLog -> Log( _L("Test case passed!") );
-    return KErrNone;
+    TRACE_INFO(  _L("<<<CableConnectedNotifierTest") );
     }
 
 
 // -----------------------------------------------------------------------------
-// CBtNotifApiTest::UsbQueriesNotifierTests
+// CUsbUiNotifApiTest::UsbQueriesNotifierTest
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::UsbQueriesNotifierTest( CStifItemParser& aItem )
+void CUsbUiNotifApiTest::UsbQueriesNotifierTest( TPtrC aTestSubOption, TUsbUiNotifApiTestResult& aTestResult )
     {
+    TRACE_INFO(  _L(">>>UsbQueriesNotifierTest") );
     TInt res;    
-    TPtrC usbQueryName( KNullDesC );
     TUSBUIQueries usbQueryType;
     
-    res = aItem.GetString( _L( "UsbQueriesNotifierTest" ), usbQueryName );   
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
     
-    res = GetQueryType( usbQueryName, usbQueryType );
+    res = GetQueryType( aTestSubOption, usbQueryType );
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("GetQueryType failed with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("GetQueryType failed with value: %d"), res) );
+        return;
         }
     
     TUSBQueriesNotiferParams notifierParams;
@@ -234,17 +496,13 @@ TInt CUSBUiNotifApiTest::UsbQueriesNotifierTest( CStifItemParser& aItem )
     TUSBQueriesNotifierParamsPckg notifierParamsPckg( notifierParams );
     TPckgBuf<TBool> output;
     
-    if (!iNotifierConnected)
-        {
-        res = iNotifier -> Connect();
-        iNotifierConnected = ETrue;
-        }
+    res = iNotifier -> Connect();
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("Failed to connect RNotifier with value: %d"), res) );
+        return;
         }   
-    iLog -> Log( _L("RNotifier connected") );
+    TRACE_INFO(  _L("RNotifier connected") );
     
     switch( usbQueryType )
         {
@@ -259,329 +517,200 @@ TInt CUSBUiNotifApiTest::UsbQueriesNotifierTest( CStifItemParser& aItem )
             break; 
         }
     
-    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KQueriesNotifier, 
-            notifierParamsPckg, output ); 
-    iLog -> Log( _L("StartNotifierAndGetResponse ready") );
+    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KQueriesNotifier, notifierParamsPckg, output ); 
+
+    aTestResult = ETestCasePassed;
     
-    return KErrNone;
+    TRACE_INFO(  _L("<<<UsbQueriesNotifierTest") );
     }
-    
+
 // -----------------------------------------------------------------------------
-// CBtNotifApiTest::UsbOTGErrorNotifierTests
+// CUsbUiNotifApiTest::UsbOTGErrorNotifierTests
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::UsbOTGErrorNotifierTests( CStifItemParser& aItem )
+void CUsbUiNotifApiTest::UsbOTGErrorNotifierTests( TPtrC aTestSubOption, TUsbUiNotifApiTestResult& aTestResult )
     {
+    TRACE_INFO(  _L(">>>UsbOTGErrorNotifierTests") );
+    
     TInt res;    
-    TPtrC usbQueryName( KNullDesC );
     TUsbUiNotifOtgError usbOTGErrorType;
-    
-    res = aItem.GetString( _L( "UsbOTGErrorNotifierTests" ), usbQueryName );   
+        
+    res = GetOTGErrorType( aTestSubOption, usbOTGErrorType );
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
-    
-    res = GetOTGErrorType( usbQueryName, usbOTGErrorType );
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("usbOTGErrorType failed with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("usbOTGErrorType failed with value: %d"), res) );
+        return;
         }    
     
-    if (!iNotifierConnected)
-        {
-        res = iNotifier -> Connect();
-        iNotifierConnected = ETrue;
-        }
+    res = iNotifier -> Connect();
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("Failed to connect RNotifier with value: %d"), res) );
+        return;
         }   
-    iLog -> Log( _L("RNotifier connected") );
+    TRACE_INFO(  _L("RNotifier connected") );
     
     TPckgBuf<TInt> notifierParamsPckg;
     notifierParamsPckg() = usbOTGErrorType;
     iCompleteQuery = EFalse;
 
-    iNotifier -> StartNotifierAndGetResponse( iReqStatus, 
-            KUsbUiNotifOtgError, notifierParamsPckg, iRes ); 
+    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KUsbUiNotifOtgError, notifierParamsPckg, iRes ); 
+
+    aTestResult = ETestCasePassed;
     
-    return KErrNone;
+    TRACE_INFO(  _L("<<<UsbOTGErrorNotifierTests") );
     }
 
 // -----------------------------------------------------------------------------
-// CBtNotifApiTest::UsbOTGErrorNotifierTests
+// CUsbUiNotifApiTest::UsbOTGWarningNotifierTests
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::UsbOTGWarningNotifierTests( CStifItemParser& aItem )
+void CUsbUiNotifApiTest::UsbOTGWarningNotifierTests( TPtrC aTestSubOption, TUsbUiNotifApiTestResult& aTestResult )
     {        
+    TRACE_INFO(  _L(">>>UsbOTGWarningNotifierTests") );
+    
     TInt res;    
-    TPtrC usbQueryName( KNullDesC );
     TUsbUiNotifOtgWarning usbOTGWarningType;
     
-    res = aItem.GetString( _L( "UsbOTGWarningNotifierTests" ), usbQueryName );   
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
     
-    res = GetOTGWarningType( usbQueryName, usbOTGWarningType );
+    res = GetOTGWarningType( aTestSubOption, usbOTGWarningType );
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("usbOTGErrorType failed with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("usbOTGErrorType failed with value: %d"), res) );
+        return;
         }    
     
-    if (!iNotifierConnected)
-        {
-        res = iNotifier -> Connect();
-        iNotifierConnected = ETrue;
-        }
+    res = iNotifier -> Connect();
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("Failed to connect RNotifier with value: %d"), res) );
+        return;
         }   
-    iLog -> Log( _L("RNotifier connected") );
+    TRACE_INFO(  _L("RNotifier connected") );
     
     TPckgBuf<TInt> notifierParamsPckg;
     notifierParamsPckg() = usbOTGWarningType;
     iCompleteQuery = EFalse;
 
-    iNotifier -> StartNotifierAndGetResponse( iReqStatus, 
-            KUsbUiNotifOtgWarning, notifierParamsPckg, iRes ); 
+    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KUsbUiNotifOtgWarning, notifierParamsPckg, iRes ); 
+
+    aTestResult = ETestCasePassed;
     
-    return KErrNone;    
+    TRACE_INFO(  _L("<<<UsbOTGWarningNotifierTests") ); 
     }
 
 // -----------------------------------------------------------------------------
-// CBtNotifApiTest::UsbMSMMNotifierTests
+// CUsbUiNotifApiTest::UsbMSMMNotifierTests
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::UsbMSMMNotifierTests( CStifItemParser& aItem )
+void CUsbUiNotifApiTest::UsbMSMMNotifierTests( TPtrC aTestSubOption, TUsbUiNotifApiTestResult& aTestResult )
     {        
+    TRACE_INFO(  _L(">>>UsbMSMMNotifierTests") );
+    
     TInt res;    
-    TPtrC usbQueryName( KNullDesC );
     THostMsErrCode usbMSMMNErrorType;
     
-    iLog -> Log( _L("------msmm------") );
-    
-    res = aItem.GetString( _L( "UsbMSMMNotifierTests" ), usbQueryName );   
+    res = GetMSMMrrorType( aTestSubOption, usbMSMMNErrorType );
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
-    
-    res = GetMSMMrrorType( usbQueryName, usbMSMMNErrorType );
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("MSMMrrorType failed with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("MSMMrrorType failed with value: %d"), res) );
+        return;
         }    
     iErrData.iError=usbMSMMNErrorType;
     iErrPckg = iErrData;
-    if (!iNotifierConnected)
-        {
-        res = iNotifier -> Connect();
-        iNotifierConnected = ETrue;
-        }
+    res = iNotifier -> Connect();
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
+        TRACE_INFO(  (_L("Failed to connect RNotifier with value: %d"), res) );
+        return;
         }   
-    iLog -> Log( _L("RNotifier connected") );
+    TRACE_INFO(  _L("RNotifier connected") );
     
     TPckgBuf<TInt> notifierParamsPckg;
     notifierParamsPckg() = usbMSMMNErrorType;
     iCompleteQuery = EFalse;
 
     iNotifier -> StartNotifierAndGetResponse( iReqStatus, KUsbUiNotifMsmmError, iErrPckg, iRes ); 
+
+    aTestResult = ETestCasePassed;
     
-    return KErrNone;    
+    TRACE_INFO(  _L("<<<UsbMSMMNotifierTests") ); 
     }
 
 
-TInt CUSBUiNotifApiTest::CancelMsmmNotifier( CStifItemParser& /*aItem*/ ) 
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::FinishQuery
+// -----------------------------------------------------------------------------
+
+TInt CUsbUiNotifApiTest::FinishQuery( TPtrC aTestSubOption, TUsbUiNotifApiTestResult& aTestResult )
     {
-    return ( iNotifier->CancelNotifier(KUsbUiNotifMsmmError) );
-    }
-
-
-TInt CUSBUiNotifApiTest::CancelQueryNotifier( CStifItemParser& /*aItem*/ ) 
-    {
-    iLog -> Log( _L("CancelQueryNotifier") );
-    return ( iNotifier->CancelNotifier(KQueriesNotifier) );
-    }
-
-
-TInt CUSBUiNotifApiTest::CancelOtgErrorNotifier( CStifItemParser& /*aItem*/ ) 
-    {
-    return ( iNotifier->CancelNotifier(KUsbUiNotifOtgError) );
-    }
-
-TInt CUSBUiNotifApiTest::CancelOtgWarningNotifier( CStifItemParser& /*aItem*/ ) 
-    {
-    return ( iNotifier->CancelNotifier(KUsbUiNotifOtgWarning) );
-    }
-
-TInt CUSBUiNotifApiTest::CancelCableConnectedNotifier( CStifItemParser& /*aItem*/ ) 
-    {
-    return ( iNotifier->CancelNotifier(KCableConnectedNotifierUid) );
-    }
-
-TInt CUSBUiNotifApiTest::WaitForRequest( CStifItemParser& /*aItem*/ ) 
-    {
-    User::WaitForRequest( iReqStatus );
-    return KErrNone;
-    }
-
-TInt CUSBUiNotifApiTest::SynchStart(CStifItemParser& aItem )
-{
-    TInt res;    
-    TPtrC usbQueryName( KNullDesC );
-    TUsbUiNotifOtgWarning usbOTGWarningType;
+    TRACE_INFO(  _L(">>>FinishQuery") ); 
     
-    res = aItem.GetString( _L( "SynchStart" ), usbQueryName );   
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
-    
-    res = GetOTGWarningType( usbQueryName, usbOTGWarningType );
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("usbOTGErrorType failed with value: %d"), res );
-        return res;
-        }    
- 
- 
-    res = iNotifier -> Connect();
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
-        }   
-    iLog -> Log( _L("RNotifier connected") );
- 
-    TPckgBuf<TInt> notifierParamsPckg;
-    notifierParamsPckg() = usbOTGWarningType;
-    iCompleteQuery = EFalse;
-
-    TInt retVal = iNotifier -> StartNotifier( KUsbUiNotifOtgWarning, notifierParamsPckg );
-    iLog -> Log( _L("StartNotifier returned with value: %d"), retVal );
-    
-    iNotifier->Close();
-    return retVal;    
-}
-
-TInt CUSBUiNotifApiTest::Update(CStifItemParser& /*aItem*/ )
-{
-    //delay in microseconds before updating the notifier
-    const TInt KUpdateDelay = 2000000;
-    TInt res;    
-    TPtrC usbQueryName( KNullDesC );
-    
-    res = iNotifier -> Connect();
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("Failed to connect RNotifier with value: %d"), res );
-        return res;
-        }   
-    iLog -> Log( _L("RNotifier connected") );
- 
-    TPckgBuf<TInt> notifierParamsPckg;
-    notifierParamsPckg() = EUsbOtgUnsupportedDevice;
-    iCompleteQuery = EFalse;
-    TPckgBuf<TInt> response ;
-    iNotifier -> StartNotifierAndGetResponse( iReqStatus, KUsbUiNotifOtgError, 
-            notifierParamsPckg, iRes );
-		
-    User::After(KUpdateDelay); //simulate update after a delay
-    TPckgBuf<TInt> notifierParamsPckgUpdate;
-    notifierParamsPckgUpdate() = EUsbOtgErrorNoMemory;    
-  	TInt retVal = iNotifier -> UpdateNotifier( KUsbUiNotifOtgError, 
-  	        notifierParamsPckgUpdate, response);
-  	
-    iNotifier->Close();  	
-    return retVal;    
-}
-
-
-TInt CUSBUiNotifApiTest::FinishQuery( CStifItemParser& aItem )
-    {
-    iLog -> Log( _L("FinishQuery") );
     TInt res;
-    TPtrC optionName( KNullDesC );
     TTestOption option;
     
     if ( iCompleteQuery )
         {
-        iLog -> Log( _L("FinishQuery completing request") );
         TRequestStatus* statPtr = &iReqStatus;
         User::RequestComplete( statPtr, KErrNone );
-        }
+        }    
     
-    iLog -> Log( _L("FinishQuery getting options") );
-    res = aItem.GetString( _L( "FinishQuery" ), optionName );   
+    res = GetTestOption( aTestSubOption, option );
     if ( res != KErrNone )
         {
-        iLog -> Log( _L("GetString failed with value: %d"), res );
+        TRACE_INFO(  (_L("GetTestOption failed with value: %d"), res) );
         iNotifier -> Close();
         return res;
         }
     
-    res = GetTestOption( optionName, option );
-    if ( res != KErrNone )
-        {
-        iLog -> Log( _L("GetTestOption failed with value: %d"), res );
-        iNotifier -> Close();
-        return res;
-        }
-    
-    iLog -> Log( _L("FinishQuery waiting for request") );
-    User::WaitForRequest( iReqStatus );
-    iLog -> Log( _L("FinishQuery closing notifier") );
+    User::WaitForRequest( iReqStatus );   
     iNotifier -> Close();
-    iNotifierConnected = EFalse;
     
     switch( option )
         {
         case EQueryAccepted:
-            iLog -> Log( _L("Request status value: %d, expected: %d"), iReqStatus.Int(), KErrNone );
+            TRACE_INFO(  (_L("Request status value: %d, expected: %d"), iReqStatus.Int(), KErrNone) );
             STIF_ASSERT_EQUALS( KErrNone, iReqStatus.Int() );
             break;
         case EQueryCanceled:
-            iLog -> Log( _L("Request status value: %d, expected: %d"), iReqStatus.Int(), KErrCancel );
+            TRACE_INFO(  (_L("Request status value: %d, expected: %d"), iReqStatus.Int(), KErrCancel) );
             STIF_ASSERT_EQUALS( KErrCancel, iReqStatus.Int() );
             break;
         default:
             return KErrNotFound;
         }
     
-    iLog -> Log( _L("Test case passed!") );
+    aTestResult = ETestCasePassed;
+    
+    TRACE_INFO(  _L("<<<FinishQuery") ); 
+    
     return KErrNone;
     }
 
-TInt CUSBUiNotifApiTest::LoadNotifiersL( CStifItemParser& /*aItem*/ )
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::LoadNotifiersL
+// -----------------------------------------------------------------------------
+
+void CUsbUiNotifApiTest::LoadNotifiersL( TUsbUiNotifApiTestResult& aTestResult )
     {
+    TRACE_INFO(  _L(">>>LoadNotifiersL") );
+    
     iNotifierArray = reinterpret_cast<CArrayPtr<MEikSrvNotifierBase2>*>(
 												REComSession::CreateImplementationL(TUid::Uid(0x10281F23), iInstanceUid));
-	return KErrNone;	
-    }
+
+    aTestResult = ETestCasePassed;
     
-TInt CUSBUiNotifApiTest::UnLoadNotifiers ( CStifItemParser& /*aItem*/ )
+    TRACE_INFO(  _L("<<<LoadNotifiersL") ); 	
+    }
+
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::UnLoadNotifiers
+// -----------------------------------------------------------------------------
+
+void CUsbUiNotifApiTest::UnLoadNotifiers ( TUsbUiNotifApiTestResult& aTestResult )
     {
+    TRACE_INFO(  _L(">>>UnLoadNotifiers") );
+    
     TInt count = iNotifierArray->Count();
     TInt i=0;
     for (i=0; i<count; i++)
@@ -590,164 +719,216 @@ TInt CUSBUiNotifApiTest::UnLoadNotifiers ( CStifItemParser& /*aItem*/ )
         }
     iNotifierArray->Reset();    
     delete iNotifierArray;
-    iNotifierArray = NULL;
     REComSession::DestroyedImplementation(iInstanceUid);    
-    return KErrNone;
+
+    aTestResult = ETestCasePassed;
+    
+    TRACE_INFO(  _L("<<<UnLoadNotifiers") ); 
     }
-                       
-TInt CUSBUiNotifApiTest::GetQueryType( TPtrC aTypeString, TUSBUIQueries& aQueryType )
+
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::Update
+// -----------------------------------------------------------------------------
+
+void CUsbUiNotifApiTest::Update( TUsbUiNotifApiTestResult& aTestResult  )
     {
+    TRACE_INFO(  _L(">>>Update") );
+    TInt count = iNotifierArray->Count();
+    TInt i=0;    
+    _LIT8(test, "test");
+    TBuf8<32> buf(test);
+    for (i=0; i<count; i++)
+        {
+        iNotifierArray->At(i)->UpdateL(buf);        
+        }    
+    
+    aTestResult = ETestCasePassed;
+    
+    TRACE_INFO(  _L("<<<Update") );
+    }
+
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::Notifierstart
+// -----------------------------------------------------------------------------
+
+void CUsbUiNotifApiTest::Notifierstart( TUsbUiNotifApiTestResult& aTestResult )
+    {
+    TRACE_INFO(  _L(">>>Notifierstart") );
+    TInt count = iNotifierArray->Count();
+    TInt i=0;    
+    _LIT8(test, "test");
+    TBuf8<32> buf(test);
+    for (i=0; i<count; i++)
+        {
+        iNotifierArray->At(i)->StartL(buf);        
+        }
+    
+    aTestResult = ETestCasePassed;
+    
+    TRACE_INFO(  _L("<<<Notifierstart") );
+    }
+
+
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::GetQueryType
+// -----------------------------------------------------------------------------
+
+TInt CUsbUiNotifApiTest::GetQueryType( TPtrC aTypeString, TUSBUIQueries& aQueryType )
+    {
+    TRACE_INFO(  _L(">>>GetQueryType") );
     if ( !aTypeString.Compare( _L( "EUSBNoMemoryCard" ) ) )
         {
         aQueryType = EUSBNoMemoryCard;
-        iLog -> Log( _L("Query type: EUSBNoMemoryCard") );
+        TRACE_INFO(  _L("Query type: EUSBNoMemoryCard") );
         }
     else if ( !aTypeString.Compare( _L( "EUSBStorageMediaFailure" ) ) )
         {
         aQueryType = EUSBStorageMediaFailure;
-        iLog -> Log( _L("Query type: EUSBStorageMediaFailure") );
+        TRACE_INFO(  _L("Query type: EUSBStorageMediaFailure") );
         }
-    else if ( !aTypeString.Compare( _L( "EUSBDiskFull" ) ) )
+    else if ( !aTypeString.Compare( _L( "EUSBChangeFromMassStorage" ) ) )
         {
-        aQueryType = EUSBDiskFull;
-        iLog -> Log( _L("Query type: EUSBDiskFull") );
-        }    
-    else if ( !aTypeString.Compare( _L( "EUSBNotEnoughRam" ) ) )
-        {
-        aQueryType = EUSBNotEnoughRam;
-        iLog -> Log( _L("Query type: EUSBNotEnoughRam") );
+        aQueryType = EUSBChangeFromMassStorage;
+        TRACE_INFO(  _L("Query type: EUSBChangeFromMassStorage") );
         }    
     else
         {
-        iLog -> Log( _L("Query type: not supported") );
+        TRACE_INFO(  _L("Query type: not supported") );
         return KErrNotFound;
         }
- 
+    TRACE_INFO(  _L("<<<GetQueryType") );
     return KErrNone;
     }
 
-TInt CUSBUiNotifApiTest::GetOTGErrorType( TPtrC aTypeString, TUsbUiNotifOtgError& aQueryType )
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::GetOTGErrorType
+// -----------------------------------------------------------------------------
+
+TInt CUsbUiNotifApiTest::GetOTGErrorType( TPtrC aTypeString, TUsbUiNotifOtgError& aQueryType )
     {
+    TRACE_INFO(  _L(">>>GetOTGErrorType") );
+    
     if ( !aTypeString.Compare( _L( "EUsbOtgTooMuchPower" ) ) )
         {
         aQueryType = EUsbOtgTooMuchPower;
-        iLog -> Log( _L("Query type: EUsbOtgTooMuchPower") );
+        TRACE_INFO(  _L("Query type: EUsbOtgTooMuchPower") );
         }    
     else if ( !aTypeString.Compare( _L( "EUsbOtgTooMuchPowerRequired" ) ) )
         {
         aQueryType = EUsbOtgTooMuchPowerRequired;
-        iLog -> Log( _L("Query type: EUsbOtgTooMuchPowerRequired") );
+        TRACE_INFO(  _L("Query type: EUsbOtgTooMuchPowerRequired") );
         }    
     else if ( !aTypeString.Compare( _L( "EUsbOtgUnsupportedDevice" ) ) )
         {
         aQueryType = EUsbOtgUnsupportedDevice;
-        iLog -> Log( _L("Query type: EUsbOtgUnsupportedDevice") );
+        TRACE_INFO(  _L("Query type: EUsbOtgUnsupportedDevice") );
         }        
     else if ( !aTypeString.Compare( _L( "EUsbOtgHubUnsupported" ) ) )
         {
         aQueryType = EUsbOtgHubUnsupported;
-        iLog -> Log( _L("Query type: EUsbOtgHubUnsupported") );
+        TRACE_INFO(  _L("Query type: EUsbOtgHubUnsupported") );
         }            
     else if ( !aTypeString.Compare( _L( "EUsbOtgErrorInConnection" ) ) )
         {
         aQueryType = EUsbOtgErrorInConnection;
-        iLog -> Log( _L("Query type: EUsbOtgErrorInConnection") );
+        TRACE_INFO(  _L("Query type: EUsbOtgErrorInConnection") );
         }                
     else if ( !aTypeString.Compare( _L( "EUsbOtgErrorAttachTimedOut" ) ) )
         {
         aQueryType = EUsbOtgErrorAttachTimedOut;
-        iLog -> Log( _L("Query type: EUsbOtgErrorAttachTimedOut") );
-        }                    
-    else if ( !aTypeString.Compare( _L( "EUsbOtgErrorNoMemory" ) ) )
-        {
-        aQueryType = EUsbOtgErrorNoMemory;
-        iLog -> Log( _L("Query type: EUsbOtgErrorNoMemory") );
+        TRACE_INFO(  _L("Query type: EUsbOtgErrorAttachTimedOut") );
         }                    
     else
         {
-        iLog -> Log( _L("Query type: not supported") );
+        TRACE_INFO(  _L("Query type: not supported") );
         return KErrNotFound;
         } 
+    
+    TRACE_INFO(  _L("<<<GetOTGErrorType") );
     return KErrNone;    
     }
 
 
-TInt CUSBUiNotifApiTest::GetOTGWarningType( TPtrC aTypeString, TUsbUiNotifOtgWarning& aQueryType )
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::GetOTGWarningType
+// -----------------------------------------------------------------------------
+
+TInt CUsbUiNotifApiTest::GetOTGWarningType( TPtrC aTypeString, TUsbUiNotifOtgWarning& aQueryType )
     {        
+    TRACE_INFO(  _L(">>>GetOTGWarningType") );
+    
     if ( !aTypeString.Compare( _L( "EUsbOtgPartiallySupportedDevice" ) ) )
         {            
         aQueryType = EUsbOtgPartiallySupportedDevice;
-        iLog -> Log( _L("Query type: EUsbOtgPartiallySupportedDevice;") );
+        TRACE_INFO(  _L("Query type: EUsbOtgPartiallySupportedDevice;") );
         }    
     else
         {
-        iLog -> Log( _L("Query type: not supported") );
+        TRACE_INFO(  _L("Query type: not supported") );
         return KErrNotFound;
         }
- 
+
+    TRACE_INFO(  _L("<<<GetOTGWarningType") );
+    
     return KErrNone;
     }
 
-TInt CUSBUiNotifApiTest::GetMSMMrrorType( TPtrC aTypeString, THostMsErrCode& aQueryType )
+// -----------------------------------------------------------------------------
+// CUsbUiNotifApiTest::GetMSMMrrorType
+// -----------------------------------------------------------------------------
+
+TInt CUsbUiNotifApiTest::GetMSMMrrorType( TPtrC aTypeString, THostMsErrCode& aQueryType )
     {        
+    TRACE_INFO(  _L(">>>GetMSMMrrorType") );
     if ( !aTypeString.Compare( _L( "EUsbMSMMGeneralError" ) ) )
         {            
         aQueryType = EHostMsErrGeneral;
-        iLog -> Log( _L("Query type: EUsbOtgPartiallySupportedDevice;") );
+        TRACE_INFO(  _L("Query type: EUsbOtgPartiallySupportedDevice;") );
         }    
     else if ( !aTypeString.Compare( _L( "EUsbMSMMUnknownFileSystem" ) ) )
         {
         aQueryType = EHostMsErrUnknownFileSystem;
-        iLog -> Log( _L("Query type: EUsbMSMMUnknownFileSystem") );
+        TRACE_INFO(  _L("Query type: EUsbMSMMUnknownFileSystem") );
         }         
     else if ( !aTypeString.Compare( _L( "EUsbMSMMOutOfMemory" ) ) )
         {
         aQueryType = EHostMsErrOutOfMemory;
-        iLog -> Log( _L("Query type: EUsbMSMMOutOfMemory") );
-        }     
-    else if ( !aTypeString.Compare( _L( "EUsbMSMMSafeToRemove" ) ) )
-        {
-        aQueryType = EHostMsErrNone;
-        iLog -> Log( _L("Query type: EUsbMSMMSafeToRemove") );
-        }     
-    else if ( !aTypeString.Compare( _L( "EUsbMSMMUnableToEject" ) ) )
-        {
-        aQueryType = EHostMsErrInUse;
-        iLog -> Log( _L("Query type: EUsbMSMMUnableToEject") );
+        TRACE_INFO(  _L("Query type: EUsbMSMMOutOfMemory") );
         }     
     else
         {
-        iLog -> Log( _L("Query type: not supported") );
+        TRACE_INFO(  _L("Query type: not supported") );
         return KErrNotFound;
         }
- 
+
+    TRACE_INFO(  _L("<<<GetMSMMrrorType") );
     return KErrNone;
     }
-    
+
 // -----------------------------------------------------------------------------
-// CBtNotifApiTest::GetTestOption
+// CUsbUiNotifApiTest::GetTestOption
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::GetTestOption( TPtrC aOptionString, TTestOption& aOption )
+TInt CUsbUiNotifApiTest::GetTestOption( TPtrC aOptionString, TTestOption& aOption )
     {    
     if ( !aOptionString.Compare( _L( "DISCARD" ) ) )
         {
         aOption = EQueryDiscarded;
-        iLog -> Log( _L("Test type: EQueryDiscarded") );
+        TRACE_INFO(  _L("Test type: EQueryDiscarded") );
         }
     else if ( !aOptionString.Compare( _L( "ACCEPT" ) ) )
         {
         aOption = EQueryAccepted;
-        iLog -> Log( _L("Test type: EQueryAccepted") );
+        TRACE_INFO(  _L("Test type: EQueryAccepted") );
         }
     else if ( !aOptionString.Compare( _L( "CANCEL" ) ) )
         {
         aOption = EQueryCanceled;
-        iLog -> Log( _L("Test type: EQueryCanceled") );
+        TRACE_INFO(  _L("Test type: EQueryCanceled") );
         }
     else
         {
-        iLog -> Log( _L("Test type: not supported") );
+        TRACE_INFO(  _L("Test type: not supported") );
         return KErrNotFound;
         }
  
@@ -755,62 +936,38 @@ TInt CUSBUiNotifApiTest::GetTestOption( TPtrC aOptionString, TTestOption& aOptio
     }
 
 // -----------------------------------------------------------------------------
-// CBtNotifApiTest::GetPersonalityIdFromString
+// CUsbUiNotifApiTest::GetPersonalityIdFromString
 // -----------------------------------------------------------------------------
 
-TInt CUSBUiNotifApiTest::GetPersonalityIdFromString( TPtrC aOptionString, TInt& aPersonalityId )
+TInt CUsbUiNotifApiTest::GetPersonalityIdFromString( TPtrC aOptionString, TInt& aPersonalityId )
     {    
     if ( !aOptionString.Compare( _L( "MS" ) ) )
         {
         aPersonalityId = KUsbPersonalityIdMS;
-        iLog -> Log( _L("Usb personality type: KUsbPersonalityIdMS") );
+        TRACE_INFO(  _L("Usb personality type: KUsbPersonalityIdMS") );
         }
-    else if ( !aOptionString.Compare( _L( "PTP" ) ) )
+    else if ( !aOptionString.Compare( _L( "PCSUITE" ) ) )
         {
-        aPersonalityId = KUsbPersonalityIdPTP;
-        iLog -> Log( _L("Usb personality type: KUsbPersonalityIdPTP") );
+        aPersonalityId = KUsbPersonalityIdPCSuite;
+        TRACE_INFO(  _L("Usb personality type: KUsbPersonalityIdPCSuite") );
         }
     else if ( !aOptionString.Compare( _L( "MTP" ) ) )
         {
         aPersonalityId = KUsbPersonalityIdMTP;
-        iLog -> Log( _L("Usb personality type: KUsbPersonalityIdMTP") );
+        TRACE_INFO(  _L("Usb personality type: KUsbPersonalityIdMTP") );
         }
     else if ( !aOptionString.Compare( _L( "PCSUITEMTP" ) ) )
         {
         aPersonalityId = KUsbPersonalityIdPCSuiteMTP;
-        iLog -> Log( _L("Usb personality type: KUsbPersonalityIdPCSuiteMTP") );
+        TRACE_INFO(  _L("Usb personality type: KUsbPersonalityIdPCSuiteMTP") );
         }
     else
         {
-        iLog -> Log( _L("Usb personality type: not found") );
+        TRACE_INFO(  _L("Usb personality type: not found") );
         return KErrNotFound;  
         }
  
     return KErrNone;
-    }
-
-
-TInt CUSBUiNotifApiTest::FindAndKillProcess(const TDesC& aProcessName)
-    {
-    iLog -> Log( _L("FindAndKillProcess") );
-    TInt ret = KErrNotFound;
-    RProcess process;            
-    TFindProcess findProc;
-    findProc.Find(aProcessName);
-    TFullName procName;
-    ret = findProc.Next(procName);
-    iLog -> Log( _L("FindAndKillProcess findProc returned: %d"), ret );
-    if (ret == KErrNone)
-        {
-        ret = process.Open(procName, EOwnerThread);
-        iLog -> Log( _L("FindAndKillProcess process open returned: %d"), ret );
-        if (ret == KErrNone)
-            {
-            process.Terminate(KErrNone);
-            process.Close();
-            }
-        }
-    return ret;
     }
 
 // ========================== OTHER EXPORTED FUNCTIONS =========================

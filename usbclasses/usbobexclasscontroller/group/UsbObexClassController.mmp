@@ -47,4 +47,4 @@ LIBRARY         ecom.lib  // ECOM API
 LIBRARY         usbclasscontroller.lib //General Class Controller API
 LIBRARY         obexusbapi.lib // Obex Service Manager Client API
 
-
+#include <usb/usblogger.mmh>

@@ -1,23 +1,24 @@
 @rem
-@rem Copyright (c) 2006 - 2010 Nokia Corporation and/or its subsidiary(-ies).
+@rem Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 @rem All rights reserved.
-@rem This material, including documentation and any related 
-@rem computer programs, is protected by copyright controlled by 
-@rem Nokia. All rights are reserved. Copying, including 
-@rem reproducing, storing, adapting or translating, any 
-@rem or all of this material requires the prior written consent of 
-@rem Nokia. This material also contains confidential 
-@rem information which may not be disclosed to others without the 
-@rem prior written consent of Nokia.
+@rem This component and the accompanying materials are made available
+@rem under the terms of "Eclipse Public License v1.0"
+@rem which accompanies this distribution, and is available
+@rem at the URL "http://www.eclipse.org/legal/epl-v10.html".
 @rem
 @rem Initial Contributors:
 @rem Nokia Corporation - initial contribution.
 @rem
 @rem Contributors:
 @rem
-@rem Description:  
+@rem Description: Test script config file
+@rem
 @rem
 
-call sbs -k -c armv5.test 
+rd /q /s x:\epoc32\BUILD
+
+call bldmake bldfiles
+call abld test build armv5
 call makesis usbuinotifapitest_phone.pkg
-call signsis usbuinotifapitest_phone.sis usbuinotifapitest_phone.sisx Nokia_RnDCert_02.der Nokia_RnDCert_02.key
+call signsis usbuinotifapitest_phone.sis usbuinotifapitest_phone.sisx x:\rd.cer x:\rd-key.pem
+call pause

@@ -44,7 +44,7 @@
 ; None
 
 ; Install files
-"\epoc32\release\armv5\urel\USBLocodPluginTest.dll"-"c:\Sys\Bin\USBLocodPluginTest.dll"
+"\epoc32\release\armv5\udeb\USBLocodPluginTest.dll"-"c:\Sys\Bin\USBLocodPluginTest.dll"
 "..\init\USBLocodPluginTest_phone.ini"-"c:\testframework\testframework.ini"
 "..\conf\USBLocodPluginTest.cfg"-"c:\testframework\USBLocodPluginTest.cfg"
   

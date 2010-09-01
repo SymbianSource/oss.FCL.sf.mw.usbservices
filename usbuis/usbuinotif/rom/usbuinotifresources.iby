@@ -19,11 +19,9 @@
 
 REM USB UI notifiers resources
 
-#include <data_caging_paths_for_iby.hrh>
-
 #ifdef __USB_MULTIPERSONALITY 
 
-data=DATAZ_\QT_TRANSLATIONS_DIR\usbdialogs.qm   QT_TRANSLATIONS_DIR\usbdialogs.qm
+data=DATAZ_\RESOURCE_FILES_DIR\usbuinotif.rsc    RESOURCE_FILES_DIR\usbuinotif.rsc
 
 #endif // __USB_MULTIPERSONALITY
 #endif // __USBUINOTIFRESOURCES_IBY__

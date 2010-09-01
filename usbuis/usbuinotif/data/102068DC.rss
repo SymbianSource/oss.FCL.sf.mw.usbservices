@@ -17,7 +17,7 @@
 */
 
 
-#include "ecom/registryinfo.rh"
+#include "registryinfo.rh"
 #include "uikon.hrh"
 
 RESOURCE REGISTRY_INFO theInfo

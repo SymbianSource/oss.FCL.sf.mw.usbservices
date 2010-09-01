@@ -22,8 +22,8 @@
 #include <e32std.h>
 #include <cusbclasscontrollerplugin.h>
 #include <usbobex.h>
+#include <usb/usblogger.h>
 #include "obexsmwatcher.h"
-
 
 const TInt KObexClassPriority = 2;
 const TInt KObexNumInterfaces = 2;

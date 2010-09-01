@@ -30,7 +30,7 @@
 #include "debug.h"
 #include "musbwatchernotify.h"
 #include "cusbwatchersession.h"
-#include "cusbindicatorhandler.h"
+#include "tusbindicatorhandler.h"
 
 
 class CUsbActiveState;
@@ -180,7 +180,7 @@ public:
      * @param aStateOld old device state
      * @param aStateNew new device state
      */
-    void StateChangeNotifyL( TUsbDeviceState aStateOld, 
+    void StateChangeNotify( TUsbDeviceState aStateOld, 
             TUsbDeviceState aStateNew );
     
    
@@ -427,7 +427,7 @@ private: // Data
     /*
      * USB indicator handler to handle device side indicator
      */
-    CUsbIndicatorHandler* iUsbIndicatorHandler;
+    TUsbIndicatorHandler iUsbIndicatorHandler;
     
     /*
      * Starting mode is normal?

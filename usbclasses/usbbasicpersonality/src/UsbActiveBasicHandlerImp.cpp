@@ -33,6 +33,7 @@ const TImplementationProxy UsbPersonalityImplementationTable[] =
 	,IMPLEMENTATION_PROXY_ENTRY(0x10282C70, CUsbActiveBasicHandler::NewL)
     ,IMPLEMENTATION_PROXY_ENTRY(0x2000B5D2, CUsbActiveBasicHandler::NewL) // PCS+MTP
     ,IMPLEMENTATION_PROXY_ENTRY(0x20029E41, CUsbActiveBasicHandler::NewL) // PhoneAsModem
+    ,IMPLEMENTATION_PROXY_ENTRY(0xA000EA04, CUsbActiveBasicHandler::NewL) // RNDIS
     };
 
 /**

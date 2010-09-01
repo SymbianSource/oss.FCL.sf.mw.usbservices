@@ -20,6 +20,9 @@
 #include <usbuinotif.h>
 #include <eikenv.h>
 #include <data_caging_path_literals.hrh> 
+#include <usbman.h>
+#include <usbwatcher.h>
+#include <AknCapServerClient.h>  
 #include "usbuinotifdebug.h"
 // CONSTANTS
 // Literal resource filename 
@@ -35,7 +38,7 @@ _LIT(KResourceFileName, "usbuinotif.rsc");
  *
  *  @lib
  */
-NONSHARABLE_CLASS(CUSBUINotifierBase) : public CBase, public MEikSrvNotifierBase2
+NONSHARABLE_CLASS(CUSBUINotifierBase) : public CActive, public MEikSrvNotifierBase2
     {
 public:
     // Constructors and destructor
@@ -69,8 +72,15 @@ protected:
      * @param aMessage Should be completed when the notifier is deactivated.
      * @return None.
      */
-    virtual void StartDialogL(const TDesC8& aBuffer, TInt aReplySlot,
+    virtual void GetParamsL(const TDesC8& aBuffer, TInt aReplySlot,
             const RMessagePtr2& aMessage)=0;
+
+    /**
+     * A function for checking the status of Apps key.
+     * @param aEnable A Boolean according to Apps key status
+     * @return None.
+     */
+    void SuppressAppSwitching(TBool aEnable);
 
     /**
      * Check if message needs to be completed and complete it
@@ -78,14 +88,34 @@ protected:
      */
     void CompleteMessage(TInt aReason);
 
-    /**
-     * Initialize HbTextResolrer, if not initialized before
-     * (checks it from TLS)
-     */    
-    void InitializeTextResolver();
-   
+    /*
+     * Check whether the keylock is on. If yes turn it off.
+     * @since S60 3.2
+     */
+    void DisableKeylock();
+
+    /*
+     * Restore the keyguard on if it has been disabled by DisableKeylock.
+     * @since S60 3.2
+     */
+    void RestoreKeylock();
+
 protected:
     // Functions from base classes        
+
+    /**
+     * From CActive Gets called when a request completes.
+     * @param None.
+     * @return None.
+     */
+    virtual void RunL()=0;
+
+    /**
+     * From CActive Gets called when a leave occurres in RunL.
+     * @param aError Symbian OS errorcode.
+     * @return error code.
+     */
+    virtual TInt RunError(TInt aError);
 
     /**
      * From MEikSrvNotifierBase2 Called when a notifier is first loaded 
@@ -101,7 +131,7 @@ protected:
      * @param None.
      * @return None.
      */
-   virtual void Cancel();
+    virtual void Cancel();
 
 private:
     // Functions from base classes        
@@ -146,8 +176,16 @@ private:
      */
     virtual TPtrC8 UpdateL(const TDesC8& aBuffer);
 
- 
-  
+    /**
+     * From CActive Gets called when a request is cancelled.
+     * @param None.
+     * @return None.
+     */
+    virtual void DoCancel();
+
+private:
+    TBool iKeylockChanged; // Flag used to restore the keylock
+    RAknUiServer iAknServer;
 protected:
     // Data
 
@@ -158,7 +196,10 @@ protected:
     TInt iResourceFileFlag; // Flag for eikon env.
     TNotifierInfo iInfo; // Notifier parameters structure    
     CEikonEnv* iEikEnv; // Local eikonenv, not own
-    TBool iTranslator ;
+    TBool iAppsKeyBlocked; // Apps key status 
+
+    TBool iCoverDisplaySupported; // Cover Display UI feature support
+
     };
 
 #endif // USBUINOTIFIER_H

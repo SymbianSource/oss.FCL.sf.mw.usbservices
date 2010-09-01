@@ -1,0 +1,58 @@
+/*
+* Copyright (c) 2005, 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file provides project information required for 
+                  USB UI.
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+../loc/USBClassChangeUI.loc             MW_LAYER_LOC_EXPORT_PATH(usbclasschangeui.loc)
+../rom/USBClassChangeUI.iby             CORE_MW_LAYER_IBY_EXPORT_PATH(USBClassChangeUI.iby)
+../rom/USBClassChangeUIResources.iby    LANGUAGE_MW_LAYER_IBY_EXPORT_PATH(USBClassChangeUIResources.iby)
+// Help exports
+#include "../help/group/bld.inf"
+PRJ_EXTENSIONS
+
+START EXTENSION s60/mifconv
+OPTION TARGETFILE usbclasschangeui_aif.mif
+OPTION SOURCES -c8,8 qgn_menu_usb
+END
+
+PRJ_MMPFILES
+/*
+#ifdef __SCALABLE_ICONS
+    gnumakefile usbui_icons_aif_scalable_dc.mk
+#else 
+    gnumakefile usbui_icons_aif_bitmaps_dc.mk
+#endif
+*/
+../group/USBClassChangeUI.mmp
+
+// Define _USBUI_BLF_INF_INCLUDED_ to prevent duplicate export
+// of USBClassChangeUI.loc
+#define _USBUI_BLF_INF_INCLUDED_
+
+#include "../USBClassChangeUIPlugin/group/bld.inf"
+
+
+PRJ_TESTMMPFILES
+// None
+
+// End of File

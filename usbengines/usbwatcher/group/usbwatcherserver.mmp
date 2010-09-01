@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -37,7 +37,7 @@ SOURCE      cusbwatcherscheduler.cpp
 SOURCE      cusbdevicelock.cpp
 SOURCE      cusbdevconstarter.cpp
 SOURCE      cusbglobalsystemstateobserver.cpp
-SOURCE      cusbindicatorhandler.cpp
+SOURCE      tusbindicatorhandler.cpp
 
 
 USERINCLUDE   ../inc
@@ -45,7 +45,36 @@ USERINCLUDE   ../inc
 MW_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE ../../usbotgwatcher/inc
 SYSTEMINCLUDE   /epoc32/include/usb
-SYSTEMINCLUDE   /epoc32/include/mw/hb/hbcore
+
+
+START RESOURCE usbman_pcsmtp.rss
+TARGET	usbman_pcsmtp
+TARGETPATH /private/101fe1db
+HEADER
+LANGUAGE_IDS
+END
+
+START RESOURCE usbman_pcs.rss
+TARGET	usbman_pcs
+TARGETPATH /private/101fe1db
+HEADER
+LANGUAGE_IDS
+END
+
+START RESOURCE usbman_pcspam.rss
+TARGET	usbman_pcspam
+TARGETPATH /private/101fe1db
+HEADER
+LANGUAGE_IDS
+END
+
+START RESOURCE usbman_pcsmtppam.rss
+TARGET	usbman_pcsmtppam
+TARGETPATH /private/101fe1db
+HEADER
+LANGUAGE_IDS
+END
+
 
 LIBRARY       euser.lib             // Kernel API
 LIBRARY       usbman.lib            // RUsb API (i.e. USB Manager's client API)
@@ -55,6 +84,5 @@ LIBRARY       usbpersonality.lib
 LIBRARY       centralrepository.lib // Central Repository (USB Personality API)
 LIBRARY       featmgr.lib
 LIBRARY       usbotgwatcher.lib  //OTG
-LIBRARY       hbcore.lib
 
 DEBUGLIBRARY  flogger.lib            // File logging

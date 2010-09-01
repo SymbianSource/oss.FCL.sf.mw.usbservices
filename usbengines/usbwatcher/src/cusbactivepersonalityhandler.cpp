@@ -268,9 +268,10 @@ void CUsbActivePersonalityHandler::StateChangeNotify(
     iDeviceState = aStateNew;        
     switch ( aStateNew )
         {
-        case EUsbDeviceStateConfigured:
+        case EUsbDeviceStateAddress:
             {
-            if ((aStateOld != EUsbDeviceStateSuspended) && (ESwStateCharging
+            if ((aStateOld != EUsbDeviceStateSuspended) && (aStateOld
+                    != EUsbDeviceStateConfigured) && (ESwStateCharging
                     != CUsbGlobalSystemStateObserver::GlobalSystemState()))
                 {
                 iPersonalityParams->PersonalityNotifier().ShowQuery(

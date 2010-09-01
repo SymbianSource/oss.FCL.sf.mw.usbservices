@@ -15,57 +15,88 @@
 *
 */
 
+
+
+
 // INCLUDE FILES
 #include <Stiftestinterface.h>
-#include "usbuinotifapitest.h"
+#include "UsbUiNotifApiTest.h"
 #include <SettingServerClient.h>
 
 // EXTERNAL DATA STRUCTURES
+//extern  ?external_data;
 
 // EXTERNAL FUNCTION PROTOTYPES  
+//extern ?external_function( ?arg_type,?arg_type );
 
 // CONSTANTS
+//const ?type ?constant_var = ?constant;
 
 // MACROS
+//#define ?macro ?macro_def
 
 // LOCAL CONSTANTS AND MACROS
+//const ?type ?constant_var = ?constant;
+//#define ?macro_name ?macro_def
 
 // MODULE DATA STRUCTURES
+//enum ?declaration
+//typedef ?declaration
 
 // LOCAL FUNCTION PROTOTYPES
+//?type ?function_name( ?arg_type, ?arg_type );
 
 // FORWARD DECLARATIONS
+//class ?FORWARD_CLASSNAME;
 
 // ============================= LOCAL FUNCTIONS ===============================
+
+// -----------------------------------------------------------------------------
+// ?function_name ?description.
+// ?description
+// Returns: ?value_1: ?description
+//          ?value_n: ?description_line1
+//                    ?description_line2
+// -----------------------------------------------------------------------------
+//
+/*
+?type ?function_name(
+    ?arg_type arg,  // ?description
+    ?arg_type arg)  // ?description
+    {
+
+    ?code  // ?comment
+
+    // ?comment
+    ?code
+    }
+*/
 
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::CUSBUiNotifApiTest
+// CUsbUiNotifApiTest::CUsbUiNotifApiTest
 // C++ default constructor can NOT contain any code, that
 // might leave.
 // -----------------------------------------------------------------------------
 //
-CUSBUiNotifApiTest::CUSBUiNotifApiTest( 
+CUsbUiNotifApiTest::CUsbUiNotifApiTest( 
     CTestModuleIf& aTestModuleIf ):
         CScriptBase( aTestModuleIf ),
         iRes(0)
-        
     {
     }
 
 // -----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::ConstructL
+// CUsbUiNotifApiTest::ConstructL
 // Symbian 2nd phase constructor can leave.
 // -----------------------------------------------------------------------------
 //
-void CUSBUiNotifApiTest::ConstructL()
+void CUsbUiNotifApiTest::ConstructL()
     {
     //Read logger settings to check whether test case name is to be
     //appended to log file name.
-    
     RSettingServer settingServer;
-    CleanupClosePushL(settingServer); 
     TInt ret = settingServer.Connect();
     if(ret != KErrNone)
         {
@@ -80,7 +111,7 @@ void CUSBUiNotifApiTest::ConstructL()
         User::Leave(ret);
         } 
     // Close Setting server session
-    CleanupStack::PopAndDestroy(&settingServer);
+    settingServer.Close();
 
     TFileName logFileName;
     
@@ -88,48 +119,46 @@ void CUSBUiNotifApiTest::ConstructL()
         {
         TName title;
         TestModuleIf().GetTestCaseTitleL(title);
-        logFileName.Format(KUSBUiNotifApiTestLogFileWithTitle, &title);
+        logFileName.Format(KUsbUiNotifApiTestLogFileWithTitle, &title);
         }
     else
         {
-        logFileName.Copy(KUSBUiNotifApiTestLogFile);
+        logFileName.Copy(KUsbUiNotifApiTestLogFile);
         }
 
-    iLog = CStifLogger::NewL( KUSBUiNotifApiTestLogPath, 
+    iLog = CStifLogger::NewL( KUsbUiNotifApiTestLogPath, 
                           logFileName,
                           CStifLogger::ETxt,
                           CStifLogger::EFile,
                           EFalse );
     
     SendTestClassVersion();
-   
+
     iNotifier = new ( ELeave ) RNotifier();
-    /*
     iUsbWatcher = new ( ELeave ) RUsbWatcher();
     iRepository = CRepository::NewL( KCRUidUsbWatcher );
-    */
     }
 
 // -----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::NewL
+// CUsbUiNotifApiTest::NewL
 // Two-phased constructor.
 // -----------------------------------------------------------------------------
 //
-CUSBUiNotifApiTest* CUSBUiNotifApiTest::NewL( 
+CUsbUiNotifApiTest* CUsbUiNotifApiTest::NewL( 
     CTestModuleIf& aTestModuleIf )
     {
-    CUSBUiNotifApiTest* self = new (ELeave) CUSBUiNotifApiTest( aTestModuleIf );
+    CUsbUiNotifApiTest* self = new (ELeave) CUsbUiNotifApiTest( aTestModuleIf );
 
     CleanupStack::PushL( self );
     self->ConstructL();
-    CleanupStack::Pop( self );
+    CleanupStack::Pop();
 
     return self;
 
     }
 
 // Destructor
-CUSBUiNotifApiTest::~CUSBUiNotifApiTest()
+CUsbUiNotifApiTest::~CUsbUiNotifApiTest()
     { 
 
     // Delete resources allocated from test methods
@@ -141,11 +170,11 @@ CUSBUiNotifApiTest::~CUSBUiNotifApiTest()
     }
 
 //-----------------------------------------------------------------------------
-// CUSBUiNotifApiTest::SendTestClassVersion
+// CUsbUiNotifApiTest::SendTestClassVersion
 // Method used to send version of test class
 //-----------------------------------------------------------------------------
 //
-void CUSBUiNotifApiTest::SendTestClassVersion()
+void CUsbUiNotifApiTest::SendTestClassVersion()
 	{
 	TVersion moduleVersion;
 	moduleVersion.iMajor = TEST_CLASS_VERSION_MAJOR;
@@ -153,7 +182,7 @@ void CUSBUiNotifApiTest::SendTestClassVersion()
 	moduleVersion.iBuild = TEST_CLASS_VERSION_BUILD;
 	
 	TFileName moduleName;
-	moduleName = _L("USBUiNotifApiTest.dll");
+	moduleName = _L("UsbUiNotifApiTest.dll");
 
 	TBool newVersionOfMethod = ETrue;
 	TestModuleIf().SendTestModuleVersion(moduleVersion, moduleName, newVersionOfMethod);
@@ -170,7 +199,7 @@ EXPORT_C CScriptBase* LibEntryL(
     CTestModuleIf& aTestModuleIf ) // Backpointer to STIF Test Framework
     {
 
-    return ( CScriptBase* ) CUSBUiNotifApiTest::NewL( aTestModuleIf );
+    return ( CScriptBase* ) CUsbUiNotifApiTest::NewL( aTestModuleIf );
 
     }
 

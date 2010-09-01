@@ -42,11 +42,6 @@ START RESOURCE  2000fda8.rss
 TARGET          usbmscfileclasscontroller.rsc
 END
 
-start resource usbpammscfile.rss
-HEADER
-targetpath /private/101fe1db
-end
-
 LIBRARY         euser.lib
 LIBRARY         usbclasscontroller.lib
 LIBRARY         efsrv.lib

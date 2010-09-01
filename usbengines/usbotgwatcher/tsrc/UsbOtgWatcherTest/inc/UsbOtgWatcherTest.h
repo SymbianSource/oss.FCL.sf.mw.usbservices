@@ -232,9 +232,6 @@ NONSHARABLE_CLASS( CtUsbOtgWatcher ) : public CScriptBase
         
         void DeviceDetached_SupportedDeviceL( TUsbOtgWatcherTestBlockParams& aParams,
                             TUsbOtgWatcherTestResult& aTestResult );
-   
-        void IndicatorNotifier_IndicatorActivateL( TUsbOtgWatcherTestBlockParams& aParams,
-                            TUsbOtgWatcherTestResult& aTestResult );
         
         //others method
         void SetupL();

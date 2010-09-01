@@ -68,6 +68,6 @@ LIBRARY                 usbman.lib
 LIBRARY                 usbdescriptors.lib
 LIBRARY                 usbdi_utils.lib
 #endif
-LIBRARY                 hbcore.lib
+LIBRARY                 aknnotify.lib
 
 DEBUGLIBRARY            flogger.lib

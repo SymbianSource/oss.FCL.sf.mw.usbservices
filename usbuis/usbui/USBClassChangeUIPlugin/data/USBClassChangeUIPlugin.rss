@@ -1,0 +1,215 @@
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resources for USBClassChangeUIPlugin. 
+*
+*/
+
+
+#include <data_caging_paths_strings.hrh>
+
+//  RESOURCE IDENTIFIER
+NAME    USBP // 4 letter ID
+
+//  INCLUDES
+#include <eikon.rh>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <avkon.loc>
+#include <appinfo.rh>
+
+#include "USBClassChangeUIPlugin.hrh"
+#include <usbclasschangeui.loc>
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf = "USBCLASSCHANGEUI"; }
+
+
+//-----------------------------------------------------------------------------
+//   
+// r_usbclasschangeui_menubar
+// Menubar for main view
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_usbclasschangeui_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane = r_usbui_menu; txt=""; }
+        };
+    }
+
+//-----------------------------------------------------------------------------
+//   
+// r_usbui_menu
+// Application level menu
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_usbui_menu
+    {
+    items =
+        {
+        MENU_ITEM { command = EUSBUICmdSelect; txt = qtn_cffh_options_select ; flags = EEikMenuItemAction;},
+        MENU_ITEM { command = EUSBUICmdHelp; txt = qtn_options_help; },
+        MENU_ITEM { command = EAknCmdExit; txt = qtn_options_exit; }
+        };
+    }
+
+//-----------------------------------------------------------------------------
+//   
+// r_usbclasschangeui_app_menu
+// application menu
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_usbclasschangeui_app_menu
+    {
+    items=
+        {
+        MENU_ITEM { command=EAknCmdExit; txt=text_softkey_exit; }
+        };
+    }
+
+//-----------------------------------------------------------------------------
+//
+// r_usb_mode_setting_editor
+// Editor for entering all settings
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE LISTBOX r_usb_mode_setting_editor
+    {
+    flags = EEikListBoxMultipleSelection;
+    }
+
+//----------------------------------------------------
+//
+//  Hotkeys for USB UI
+//
+//----------------------------------------------------
+//
+RESOURCE HOTKEYS r_usbui_hotkeys
+    {
+    control=
+        {
+        HOTKEY { command=EAknCmdExit; key='e'; }
+        };
+    }
+
+
+//----------------------------------------------------
+//
+//  Softkeys for USB UI as application. 
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_usbui_softkeys_options_exit__select
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON {id=EAknSoftkeyExit; txt = text_softkey_exit;},
+        CBA_BUTTON {id=EUSBUICmdMskSelect; txt = text_softkey_select ;}
+        };
+    }
+
+
+//----------------------------------------------------
+//
+//  The main view of the USB UI application. Used when
+//  this .dll is loaded from the USBClassChangeUIAppUI
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_usbui_main_view
+    {
+    hotkeys = r_usbui_hotkeys;
+    menubar = r_usbclasschangeui_menubar;
+    cba     = r_usbui_softkeys_options_exit__select;
+    }
+
+//----------------------------------------------------
+//
+//  Title for the main view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_usb_title { buf = qtn_usb_title; }
+
+//----------------------------------------------------
+//  r_gs_usbui_view_caption 
+// 
+// USBClassChangeUI view caption for GS plugin
+//----------------------------------------------------
+//
+RESOURCE TBUF r_gs_usbui_view_caption
+    {
+    buf = qtn_set_folder_usb;
+    }
+    
+//----------------------------------------------------
+//
+//  Softkeys for USB UI as GS plugin. 
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_usbui_softkeys_options_back__select
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON {id=EAknSoftkeyBack; txt = text_softkey_back;},
+        CBA_BUTTON {id=EUSBUICmdMskSelect; txt = text_softkey_select ;}
+        };
+    }
+
+//----------------------------------------------------
+//
+//  The main view of the USB UI application as GS plugin
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_usbui_main_view_gs_plugin
+    {
+    hotkeys = r_usbui_hotkeys;
+    menubar = r_usbclasschangeui_menubar;
+    cba     = r_usbui_softkeys_options_back__select;
+    }
+
+//------------------------------------------------------------------------------
+//
+// Secondary status information
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cp_detail_usb_not_connected { buf = qtn_cp_detail_usb_not_connected; }
+RESOURCE TBUF r_cp_detail_usb_otg_conn { buf = qtn_cp_detail_usb_otg_conn; }
+RESOURCE TBUF r_cp_detail_usb_conn_mass_storage { buf = qtn_cp_detail_usb_conn_mass_storage; }
+RESOURCE TBUF r_cp_detail_usb_conn_pc_suite { buf = qtn_cp_detail_usb_conn_ovi_suite; }
+RESOURCE TBUF r_cp_detail_usb_conn_picture_transfer { buf = qtn_cp_detail_usb_conn_picture_transfer; }
+RESOURCE TBUF r_cp_detail_usb_conn_media_transfer { buf = qtn_cp_detail_usb_conn_media_transfer; }
+RESOURCE TBUF r_cp_detail_usb_conn_modem_inst { buf = qtn_cp_detail_usb_conn_modem_inst; }
+RESOURCE TBUF r_cp_detail_usb_conn_rndis { buf = qtn_cp_detail_usb_conn_rndis; }
+
+RESOURCE TBUF r_usb_mode_default { buf = qtn_usb_settings_default ;} 
+RESOURCE TBUF r_usb_mode_active { buf = qtn_usb_settings_active;} 
+
+// End of File

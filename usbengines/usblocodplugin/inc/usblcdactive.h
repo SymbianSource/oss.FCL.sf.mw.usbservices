@@ -21,7 +21,7 @@
 #define USBLCDACTIVE_H
 
 #include <locodbearerpluginobserver.h>
-
+#include <usb/usblogger.h>
 
 /**
  *  Base Active Object class 

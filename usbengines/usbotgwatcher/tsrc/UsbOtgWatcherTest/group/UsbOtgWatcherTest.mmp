@@ -25,9 +25,7 @@ TARGET          UsbOtgWatcherTest.dll
 TARGETTYPE      dll
 UID             0x1000008D 0x101FB3E3
 
-CAPABILITY      ALL -TCB
-//CAPABILITY	LocalServices ReadDeviceData NetworkControl WriteDeviceData DiskAdmin ReadUserData WriteUserData ProtServ CommDD
-//CAPABILITY CommDD NetworkControl WriteDeviceData NetworkServices LocalServices ProtServ	
+CAPABILITY CommDD NetworkControl WriteDeviceData NetworkServices LocalServices ProtServ	
 VENDORID                VID_DEFAULT
 
 DEFFILE         UsbOtgWatcherTest.def
@@ -56,7 +54,6 @@ SOURCE                  mockcusbbusactivityobserver.cpp
 SOURCE                  mockrusb.cpp 
 SOURCE                  mockcusbtimer.cpp 
 SOURCE                  mockcusbnotifmanager.cpp
-SOURCE                  mockchbindicatorsymbian.cpp
 
 // real classes to be tested
 SOURCEPATH ../../../src
@@ -78,7 +75,6 @@ SOURCE          CUsbStateHostDelayNotAttachedHandle.cpp
 SOURCE          CUsbStateHostDelayAttachedHandle.cpp
 SOURCE          CUsbStateHostUndefined.cpp
 SOURCE          cusbstatehostdelayhandle.cpp
-SOURCE          cusbindicatornotifier.cpp
 
 
 
