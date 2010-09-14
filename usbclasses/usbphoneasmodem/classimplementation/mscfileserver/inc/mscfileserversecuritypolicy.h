@@ -1,4 +1,4 @@
-// Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -21,24 +21,21 @@
 
 // USB masss storage Server Security Policy Definition
 
-const TUint KUsbMsServerRangeCount = 3;
+const TUint KUsbMsServerRangeCount = 2;
 
 const TInt KUsbMsServerRanges[KUsbMsServerRangeCount] = 
 	{
-	EMscFileStart,                // NetworkControl	[StartL/Stop]
-	EMscFileShutdown,				// DiskAdmin		[Shutdown]
+	EMscFileSetupLu,              // NetworkControl	[SetupLogicalUnitL/StartL/Stop/Shutdown]
     EMscFileShutdown + 1,         // fail (to KMaxInt)
 	};
 
 // Index numbers into KUsbMsServerElements[]
 const TInt KPolicyNetworkControl = 0;
-const TInt KPolicyDiskAdmin = 1;
 
 // Mapping IPCs to poicy element
 const TUint8 KUsbMsServerElementsIndex[KUsbMsServerRangeCount] = 
 	{
-	KPolicyNetworkControl,          // EMscFileStart & EMscFileStop 
-	KPolicyDiskAdmin,			 	// EMscFileShutdown 
+	KPolicyNetworkControl,          // EMscFileSetupLu, EMscFileStart, EMscFileStop, EMscFileShutdown
 	CPolicyServer::ENotSupported,   // EMscFileShutdown + 1 to KMaxTInt    
 	};
 
@@ -46,7 +43,6 @@ const TUint8 KUsbMsServerElementsIndex[KUsbMsServerRangeCount] =
 const CPolicyServer::TPolicyElement KUsbMsServerElements[] = 
 	{
   		{ _INIT_SECURITY_POLICY_C1(ECapabilityNetworkControl), CPolicyServer::EFailClient },
-		{ _INIT_SECURITY_POLICY_C1(ECapabilityDiskAdmin), CPolicyServer::EFailClient},
 		// the EFailClient means that if the check fails 
         // the CheckFailed method with return KErrPermissionDenied
 	};
