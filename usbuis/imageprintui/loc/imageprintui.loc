@@ -309,3 +309,4 @@
 // l: popup_note_wait_window
 // r: 3.2
 #define qtn_usb_wait_connect_cable "Connect USB cable"
+

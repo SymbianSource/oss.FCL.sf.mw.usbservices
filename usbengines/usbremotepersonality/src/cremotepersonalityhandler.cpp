@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -280,7 +280,7 @@ void CRemotePersonalityHandler::GetPersonalitiesL(RBuf8& aPersonalities)
            _L("[USBREMOTEPERSONALITY]\tCRemotePersonalityHandler::GetPersonalities Response length is %d bytes" ), responseLength));
     
     aPersonalities.Close();
-    aPersonalities.Create(responseLength);
+    aPersonalities.CreateL(responseLength);
     
     // Panic on Append never can be rised in this method, due to aPersonalities length exactly equal the appending data length.  
     aPersonalities.Append(responseLength);
@@ -462,7 +462,7 @@ void CRemotePersonalityHandler::GetLastResultL(RBuf8& aLastResult)
         }
     
     aLastResult.Close();
-    aLastResult.Create(1); // Length of response to GetLastResult request is 1 byte always.
+    aLastResult.CreateL(1); // Length of response to GetLastResult request is 1 byte always.
     
     // Panic on Append never can be rised here, due to aPersonalities length exactly equal the appending data length.  
     aLastResult.Append(static_cast<TInt8>(iLastResult));

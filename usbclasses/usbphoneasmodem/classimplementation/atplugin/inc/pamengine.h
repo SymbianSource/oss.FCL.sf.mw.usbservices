@@ -21,8 +21,6 @@
 // INCLUDES
 #include <e32std.h>
 #include <e32base.h>
-#include <cntdef.h>
-#include <cntdbobs.h>
 #include <badesca.h>
 #include <etel3rdparty.h>
 #include <rmmcustomapi.h>

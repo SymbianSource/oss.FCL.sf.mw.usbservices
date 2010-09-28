@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -91,7 +91,7 @@ CStateMachine::~CStateMachine()
 // Starts state machine
 // ---------------------------------------------------------------------------
 //
-void CStateMachine::Start()
+void CStateMachine::StartL()
     {
     
     FLOG( _L( "[USBDEVCON]\tCStateMachine::Start" ) );
@@ -103,7 +103,7 @@ void CStateMachine::Start()
         }
     
     iState = ESetupStage;   
-    iEP0Reader->ReadSetupPacket();
+    iEP0Reader->ReadSetupPacketL();
                 
     }
     
@@ -146,7 +146,7 @@ TInt CStateMachine::IsStarted() const
 // Something has been read from EP0 
 // ---------------------------------------------------------------------------
 //
-void CStateMachine::ReadEP0(RBuf8& aBuffer, const TRequestStatus& aStatus)
+void CStateMachine::ReadEP0L(RBuf8& aBuffer, const TRequestStatus& aStatus)
     {
     
     FTRACE(FPrint(
@@ -156,7 +156,7 @@ void CStateMachine::ReadEP0(RBuf8& aBuffer, const TRequestStatus& aStatus)
     if(KErrNone != aStatus.Int())
         {
         // restart
-        Start();
+        StartL();
         return;
         }
     
@@ -171,11 +171,11 @@ void CStateMachine::ReadEP0(RBuf8& aBuffer, const TRequestStatus& aStatus)
             
             if(aBuffer.Length() != KSetupPacketLength) // SetupPacket is always 8 bytes
                 {
-                Start();
+                StartL();
                 return;
                 }
             
-            ProcessSetupPacket(aBuffer);
+            ProcessSetupPacketL(aBuffer);
                                 
             break;
             }
@@ -200,7 +200,7 @@ void CStateMachine::ReadEP0(RBuf8& aBuffer, const TRequestStatus& aStatus)
             
             // all done, go to idle state
             iState = ESetupStage;
-            iEP0Reader->ReadSetupPacket();
+            iEP0Reader->ReadSetupPacketL();
             
             break;
             
@@ -218,7 +218,7 @@ void CStateMachine::ReadEP0(RBuf8& aBuffer, const TRequestStatus& aStatus)
 // Processing setup packet 
 // ---------------------------------------------------------------------------
 //
-void CStateMachine::ProcessSetupPacket(RBuf8& aSetupPacket)
+void CStateMachine::ProcessSetupPacketL(RBuf8& aSetupPacket)
     {
     
     FLOG( _L( "[USBDEVCON]\tCStateMachine::ProcessSetupPacket" ) );
@@ -233,11 +233,11 @@ void CStateMachine::ProcessSetupPacket(RBuf8& aSetupPacket)
 
         // save request, until receiving following data
         iBuffer.Close();
-        iBuffer.Create(aSetupPacket);
+        iBuffer.CreateL(aSetupPacket);
                 
         // switch to Data state
         iState = EDataStage;
-        iEP0Reader->Read(datalength);
+        iEP0Reader->ReadL(datalength);
     
         return;
         
@@ -259,7 +259,7 @@ void CStateMachine::ProcessSetupPacket(RBuf8& aSetupPacket)
             
         // listen to EP0
         iState = ESetupStage;
-        iEP0Reader->ReadSetupPacket();
+        iEP0Reader->ReadSetupPacketL();
         
         return;
         }
@@ -272,7 +272,7 @@ void CStateMachine::ProcessSetupPacket(RBuf8& aSetupPacket)
           _L("[USBDEVCON]\tCStateMachine::ProcessSetupPacket. Data from device is required: %d bytes" ),datalength));
 
         iState = EStatusStage;
-        iEP0Writer->Write(iBuffer, datalength);
+        iEP0Writer->WriteL(iBuffer, datalength);
         
         return;
                 
@@ -283,7 +283,7 @@ void CStateMachine::ProcessSetupPacket(RBuf8& aSetupPacket)
                 
     // all is done, listen to EP0, in setup stage
     iState = ESetupStage;
-    iEP0Reader->ReadSetupPacket();
+    iEP0Reader->ReadSetupPacketL();
     
     }
     
@@ -292,7 +292,7 @@ void CStateMachine::ProcessSetupPacket(RBuf8& aSetupPacket)
 // Something has been written to EP0 
 // ---------------------------------------------------------------------------
 //
-void CStateMachine::WroteEP0(const TRequestStatus& aStatus)
+void CStateMachine::WroteEP0L(const TRequestStatus& aStatus)
     {
     
     FTRACE(FPrint(
@@ -302,7 +302,7 @@ void CStateMachine::WroteEP0(const TRequestStatus& aStatus)
     if(KErrNone != aStatus.Int())
         {
         // restart
-        Start();
+        StartL();
         }
         
     switch(iState)
@@ -315,7 +315,7 @@ void CStateMachine::WroteEP0(const TRequestStatus& aStatus)
             // successfully wrote data to EP0
             // go to idle
             iState = ESetupStage;
-            iEP0Reader->ReadSetupPacket();
+            iEP0Reader->ReadSetupPacketL();
             
             break;
             }

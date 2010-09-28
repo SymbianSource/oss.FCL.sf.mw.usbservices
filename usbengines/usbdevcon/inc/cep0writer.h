@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -59,7 +59,7 @@ public:
      * @param aBuffer Data to write
      * @param aDataLength Max length of data to write
      */
-    void Write(const RBuf8& aBuffer, TUint aDataLength);
+    void WriteL(const RBuf8& aBuffer, TUint aDataLength);
     
 private:
     

@@ -33,7 +33,7 @@ SOURCEPATH      ../src
 SOURCE          USBRemotePersonalityTest_exe.cpp
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 
 EPOCSTACKSIZE   40960
 

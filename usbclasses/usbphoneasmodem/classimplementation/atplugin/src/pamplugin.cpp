@@ -1,4 +1,4 @@
-// Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -102,24 +102,20 @@ void CPamPlugin::HandleCommand( const TDesC8& aCmd, RBuf8& aReply, TBool aReplyN
 
     if (aCmd.FindF(KNqapTestString) >= 0)
         {
-        SupportedAccessPointL( aReply );
-        err = KErrNone;
+        err = SupportedAccessPoint( aReply );
         }
         
     else if (aCmd.FindF(KNqapInternetString) >= 0)
         {
-        ReadAccessPointL( KInternet, aReply );
-        err = KErrNone;
+        err = ReadAccessPoint( KInternet, aReply );
         }
     else if (aCmd.FindF(KNqapWapString) >= 0)
         {
-        ReadAccessPointL( KWap, aReply );
-        err = KErrNone;
+        err = ReadAccessPoint( KWap, aReply );
         }
     else if (aCmd.FindF(KNqapInternetAndWapString) >= 0)
         {
-        ReadAccessPointL( KWapInternet, aReply );
-        err = KErrNone;
+        err = ReadAccessPoint( KWapInternet, aReply );
         }
     else if (aCmd.FindF(KNcnnString) >= 0)
         {
@@ -133,10 +129,14 @@ void CPamPlugin::HandleCommand( const TDesC8& aCmd, RBuf8& aReply, TBool aReplyN
         }
 
     if(err != KErrNone)
-        HandleCommandCompleted(err, EReplyTypeUndefined);
-    else
-        HandleCommandCompleted(KErrNone, EReplyTypeOk);
-        
+        {
+        HandleCommandCompleted(err, EReplyTypeUndefined); 
+        }
+     else
+        {
+        HandleCommandCompleted(KErrNone, EReplyTypeOk);  
+        }
+              
     TRACE_FUNC_EXIT
     }
 
@@ -144,10 +144,12 @@ void CPamPlugin::HandleCommand( const TDesC8& aCmd, RBuf8& aReply, TBool aReplyN
 void CPamPlugin::NameReqCallback( const TDesC8& aName )
     {
     TRACE_FUNC_ENTRY
+    
+    TInt err;
     if ( aName == KNullDesC8() )
         {
         iReply->Zero();
-        iReply->Create( KErrorString );
+        err = iReply->Create( KErrorString );
         }
     else
         {
@@ -158,79 +160,113 @@ void CPamPlugin::NameReqCallback( const TDesC8& aName )
         buf.Append( KCrlfString );
         buf.Append( KOkString );
         iReply->Zero();
-        iReply->Create( buf );
+        err = iReply->Create( buf );
         }
-    HandleCommandCompleted(KErrNone, EReplyTypeOk);
+   
+     if(err != KErrNone)
+        {
+        HandleCommandCompleted(err, EReplyTypeUndefined); 
+        }
+     else
+        {
+        HandleCommandCompleted(KErrNone, EReplyTypeOk);  
+        }
+   
 	TRACE_FUNC_EXIT
     }
 
 /**
  Used by AT*NQAP=?
  */
-void CPamPlugin::SupportedAccessPointL( RBuf8& aReply )
+TInt CPamPlugin::SupportedAccessPoint( RBuf8& aReply )
 	{
 	TRACE_FUNC_ENTRY
 
     const TInt Kbufsize = 16;
     const TInt Kresponcebufsize = 64;
+    TInt err = KErrNone;
 	
-    HBufC16* supportedAp = HBufC16::NewL( Kbufsize );
-    iPAMEngine->SupportedAccessPoints( supportedAp );
-    TBuf8<Kresponcebufsize> buf;
+    HBufC16* supportedAp = HBufC16::New( Kbufsize );
+    if (supportedAp)
+        {
+        iPAMEngine->SupportedAccessPoints( supportedAp );
+        TBuf8<Kresponcebufsize> buf;
     
-	buf.Zero();
-    buf.Append( KCrlfString );
-    buf.Append( KNqapString );
-    buf.Append( *supportedAp );
-    buf.Append( KCrlfString );
-    buf.Append( KOkString );
+	    buf.Zero();
+        buf.Append( KCrlfString );
+        buf.Append( KNqapString );
+        buf.Append( *supportedAp );
+        buf.Append( KCrlfString );
+        buf.Append( KOkString );
 
-    aReply.Zero();
-    aReply.Create( buf ); 
+    	delete supportedAp;
+        aReply.Zero();
+        err = aReply.Create( buf );           
+        }     
+    else
+        {
+        err = KErrNoMemory;    
+        }
 
 	TRACE_FUNC_EXIT
- 	return;
+ 	return err;
     }           
 
 /**
  Used by AT*NQAP=<>
  */
-void CPamPlugin::ReadAccessPointL(TInt aAccessPoint, RBuf8& aReply )
+TInt CPamPlugin::ReadAccessPoint(TInt aAccessPoint, RBuf8& aReply )
 	{
 	TRACE_FUNC_ENTRY
 
     const TInt KreplyBufferLength = 1024;
+    TInt error = KErrNone;
 	
    	CDesC8ArrayFlat* apArray = new(ELeave) CDesC8ArrayFlat(4);
-    CleanupStack::PushL( apArray );
-   	
-    iPAMEngine->ReadAccessPointTableL( aAccessPoint, apArray );
-
-    TInt apArrayLength = apArray->Count();
-    if ( apArrayLength > 0)
-        {
-        HBufC8* buf = HBufC8::NewL( KreplyBufferLength );
-        buf->Des().Zero();
-        buf->Des().Append( KCrlfString );
-        for (TInt i=0; i < apArrayLength; i++ )
-            {
-            // AT*NQAP=<n> responce
-            buf->Des().Append( KNqapString );
-            buf->Des().Append( (*apArray)[i] );
-            buf->Des().Append( KCrlfString );
-            }
-        buf->Des().Append( KOkString );
-        aReply.Zero();
-        aReply.Create( *buf );
+   	if (apArray)
+   	    {
+        TRAP(error, iPAMEngine->ReadAccessPointTableL( aAccessPoint, apArray ));
+        if (!error)
+            {        
+            TInt apArrayLength = apArray->Count();
+            if ( apArrayLength > 0)
+                {
+                HBufC8* buf = HBufC8::New( KreplyBufferLength );
+                if (buf)
+                    {
+                    buf->Des().Zero();
+                    buf->Des().Append( KCrlfString );
+                    for (TInt i=0; i < apArrayLength; i++ )
+                        {
+                        // AT*NQAP=<n> responce
+                        buf->Des().Append( KNqapString );
+                        buf->Des().Append( (*apArray)[i] );
+                        buf->Des().Append( KCrlfString );
+                        }
+                    buf->Des().Append( KOkString );
+                    aReply.Zero();
+                    error = aReply.Create( *buf );
+					delete buf;
+                    }
+                else 
+                    {
+                    error = KErrNoMemory;      
+                    }
+                }    
+            else
+                {
+                aReply.Zero();
+                error = aReply.Create( KOkString );
+                }
+            }   
+        delete apArray;
         }
     else
         {
-        aReply.Zero();
-        aReply.Create( KOkString );
-        }
-    CleanupStack::PopAndDestroy( apArray );
+        error = KErrNoMemory;    
+        } 
     TRACE_FUNC_EXIT
-	return;
+	return error;
     }           
         
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -69,7 +69,7 @@ public:
      * @param aBuffer Data read from EP0
      * @param aStatus status of Read request, completed
      */
-    void ReadEP0(RBuf8& aBuffer, const TRequestStatus& aStatus);
+    void ReadEP0L(RBuf8& aBuffer, const TRequestStatus& aStatus);
     
     /**
      * Call back from CEP0Writer
@@ -77,14 +77,14 @@ public:
      * @since S60 v.5.0
      * @param aStatus status of Write request, completed
      */
-    void WroteEP0(const TRequestStatus& aStatus);
+    void WroteEP0L(const TRequestStatus& aStatus);
     
     /**
      * Starts machine
      *
      * @since S60 v.5.0
      */
-    void Start();
+    void StartL();
     
     /**
      * Stops machine
@@ -125,7 +125,7 @@ private:
      * @since S60 v.5.0
      * @param aSetupPacket Will be processed
      */
-    void ProcessSetupPacket(RBuf8& aSetupPacket);
+    void ProcessSetupPacketL(RBuf8& aSetupPacket);
     
     /**
      * Checks wheather data required to be sent from host to device 

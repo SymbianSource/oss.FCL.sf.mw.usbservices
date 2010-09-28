@@ -45,6 +45,6 @@ SYSTEMINCLUDE           /epoc32/include/ecom
 MW_LAYER_SYSTEMINCLUDE
 
 LIBRARY                 euser.lib  // Kernel API
-LIBRARY                 ECom.lib   // ECOM framework API
+LIBRARY                 ecom.lib   // ECOM framework API
 LIBRARY                 usbman.lib // RUSB API (USB Manager)
 

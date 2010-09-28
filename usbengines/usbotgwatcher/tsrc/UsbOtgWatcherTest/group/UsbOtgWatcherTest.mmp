@@ -85,7 +85,7 @@ SOURCE          cusbindicatornotifier.cpp
 
 //standart lib for stif testing
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 
 //lib for stubbing

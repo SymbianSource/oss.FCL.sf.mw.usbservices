@@ -16,7 +16,7 @@
 */
 
 // INCLUDE FILES
-#include <Stiftestinterface.h>
+#include <StifTestInterface.h>
 #include "usbuinotifapitest.h"
 #include <SettingServerClient.h>
 

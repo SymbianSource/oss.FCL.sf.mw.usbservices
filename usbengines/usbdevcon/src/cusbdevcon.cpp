@@ -295,7 +295,7 @@ void CUsbDevCon::StartL()
         User::LeaveIfError(iLdd.SetDeviceControl());
         
         // start state machine
-        iStateMachine->Start();
+        iStateMachine->StartL();
         
         }
         

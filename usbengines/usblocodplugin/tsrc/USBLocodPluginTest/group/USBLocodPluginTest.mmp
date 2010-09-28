@@ -41,7 +41,7 @@ SOURCE          USBLocodPluginTestBlocks.cpp
 SOURCE 		LocodBearerPluginObs.cpp
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY		ecom.lib
 

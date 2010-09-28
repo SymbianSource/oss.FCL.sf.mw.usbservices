@@ -54,8 +54,8 @@ END
 
 
 LIBRARY	euser.lib cone.lib 
-LIBRARY ECom.lib
-LIBRARY ServiceHandler.lib 
+LIBRARY ecom.lib
+LIBRARY servicehandler.lib 
 LIBRARY estor.lib
 LIBRARY apgrfx.lib 
 LIBRARY apparc.lib 
@@ -64,11 +64,11 @@ LIBRARY efsrv.lib
 LIBRARY bafl.lib 
 LIBRARY avkon.lib 
 LIBRARY DRMCommon.lib
-LIBRARY ImageConversion.lib
+LIBRARY imageconversion.lib
 LIBRARY eikcdlg.lib 
 LIBRARY eikctl.lib
 LIBRARY PlatformEnv.lib 
-LIBRARY commonengine.lib  
+LIBRARY CommonEngine.lib  
 
 
 DEBUGLIBRARY       flogger.lib

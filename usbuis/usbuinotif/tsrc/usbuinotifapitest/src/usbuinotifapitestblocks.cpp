@@ -19,7 +19,7 @@
 #include <e32svr.h>
 #include <StifParser.h>
 #include <ecom/ecom.h>
-#include <Stiftestinterface.h>
+#include <StifTestInterface.h>
 #include "usbuinotifapitest.h"
 
 // EXTERNAL DATA STRUCTURES

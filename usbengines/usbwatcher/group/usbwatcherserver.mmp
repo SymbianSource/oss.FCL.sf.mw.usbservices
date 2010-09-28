@@ -55,6 +55,6 @@ LIBRARY       usbpersonality.lib
 LIBRARY       centralrepository.lib // Central Repository (USB Personality API)
 LIBRARY       featmgr.lib
 LIBRARY       usbotgwatcher.lib  //OTG
-LIBRARY       hbcore.lib
+LIBRARY       HbCore.lib
 
 DEBUGLIBRARY  flogger.lib            // File logging

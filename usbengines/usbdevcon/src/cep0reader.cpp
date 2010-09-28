@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -86,8 +86,10 @@ void CEP0Reader::DoCancel()
 // Standard active object error function.
 // ----------------------------------------------------------------------------
 //
-TInt CEP0Reader::RunError( TInt /*aError*/ )
+TInt CEP0Reader::RunError( TInt aError )
     {
+    FTRACE(FPrint(
+           _L("[USBDEVCON]\tCEP0Reader::RunError, aError = %d"), aError));
     return KErrNone;
     }
         
@@ -100,14 +102,14 @@ void CEP0Reader::RunL()
 
     FLOG( _L( "[USBDEVCON]\tCEP0Reader::RunL Data received:" ) );
     
-    iObserver.ReadEP0(iBuffer, iStatus);
+    iObserver.ReadEP0L(iBuffer, iStatus);
     }
 
 // ---------------------------------------------------------------------------
 // Issue request to read setup packet
 // ---------------------------------------------------------------------------
 //
-void CEP0Reader::ReadSetupPacket()
+void CEP0Reader::ReadSetupPacketL()
     {
     
     FLOG( _L( "[USBDEVCON]\tCEP0Reader::ReadSetupPacket" ) );
@@ -118,7 +120,7 @@ void CEP0Reader::ReadSetupPacket()
         }
     
     iBuffer.Close();
-    iBuffer.Create(KSetupPacketLength);
+    iBuffer.CreateL(KSetupPacketLength);
     
     iLdd.ReadPacket(iStatus, EEndpoint0, iBuffer, KSetupPacketLength);
     SetActive();
@@ -129,7 +131,7 @@ void CEP0Reader::ReadSetupPacket()
 // Issue request to read data
 // ---------------------------------------------------------------------------
 //  
-void CEP0Reader::Read(TUint aDataLength)
+void CEP0Reader::ReadL(TUint aDataLength)
     {
     
     FLOG( _L( "[USBDEVCON]\tCEP0Reader::Read" ) );
@@ -140,7 +142,7 @@ void CEP0Reader::Read(TUint aDataLength)
         }
     
     iBuffer.Close();
-    iBuffer.Create(aDataLength);    
+    iBuffer.CreateL(aDataLength);    
         
     iLdd.Read(iStatus, EEndpoint0, iBuffer, aDataLength);
     SetActive();

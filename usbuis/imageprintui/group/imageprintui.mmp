@@ -74,16 +74,16 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY                 euser.lib apparc.lib cone.lib eikcore.lib 
 LIBRARY                 eikcoctl.lib avkon.lib
 LIBRARY                 bafl.lib            // Basic Application Framework 
-LIBRARY                 AknSkins.lib        // Skinned icons
+LIBRARY                 aknskins.lib        // Skinned icons
 LIBRARY                 aknicon.lib
-LIBRARY                 commonengine.lib    // Series 60 common components library
+LIBRARY                 CommonEngine.lib    // Series 60 common components library
 LIBRARY                 pictbridge.lib
 LIBRARY                 eikcdlg.lib eikctl.lib estor.lib efsrv.lib
-LIBRARY                 ServiceHandler.lib 
+LIBRARY                 servicehandler.lib 
 LIBRARY                 DRMCommon.lib
-LIBRARY                 ImageConversion.lib
+LIBRARY                 imageconversion.lib
 LIBRARY                 PlatformEnv.lib // PathInfo
-LIBRARY                 CommonUI.lib
+LIBRARY                 commonui.lib
 
 
 

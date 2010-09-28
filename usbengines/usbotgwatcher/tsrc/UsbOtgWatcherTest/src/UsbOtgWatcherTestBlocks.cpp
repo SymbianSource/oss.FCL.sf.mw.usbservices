@@ -18,7 +18,7 @@
 // [INCLUDE FILES] - do not remove
 #include <e32svr.h>
 #include <StifParser.h>
-#include <Stiftestinterface.h>
+#include <StifTestInterface.h>
 #include "UsbOtgWatcherTest.h"
 #include "testdebug.h"
 #include "panic.h"

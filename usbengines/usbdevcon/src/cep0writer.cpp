@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -91,23 +91,25 @@ void CEP0Writer::RunL()
 
     FLOG( _L( "[USBDEVCON]\tCEP0Writer::RunL" ) );
 
-    iObserver.WroteEP0(iStatus);
+    iObserver.WroteEP0L(iStatus);
     }
     
 // ----------------------------------------------------------------------------
 // Standard active object error function.
 // ----------------------------------------------------------------------------
 //
-TInt CEP0Writer::RunError( TInt /*aError*/ )
+TInt CEP0Writer::RunError( TInt aError )
     {
-    return KErrNone;
+    FTRACE(FPrint(
+           _L("[USBDEVCON]\tCEP0Reader::RunError, aError = %d"), aError));
+    return KErrNone;                    
     }
 
 // ---------------------------------------------------------------------------
 // Issue request to write data
 // ---------------------------------------------------------------------------
 //
-void CEP0Writer::Write(const RBuf8& aBuffer, TUint aDataLength)
+void CEP0Writer::WriteL(const RBuf8& aBuffer, TUint aDataLength)
     {
 
     FLOG( _L( "[USBDEVCON]\tCEP0Writer::Write" ) );
@@ -121,7 +123,7 @@ void CEP0Writer::Write(const RBuf8& aBuffer, TUint aDataLength)
             _L("[USBDEVCON]\tCEP0Writer::Write. aBuffer Length = %d aDataLength = %d" ),aBuffer.Length(), aDataLength));
 
     iBuffer.Close();
-    iBuffer.Create(aBuffer, aDataLength);   
+    iBuffer.CreateL(aBuffer, aDataLength);   
     
     iLdd.Write(iStatus, EEndpoint0, iBuffer, aDataLength, ETrue);
     SetActive();
