@@ -83,7 +83,10 @@ TBool CPamPlugin::IsCommandSupported( const TDesC8& aCmd )
     return ret;
     }
 
-
+// there is no trailing L, eventhough there are leaving functions inside
+// the problem comes from base class CATExtPluginBase, where defined HandleCommand(), 
+// without trailing L. This class belongs to /sf/os/bt/bt_plat/at_command_handler_plugin_api/inc/atextpluginbase.h, 
+// and has to be fixed there first.
 void CPamPlugin::HandleCommand( const TDesC8& aCmd, RBuf8& aReply, TBool aReplyNeeded )
 	{
 	TRACE_FUNC_ENTRY

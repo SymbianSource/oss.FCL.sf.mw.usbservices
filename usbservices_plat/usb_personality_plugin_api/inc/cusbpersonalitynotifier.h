@@ -69,7 +69,7 @@ private:
     class TNotifierClient
         {
     public:
-        TNotifierClient::TNotifierClient(MUsbNotifierCallBack* aCallBack, TUid aNotifierUid, 
+        TNotifierClient(MUsbNotifierCallBack* aCallBack, TUid aNotifierUid, 
             const TDesC8 &aBuffer, TDes8 &aResponse, TRequestStatus* iRequestStatus, 
             TBool aConfirmation);
             

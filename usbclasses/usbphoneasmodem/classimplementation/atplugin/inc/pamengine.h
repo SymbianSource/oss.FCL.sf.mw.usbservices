@@ -48,7 +48,7 @@ public: // Constructor, destructor
 	* @param aOwner
 	* @return Instance of CPamEngine
 	*/
-	static CPamEngine* CPamEngine::NewL( CPamPlugin* aOwner );
+	static CPamEngine* NewL( CPamPlugin* aOwner );
 						   
 	/**
 	* Two-phased contructor

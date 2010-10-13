@@ -28,7 +28,7 @@
 EXPORT_C TUsbPersonalityParams::TUsbPersonalityParams( RUsb& aUsbMan,
     CUsbPersonalityNotifier& aPersonalityNotifier )
     : iUsbMan( aUsbMan ),
-      iPersonalityNotifier( aPersonalityNotifier )
+      iPersonalityNotifier( aPersonalityNotifier ), iPersonalityId(0)
     {
     LOG_FUNC
 	

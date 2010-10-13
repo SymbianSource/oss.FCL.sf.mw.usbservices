@@ -957,7 +957,7 @@ TBool CUsbActiveMscHandler::IsEncProtectionRequired(const TInt& aDriveLetter)
         {
         FLOG(_L("Check drives for busy status"));
 	
-        TInt encDriverStatus;
+        TInt encDriverStatus(0);
 		
         if(!iDevEncSession)
             {

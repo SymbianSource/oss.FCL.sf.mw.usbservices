@@ -110,8 +110,7 @@ private:
  */
 class CUsbNotifManager : public CBase
     {
-    friend class CUsbNotifManager;
-
+    
 public:
 
     /**

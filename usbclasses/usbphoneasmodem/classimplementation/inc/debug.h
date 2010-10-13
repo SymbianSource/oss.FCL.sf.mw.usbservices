@@ -39,7 +39,8 @@ _LIT8(KLeavePrefix8, "LEAVE code ");
 
 #ifdef _DEBUG
 
-const TInt KMaxLogLineLength = 512;
+const TInt KMaxLogLineLength = 508;  // 512-4, 4 is taken by TBuf structure, 
+// otherwise exceeds maximum single use of 1024 bytes for stack in TBuf16 config
 
 // Trace options
 #define KPRINTERROR		0x00000001 // Print error
@@ -113,7 +114,7 @@ inline void TracePanic(
 	User::Panic(aPanicCategory, aPanicCode); 
     }
 
-inline void TraceLeave(char* aFile, TInt aLine, TInt aReason)
+inline void TraceLeaveL(char* aFile, TInt aLine, TInt aReason)
 	{
 	TPtrC8 fullFileName((const TUint8*)aFile);
 	TPtrC8 fileName(fullFileName.Ptr()+fullFileName.LocateReverse('\\')+1);
@@ -138,9 +139,9 @@ inline void TraceLeave(char* aFile, TInt aLine, TInt aReason)
 
 #define PANIC(CODE) TracePanic(__FILE__, __LINE__, CODE, KPanicCategory)
 
-#define LEAVE_IF_ERROR(REASON) {if (REASON) TraceLeave(__FILE__, __LINE__, REASON);}
+#define LEAVE_IF_ERROR(REASON) {if (REASON) TraceLeaveL(__FILE__, __LINE__, REASON);}
 
-#define LEAVE(REASON) TraceLeave(__FILE__, __LINE__, REASON)
+#define LEAVE(REASON) TraceLeaveL(__FILE__, __LINE__, REASON)
 
 #define TRACE_FUNC_ENTRY {if(KTraceMask & KPRINTINFO) { TPtrC8 ptr8((TUint8*)__PRETTY_FUNCTION__); Trace(KFuncEntryFormat8, &ptr8);}}
 

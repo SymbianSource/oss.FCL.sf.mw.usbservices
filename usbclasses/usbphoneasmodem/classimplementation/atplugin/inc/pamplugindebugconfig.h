@@ -42,7 +42,8 @@ _LIT8(KPanicPrefix8, "PANIC code ");
 _LIT8(KLeavePrefix8, "LEAVE code ");
 #endif
 
-const TInt KMaxLogLineLength = 512;
+const TInt KMaxLogLineLength = 508;  // 512-4, 4 is taken by TBuf structure, 
+// otherwise exceeds maximum single use of 1024 bytes for stack in TBuf16 config
 
 #define KPRINTERROR        0x00000001 // Tracing level: error
 #define KPRINTINFO        0x00000002 // Tracing level: function trace
