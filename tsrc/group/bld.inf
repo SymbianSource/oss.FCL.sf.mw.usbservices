@@ -19,30 +19,16 @@
 PRJ_PLATFORMS
 DEFAULT
 
-//build files for Stub Framework
-
-
 //build files for shortlinkconn
 #include "../../../shortlinkconn/localconnectivityservice/lcstylustap/tsrc/LcStylusTapTest/group/bld.inf"
 #include "../../../shortlinkconn/localconnectivityservice/generichid/tsrc/GenericHidTest/group/bld.inf"
 
 //build files for usb
+#include "../../usbclasses/msmmplugin/tsrc/MsmmPluginTest/group/bld.inf"
 #include "../../usbuis/usbui/tsrc/USBUiApiTest/group/bld.inf"
 #include "../../usbuis/usbuinotif/tsrc/USBUiNotifApiTest/group/bld.inf"
-
 #include "../../usbclasses/usbhidclassdriver/tsrc/UsbHidClassDriverTest/group/bld.inf"
-#include "../../usbclasses/msmmplugin/tsrc/MsmmPluginTest/group/bld.inf"
-#include "../../usbclasses/usbbasicpersonality/tsrc/UsbBasicPersonalityTest/group/bld.inf"
-//#include "../../usbclasses/usbosdescriptorhandler/tsrc/UsbOsDescriptorHandlerTest/group/bld.inf"
-//#include "../../usbclasses/usbmscpersonality/tsrc/UsbMscPersonalityTest/group/bld.inf"
-#include "../../usbclasses/usbobexclasscontroller/tsrc/UsbObexClassControllerTest/group/bld.inf"
 
-//#include "../../usbengines/usbotgwatcher/tsrc/UsbOtgWatcherTest/group/bld.inf"
-#include "../../usbengines/usblocodplugin/tsrc/USBLocodPluginTest/group/bld.inf"
-#include "../../usbengines/usbremotepersonality/tsrc/USBRemotePersonalityTest/group/bld.inf"
-//#include "../../usbengines/usbwatcher/tsrc/UsbWatcherTest/group/bld.inf"
-
-#include "../../usbservices_plat/usb_personality_plugin_api/tsrc/usbpersonalitypluginapitest/group/bld.inf"
 
 PRJ_EXPORTS
 

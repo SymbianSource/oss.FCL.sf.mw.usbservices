@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -76,10 +76,11 @@ public: // New functions
      *
      * @since Series 60 3.2
      * @param aPersonalityId Identification of the personality to be loaded.
+     * @param aAskOnConnectionSetting When this parameter is ETrue, "ask on connection" query is shown.
      * @param aStatus Used to complete outstanding request.
      */
     void StartPersonality( TInt& aPersonalityId, 
-	        TRequestStatus& aStatus );
+            TInt aAskOnConnectionSetting, TRequestStatus& aStatus );
 
     /**
      * Stop current personality.
@@ -231,6 +232,11 @@ private:    // Data
      */        
     TInt *iPersonalityId;
     
+    /**
+     * Ask on connection is either on (1) or off (0).
+     */    
+    TInt iAskOnConnectionSetting;
+
     /**
      * When value is ETrue then serial number is written to P&S.
      */            

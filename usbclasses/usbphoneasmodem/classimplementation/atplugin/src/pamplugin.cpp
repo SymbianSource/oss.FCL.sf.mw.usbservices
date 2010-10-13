@@ -1,4 +1,4 @@
-// Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -185,8 +185,9 @@ void CPamPlugin::SupportedAccessPointL( RBuf8& aReply )
     buf.Append( KCrlfString );
     buf.Append( KOkString );
 
+    delete supportedAp;
     aReply.Zero();
-    aReply.Create( buf ); 
+    aReply.CreateL( buf ); 
 
 	TRACE_FUNC_EXIT
  	return;
@@ -209,7 +210,7 @@ void CPamPlugin::ReadAccessPointL(TInt aAccessPoint, RBuf8& aReply )
     TInt apArrayLength = apArray->Count();
     if ( apArrayLength > 0)
         {
-        HBufC8* buf = HBufC8::NewL( KreplyBufferLength );
+        HBufC8* buf = HBufC8::NewLC( KreplyBufferLength );
         buf->Des().Zero();
         buf->Des().Append( KCrlfString );
         for (TInt i=0; i < apArrayLength; i++ )
@@ -221,7 +222,8 @@ void CPamPlugin::ReadAccessPointL(TInt aAccessPoint, RBuf8& aReply )
             }
         buf->Des().Append( KOkString );
         aReply.Zero();
-        aReply.Create( *buf );
+        aReply.CreateL( *buf );
+        CleanupStack::PopAndDestroy(buf); // buf;
         }
     else
         {

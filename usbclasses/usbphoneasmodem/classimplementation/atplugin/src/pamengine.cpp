@@ -306,9 +306,9 @@ void CPamEngine::ReadPacketServicetableL( CMManager::TPacketDataApType aAccessPo
             CleanupStack::PopAndDestroy(); // connectionMethod
             }
         tmpName = NULL;
-        CleanupStack::PopAndDestroy(2); // destination
+        CleanupStack::PopAndDestroy(2); // destination, tmpName
         }
-    CleanupStack::PopAndDestroy(3); // cmManager
+    CleanupStack::PopAndDestroy(3);  // cmManager, destinations, buf
     TRACE_FUNC_EXIT
     return;
     }

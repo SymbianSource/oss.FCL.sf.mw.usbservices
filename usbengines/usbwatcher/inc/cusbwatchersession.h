@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -40,6 +40,12 @@ public:
         
     virtual void Notify(TInt iPersonalityId, TInt aStatus); 
 
+    /**
+     * Check if ask on connection mode query is suppressed in this session.
+     * From MUsbWatcherNotify
+     */
+    virtual TBool IsAskOnConnectionSuppressed();
+    
 protected:
     CUsbWatcherSession(CUsbWatcherServer* aServer);
     void ConstructL();
@@ -60,6 +66,14 @@ private:
     TInt SetPreviousPersonalityOnDisconnect(const RMessage2& aMessage, 
             TBool& aComplete);
 
+    /**
+     * Prevent showing ask on connection mode query in this session.
+     * This affects to the next cable connections. The currently shown
+     * mode query is not closed.
+     * aSuppress ETrue prevents showing the mode query.
+     */
+    void SetAskOnConnectionSuppression(TBool aSuppress);
+
     CUsbWatcherServer* iUsbWatcherServer;
     RMessage2 iSetPersonalityMessage;
     RMessage2 iCancelSetPersonalityMessage;
@@ -70,6 +84,7 @@ private:
 
     TBool iSetPreviousPersonalityOutstanding;
     TBool iCancelSetPreviousPersonalityOutstanding;
+    TBool iSuppressAskOnConnection; // Prevent ask on connection mode query 
     };
 
 #endif

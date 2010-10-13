@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -159,6 +159,9 @@ TInt CUsbWatcherSession::SetPersonality( const RMessage2& aMessage,
     aComplete = EFalse;
     iSetPersonalityOutstanding = ETrue;
 
+    //Set force parameter to this session.
+    SetAskOnConnectionSuppression( aMessage.Int1() );
+
     iUsbWatcherServer->Watcher().SetPersonality( aMessage.Int0(),
         static_cast<TBool>( aMessage.Int2() ) );
 
@@ -180,6 +183,7 @@ TInt CUsbWatcherSession::CancelSetPersonality( const RMessage2& aMessage,
         return KErrNone;
         }
 
+    SetAskOnConnectionSuppression( EFalse );
     aComplete = EFalse;
     iCancelSetPersonalityMessage = aMessage;
     iCancelSetPersonalityOutstanding = ETrue;
@@ -207,6 +211,7 @@ TInt CUsbWatcherSession::SetPreviousPersonality( const RMessage2& aMessage,
     // Cancel all other pending requests
     iUsbWatcherServer->Watcher().Notify( KErrCancel );
 
+    SetAskOnConnectionSuppression( EFalse );
     iSetPreviousPersonalityOutstanding = ETrue;
     iSetPreviousPersonalityMessage = aMessage;
     aComplete = EFalse;
@@ -234,6 +239,7 @@ TInt CUsbWatcherSession::SetPreviousPersonalitySync( const RMessage2& /*aMsg*/,
     // Cancel all other pending requests
     iUsbWatcherServer->Watcher().Notify( KErrCancel );
 
+    SetAskOnConnectionSuppression( EFalse );
     iUsbWatcherServer->Watcher().SetPreviousPersonality();
 
     return KErrNone;
@@ -271,6 +277,8 @@ TInt CUsbWatcherSession::SetPreviousPersonalityOnDisconnect( const RMessage2&
     {
     LOG_FUNC
 
+    //connected currently, so ask on connection can be enabled
+    SetAskOnConnectionSuppression( EFalse );
     iUsbWatcherServer->Watcher().SetPreviousPersonalityOnDisconnect();
 
     return KErrNone;
@@ -313,6 +321,28 @@ void CUsbWatcherSession::Notify( TInt /*aPersonalityId*/, TInt aStatus )
         iSetPreviousPersonalityMessage.Complete( aStatus );
         iSetPreviousPersonalityOutstanding = EFalse;
         }
+    }
+
+// ----------------------------------------------------------------------------
+// Set or clear AskOnConnection suppression
+// ----------------------------------------------------------------------------
+//
+void CUsbWatcherSession::SetAskOnConnectionSuppression( TBool aSuppress )
+    {
+    LOG_FUNC
+
+    iSuppressAskOnConnection = aSuppress;
+    }
+
+// ----------------------------------------------------------------------------
+// Check if AskOnConnection is suppressed
+// ----------------------------------------------------------------------------
+//
+TBool CUsbWatcherSession::IsAskOnConnectionSuppressed()
+    {
+    LOG_FUNC
+
+    return iSuppressAskOnConnection;
     }
 
 // End of file

@@ -14,10 +14,7 @@
 @rem Description: 
 @rem
 
-call sbs -c armv5_udeb clean
-call sbs -c armv5_udeb.test
-call sbs -c armv5_udeb.test freeze
-call sbs -c armv5_udeb.test
-
+call bldmake bldfiles
+call abld test build armv5
 call makesis USBRemotePersonalityTest_ats.pkg
-call signsis USBRemotePersonalityTest_ats.sis USBRemotePersonalityTest_ats.sisx x:\rd.cer x:\rd-key.pem
+call signsis USBRemotePersonalityTest_ats.sis USBRemotePersonalityTest_ats.sisx rd.cer rd-key.pem
