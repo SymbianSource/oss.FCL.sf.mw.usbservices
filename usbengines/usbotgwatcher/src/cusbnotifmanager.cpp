@@ -190,6 +190,7 @@ void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
         {
         LOG1("Unexpected aCat = 0x%X", aCat );
         PANIC(EWrongNotifierCategory);
+        return;
         }
 
     CleanupStack::PushL(notifier);
@@ -197,7 +198,7 @@ void CUsbNotifManager::ShowNotifierL(TUid aCat, TUint aNotifId,
     iWaitNotifiers.AppendL(CWaitNotifierInfo::NewL(notifier, *aObserver));
 
     notifier->ShowL();
-
+    
     CleanupStack::Pop(notifier);
     }
 

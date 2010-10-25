@@ -19,9 +19,9 @@ TRANSLATIONS = usbdialogs.ts
 
 defBlock = \      
     "$${LITERAL_HASH}if defined(EABI)" \
-    "DEFFILE  .\eabi/usbavkonnotif.def" \
+    "DEFFILE  ./eabi/usbavkonnotif.def" \
     "$${LITERAL_HASH}else" \
-    "DEFFILE  .\BWINS/usbavkonnotif.def" \
+    "DEFFILE  ./BWINS/usbavkonnotif.def" \
     "$${LITERAL_HASH}endif"
 	
 MMP_RULES += defBlock

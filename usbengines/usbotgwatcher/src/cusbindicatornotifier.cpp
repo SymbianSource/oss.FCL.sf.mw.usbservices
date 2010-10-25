@@ -69,7 +69,7 @@ CUsbIndicatorNotifier::~CUsbIndicatorNotifier()
 // C++ constructor
 // ---------------------------------------------------------------------------
 //
-CUsbIndicatorNotifier::CUsbIndicatorNotifier(CUsbNotifManager& aNotifManager,
+CUsbIndicatorNotifier::CUsbIndicatorNotifier(CUsbNotifManager& /*aNotifManager*/,
         CUsbOtgWatcher& aOtgWatcher) :
         iOtgWatcher(aOtgWatcher)
     {
@@ -155,7 +155,7 @@ void CUsbIndicatorNotifier::ToggleConnectingIndicator(TBool aEnable)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbIndicatorNotifier::OtgWatcherStateChangedL(TUsbStateIds aState)
+void CUsbIndicatorNotifier::OtgWatcherStateChangedL(TUsbStateIds /*aState*/)
     {
      LOG_FUNC
     SetIndicator();
@@ -185,7 +185,7 @@ void CUsbIndicatorNotifier::VBusUpL()
 // 
 // ---------------------------------------------------------------------------
 //  
-void CUsbIndicatorNotifier::VBusObserverErrorL(TInt aError)
+void CUsbIndicatorNotifier::VBusObserverErrorL(TInt /*aError*/)
     {
     LOG_FUNC
     // do nothing

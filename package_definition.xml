@@ -80,12 +80,6 @@
     <unit bldFile="usbuis/usbuinotif" qt:proFile="usbuinotif.pro" filter="!test"/>
     <unit bldFile="usbuis/usbuinotif/tsrc/usbuinotifapitest/group" filter="test,api_test" />
    </component>
-   <component id="imageprintuiprovider" filter="s60" name="ImagePrint UI Provider" class="plugin">
-    <unit bldFile="usbuis/imageprintuiprovider/group"/>
-   </component>
-   <component id="usbimageprintui" filter="s60" name="ImagePrint UI">
-    <unit bldFile="usbuis/imageprintui/group"/>
-   </component>
    <component id="usbsettingsapp" name="USB Settings Application" introduced="^4" filter="s60">
       <unit bldFile="usbuis/usbsettingsapp" qt:proFile="USBSettingsApp.pro"/>
     </component>

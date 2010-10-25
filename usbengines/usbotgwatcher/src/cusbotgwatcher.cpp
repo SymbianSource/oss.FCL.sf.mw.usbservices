@@ -149,7 +149,7 @@ EXPORT_C CUsbOtgWatcher* CUsbOtgWatcher::NewL(RUsb& aUsbMan)
 // 
 // ---------------------------------------------------------------------------
 //
-CUsbOtgWatcher::~CUsbOtgWatcher()
+EXPORT_C CUsbOtgWatcher::~CUsbOtgWatcher()
     {
     LOG_FUNC
 
@@ -366,7 +366,7 @@ void CUsbOtgWatcher::IdPinOffL()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::IdPinErrorL(TInt aError)
+void CUsbOtgWatcher::IdPinErrorL(TInt /*aError*/)
     {
     ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherIdPinError, EUsbStateHostHandleDropping);
@@ -398,7 +398,7 @@ void CUsbOtgWatcher::VBusUpL()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::VBusObserverErrorL(TInt aError)
+void CUsbOtgWatcher::VBusObserverErrorL(TInt /*aError*/)
     {
     ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherVBusObserverError,
@@ -480,7 +480,7 @@ void CUsbOtgWatcher::BHostL()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::OtgStateErrorL(TInt aError)
+void CUsbOtgWatcher::OtgStateErrorL(TInt /*aError*/)
     {
     ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherOtgStateError, EUsbStateHostHandleDropping);
@@ -511,7 +511,7 @@ void CUsbOtgWatcher::BusActiveL()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::BusActivityErrorL(TInt aError)
+void CUsbOtgWatcher::BusActivityErrorL(TInt /*aError*/)
     {
     ASSERT_PANIC(iHostState != NULL, EBadHostState);
     // no action, continue
@@ -572,7 +572,7 @@ void CUsbOtgWatcher::DriverLoadFailureL(TDeviceEventInformation aTdi)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::HostEventNotificationErrorL(TInt aError)
+void CUsbOtgWatcher::HostEventNotificationErrorL(TInt /*aError*/)
     {
     ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherHostEventNotificationError,
@@ -634,7 +634,7 @@ void CUsbOtgWatcher::SessionRequestedL()
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbOtgWatcher::MessageNotificationErrorL(TInt aError)
+void CUsbOtgWatcher::MessageNotificationErrorL(TInt /*aError*/)
     {
     ASSERT_PANIC(iHostState != NULL, EBadHostState);
     HandleHostProblemL(EUsbWatcherMessageNotificationError,

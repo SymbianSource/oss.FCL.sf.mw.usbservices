@@ -245,9 +245,10 @@ void CUsbStateHostAInitiate::DeviceAttachedL(TDeviceEventInformation aTdi)
             }
         case KErrUsbDeviceDetachedDuringDriverLoading:
             {
-            //do not show error, due to device is already detached
-            // Device Detachment will not come after this (it was not attached yet)
-            // therefore emulate detachment
+            LOG( "KErrUsbDeviceDetachedDuringDriverLoading" );
+            // do not show error, due to device is already detached
+            // Device Detachment will not come after this (it was not 
+            // normally attached yet), therefore emulate detachment 
             // content of aTdi is not important, due to detachment anyway
             DeviceDetachedL(aTdi);
             break;
@@ -272,7 +273,7 @@ void CUsbStateHostAInitiate::DeviceAttachedL(TDeviceEventInformation aTdi)
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAInitiate::DeviceDetachedL(TDeviceEventInformation aTdi)
+void CUsbStateHostAInitiate::DeviceDetachedL(TDeviceEventInformation /*aTdi*/)
     {
     LOG_FUNC
 
@@ -327,7 +328,7 @@ void CUsbStateHostAInitiate::DriverLoadPartialSuccessL(
 // 
 // ---------------------------------------------------------------------------
 //
-void CUsbStateHostAInitiate::DriverLoadFailureL(TDeviceEventInformation aDei)
+void CUsbStateHostAInitiate::DriverLoadFailureL(TDeviceEventInformation /*aDei*/)
     {
     LOG_FUNC
 
