@@ -270,7 +270,12 @@ void CUsbStateHostABase::SessionRequestedL()
         LOG( "Session is ongoing (VBus high); ignore Session Request." );
         return;
         }
-
+	if( !iWatcher.AllowedToRiseVBusL() )
+	    {
+		iWatcher.HandleHostProblemL(EUsbWatcherErrorInConnection,
+	            EUsbStateHostHandleDropping);	
+        return;        
+		}
     TInt err = iWatcher.Usb().BusRequest();
     LOG1( "BusRequest() err = %d" , err);
 

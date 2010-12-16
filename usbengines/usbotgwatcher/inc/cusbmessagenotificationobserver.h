@@ -63,8 +63,19 @@ public:
      * @param aError error code
      */
     virtual void MessageNotificationErrorL(TInt aError) = 0;
-    };
-
+    
+    /**
+     * Called when Thermalstatus high received
+     */
+    virtual void ThermalStatusHighL() = 0;
+    
+    /**
+     * Called when thermal status normal received    
+     */
+    virtual void ThermalStatusNormalL() = 0;
+    
+  
+	};
 /**
  *  Class observes USB Notifications
  *

@@ -813,8 +813,10 @@ void CUsbWatcher::Start()
         }
     else
         {
-        LOG( "Tryign to call CUsbWatcher::Start in non-idle state " );
-        PANIC( KErrGeneral );
+        //Start may have been called because device lock was unlocking. The
+        //personality may be already starting, so nothing needs to be done.
+        LOG1( "Trying to call CUsbWatcher::Start in non-idle state %d",
+            iState );        
         }
     }
 

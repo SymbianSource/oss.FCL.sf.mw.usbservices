@@ -196,6 +196,26 @@ void CUsbMessageNotificationObserver::RunL()
             break;
             }
             // notify states with other messages  
+        case KErrUsbOtgThermalFatal:
+            {
+            LOG(" Thermal status fatal received" );
+
+            for (TInt i(0); i < iObservers.Count(); ++i)
+                {
+                iObservers[i]->ThermalStatusHighL();
+                }
+            break; 
+          	} 
+        case KErrUsbOtgThermalNormal:
+            {
+            LOG(" Thermal status normal received" );
+
+            for (TInt i(0); i < iObservers.Count(); ++i)
+                {
+                iObservers[i]->ThermalStatusNormalL();
+                }
+            break;     
+            }
         default:
             {
 

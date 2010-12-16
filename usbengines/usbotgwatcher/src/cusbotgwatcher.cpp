@@ -37,8 +37,10 @@
 #include "errors.h"
 #include "debug.h"
 #include "panic.h"
+#ifndef STIF
 _LIT_SECURITY_POLICY_PASS( KAlwaysPassPolicy );
 _LIT_SECURITY_POLICY_C1( KLocalServicesPolicy, ECapabilityLocalServices );
+#endif
 
 // ---------------------------------------------------------------------------
 // 
@@ -46,7 +48,7 @@ _LIT_SECURITY_POLICY_C1( KLocalServicesPolicy, ECapabilityLocalServices );
 //
 CUsbOtgWatcher::CUsbOtgWatcher(RUsb& aUsbMan) :
     iUsb(aUsbMan), iPersonalityId(KUsbPersonalityIdMTP), iUsbServiceRequest(
-            CUsbServiceControl::ERequestUndefined)
+            CUsbServiceControl::ERequestUndefined), iThermalNormal(ETrue)
     {
     LOG_FUNC
     }
@@ -358,6 +360,7 @@ void CUsbOtgWatcher::IdPinOffL()
         LOG( "ErrorStoppingUsbServices" );
         PANIC(ECanNotStopUsbServices);
         }
+    iThermalNormal = ETrue;    
     }
 
 // ---------------------------------------------------------------------------
@@ -1124,3 +1127,36 @@ void CUsbOtgWatcher::UnsubscribeL(MUsbOtgWatcherStateObserver& aObserver)
 
     iOtgStateObservers.Remove(i);
     }
+    
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+// 
+void CUsbOtgWatcher::ThermalStatusHighL()
+	{
+	LOG_FUNC	
+	iThermalNormal = EFalse;	
+	HandleHostProblemL(EUsbWatcherErrorInConnection,
+                        EUsbStateHostHandleDropping);
+	}
+    
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+// 
+void CUsbOtgWatcher::ThermalStatusNormalL()
+	{
+	LOG_FUNC	
+	iThermalNormal = ETrue;	
+	}
+	
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+// 
+TBool CUsbOtgWatcher::AllowedToRiseVBusL()
+	{
+	LOG_FUNC		
+	return iThermalNormal;
+	}
+	

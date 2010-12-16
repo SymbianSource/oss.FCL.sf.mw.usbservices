@@ -289,6 +289,22 @@ public:
      * @param error code
      */
     void MessageNotificationErrorL(TInt aError);
+    
+    /**
+     * ThermalStatusHigh event     
+     */
+    void ThermalStatusHighL();
+    
+    /**
+     * ThermalStatus Normal event     
+     */
+    void ThermalStatusNormalL();
+    
+    /**
+     * Allowed to rise vbus
+     * return true if allowed, otherwise false
+     */
+    TBool AllowedToRiseVBusL();
 
     // From CUsbServiceControl
     /**
@@ -507,6 +523,11 @@ private:
      * Not Own
      */
     CUsbServiceControl::TUsbServiceRequest iUsbServiceRequest;
+    	
+    /**
+	 * Thermal level  
+	 */	
+    TBool iThermalNormal;	
     };
 
 #endif //  C_USBOTGWATCHER_H

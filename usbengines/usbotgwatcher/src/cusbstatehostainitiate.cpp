@@ -131,9 +131,15 @@ void CUsbStateHostAInitiate::JustAdvancedToThisStateL()
                 EUsbStateHostHandleDropping);
         return;
         }
-
-    // do BusRequest, if down
-
+    
+	if( !iWatcher.AllowedToRiseVBusL() )
+	    {
+		iWatcher.HandleHostProblemL(EUsbWatcherErrorInConnection,
+                EUsbStateHostHandleDropping);	
+        return;        
+		}
+		
+	// do BusRequest, if down	
     if (CUsbVBusObserver::EVBusUp != iWatcher.VBusObserver()->VBus())
         {
         const TUint maxTrial = 3;
